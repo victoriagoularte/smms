@@ -1,0 +1,2 @@
+include ':app', ':facebook-nav_login'
+rootProject.name='smms'

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_smms"
+    app:startDestination="@id/smmsFragment">
+
+    <fragment
+        android:id="@+id/smmsFragment"
+        tools:layout="@layout/fragment_analitycs"
+        android:name="br.com.unb.smms.view.fragment.AnalitycsFragment"
+        android:label="SmmsFragment" />
+    <fragment
+        android:id="@+id/newPostFragment"
+        android:name="br.com.unb.smms.view.fragment.NewPostFragment"
+        android:label="fragment_new_post"
+        tools:layout="@layout/fragment_new_post" />
+</navigation>
