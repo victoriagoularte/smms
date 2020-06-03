@@ -51,7 +51,13 @@ class SelectSocialMediaActivity : AppCompatActivity() {
             this@SelectSocialMediaActivity,
             listOf(
                 "manage_pages",
-                "publish_pages"
+                "publish_pages",
+                "pages_manage_ads",
+                "pages_manage_metadata",
+                "pages_manage_engagement",
+                "pages_read_engagement",
+                "pages_read_user_content",
+                "pages_manage_posts"
             )
        )
 
