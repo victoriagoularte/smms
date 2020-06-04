@@ -23,6 +23,9 @@ interface FacebookPageService {
     @POST("{page-id}/feed")
     fun feed(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
+    @POST("{page-id}/photos")
+    fun photo(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
+
 }
 
 class SmmsPageRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
@@ -36,6 +39,20 @@ class SmmsPageRepository(val context: Context, val baseUrl: String, val accessTo
         val dto = domainMapper.toDTO(feed)
 
         return facebookService.feed(id, dto).map { nodeDTO ->
+            nodeGraphDomainMapper.toDomain(nodeDTO)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+    }
+
+    fun photo(id: String, feed: Feed): Single<NodeGraph?> {
+
+        val domainMapper = Mappers.getMapper(FeedResponseMapper::class.java)
+        val nodeGraphDomainMapper = Mappers.getMapper(NodeGraphMapper::class.java)
+        val dto = domainMapper.toDTO(feed)
+
+        return facebookService.photo(id, dto).map { nodeDTO ->
             nodeGraphDomainMapper.toDomain(nodeDTO)
         }
             .subscribeOn(Schedulers.io())

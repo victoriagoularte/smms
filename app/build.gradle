@@ -118,7 +118,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:17.4.0'
 
 //    Facebook SDK
+    implementation 'com.facebook.android:facebook-core:5.15.3'
     implementation 'com.facebook.android:facebook-login:5.15.3'
+    implementation 'com.facebook.android:facebook-share:5.15.3'
+    implementation 'com.facebook.android:facebook-places:5.15.3'
+    implementation 'com.facebook.android:facebook-messenger:5.15.3'
+    implementation 'com.facebook.android:facebook-applinks:5.15.3'
 
     implementation "androidx.security:security-crypto:1.0.0-alpha02"
 

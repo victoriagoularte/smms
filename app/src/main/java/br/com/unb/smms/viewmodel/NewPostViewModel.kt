@@ -25,20 +25,22 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     fun feed(downloadUri: String?) {
 
-        val feed = if (downloadUri != null) {
-            Feed(text.value, downloadUri)
-        } else {
-            Feed(text.value)
-        }
-
+        val feed = Feed(text.value, downloadUri)
 
         textErrorMessage.value = pageInteractor.validateTextPost(feed)
         if (!textErrorMessage.value.isNullOrEmpty()) return
 
-        feedDisposable = pageInteractor.feed(app.baseContext.getString(R.string.page_id), feed)
-            .subscribe { res, error ->
-                resultPost.value = SmmsData.Success(res!!)
-            }
+        if(downloadUri.isNullOrEmpty()) {
+            feedDisposable = pageInteractor.feed(app.baseContext.getString(R.string.page_id), feed)
+                .subscribe { res, error ->
+                    resultPost.value = SmmsData.Success(res!!)
+                }
+        } else {
+            feedDisposable = pageInteractor.photo(app.baseContext.getString(R.string.page_id), feed)
+                .subscribe { res, error ->
+                    resultPost.value = SmmsData.Success(res!!)
+                }
+        }
 
         smmsCompositeDisposable.add(feedDisposable)
     }

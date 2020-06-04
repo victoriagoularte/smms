@@ -28,6 +28,10 @@ class SmmsPageInteractor(val context: Context) {
         return smmsRepository.feed(id, feed)
     }
 
+    fun photo(id: String, feed: Feed): Single<NodeGraph?> {
+        return smmsRepository.photo(id, feed)
+    }
+
     private fun getPageAccessToken() : String? {
         val gson = Gson()
         val loginResultString = getEncrypSharedPreferences(context).getString(

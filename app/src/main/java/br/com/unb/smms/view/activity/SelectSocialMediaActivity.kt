@@ -12,6 +12,7 @@ import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
+import com.facebook.FacebookSdk
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import kotlinx.android.synthetic.main.activity_select_social_media.*
@@ -25,13 +26,7 @@ class SelectSocialMediaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_social_media)
 
-        if (getEncrypSharedPreferences(this@SelectSocialMediaActivity).getString(
-                SecurityConstants.LOGIN_RESULT,
-                ""
-            )!!.isNotEmpty()
-        ) {
-            startActivity(Intent(this@SelectSocialMediaActivity, SmmsActivity::class.java))
-        }
+        FacebookSdk.setGraphApiVersion("v7.0")
 
         LoginManager.getInstance().logInWithReadPermissions(
             this@SelectSocialMediaActivity,
@@ -43,15 +38,7 @@ class SelectSocialMediaActivity : AppCompatActivity() {
                 "user_posts",
                 "email",
                 "public_profile",
-                "pages_show_list"
-            )
-        );
-
-        LoginManager.getInstance().logInWithPublishPermissions(
-            this@SelectSocialMediaActivity,
-            listOf(
-                "manage_pages",
-                "publish_pages",
+                "pages_show_list",
                 "pages_manage_ads",
                 "pages_manage_metadata",
                 "pages_manage_engagement",
@@ -59,7 +46,26 @@ class SelectSocialMediaActivity : AppCompatActivity() {
                 "pages_read_user_content",
                 "pages_manage_posts"
             )
-       )
+        );
+
+        LoginManager.getInstance().logInWithPublishPermissions(
+            this@SelectSocialMediaActivity,
+            listOf(
+                "manage_pages",
+                "publish_pages"
+            )
+        )
+
+        if (getEncrypSharedPreferences(this@SelectSocialMediaActivity).getString(
+                SecurityConstants.LOGIN_RESULT,
+                ""
+            )!!.isNotEmpty()
+        ) {
+            startActivity(Intent(this@SelectSocialMediaActivity, SmmsActivity::class.java))
+            return
+        }
+
+
 
         loginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult?> {
             override fun onSuccess(loginResult: LoginResult?) {

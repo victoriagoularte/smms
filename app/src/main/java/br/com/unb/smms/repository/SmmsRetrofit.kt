@@ -1,6 +1,7 @@
 package br.com.unb.smms.repository
 
 import android.content.Context
+import br.com.unb.smms.R
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.google.gson.Gson
@@ -23,8 +24,6 @@ private class AddHeaderInterceptor(val context: Context, val accessToken: String
 //        val sharePref = getEncrypSharedPreferences(context)
 //        val accessToken = sharePref.getString(SecurityConstants.ACCESS_TOKEN, "")
         var builder = chain.request().newBuilder()
-
-
         if(accessToken != null) {
             val originalHttpUrl: HttpUrl = chain.request().url
             val url = originalHttpUrl.newBuilder()
@@ -66,7 +65,6 @@ open class SmmsRetrofit(context: Context, baseUrl: String, accessType: String?) 
         val client = OkHttpClient.Builder()
             .addInterceptor(AddHeaderInterceptor(context, accessType))
             .addInterceptor(logInterceptor)
-
             .build()
 
         gson = GsonBuilder()
