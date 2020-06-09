@@ -4,9 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import br.com.unb.smms.R
 import br.com.unb.smms.domain.Account
-import br.com.unb.smms.domain.Feed
 import br.com.unb.smms.domain.Friends
-import br.com.unb.smms.domain.NodeGraph
+import br.com.unb.smms.domain.InstagramInfo
 import br.com.unb.smms.repository.SmmsUserRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
@@ -30,6 +29,10 @@ class SmmsUserInteractor(val context: Context) {
 
     fun getFriendsCount(id: String): Single<Friends> {
         return smmsRepository.friends(id)
+    }
+
+    fun infoIg(id: String): Single<InstagramInfo> {
+        return smmsRepository.infoIg(id)
     }
 
 }

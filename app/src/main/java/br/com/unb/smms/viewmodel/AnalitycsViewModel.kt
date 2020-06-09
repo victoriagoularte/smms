@@ -6,7 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
-import br.com.unb.smms.domain.Feed
+import br.com.unb.smms.domain.InstagramInfo
 import br.com.unb.smms.domain.NodeGraph
 import br.com.unb.smms.extension.toJson
 import br.com.unb.smms.interactor.SmmsPageInteractor
@@ -28,11 +28,13 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
     private lateinit var pageInfoDisposable: Disposable
     private lateinit var feedDisposable: Disposable
     private lateinit var picDisposable: Disposable
-    private lateinit var friendsDisposable: Disposable
+    private lateinit var friendsFacebookDisposable: Disposable
+    private lateinit var instaInfoDisposable: Disposable
 
     var resultPageInfo = MutableLiveData<SmmsData<String>>()
     var resultPic = MutableLiveData<SmmsData<Bitmap>>()
-    var resultFriends = MutableLiveData<String>("0")
+    var resultFacebookFriends = MutableLiveData<String>("0")
+    var resultInstaInfo = MutableLiveData<SmmsData<InstagramInfo>>()
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
 
 
@@ -66,14 +68,28 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     fun getFriendsCount() {
-        friendsDisposable = userInteractor.getFriendsCount(getAccessToken().userId)
+        friendsFacebookDisposable = userInteractor.getFriendsCount(getAccessToken().userId)
             .subscribe { res, error ->
                 if (res?.summary != null)
-                    resultFriends.value = (res.summary!!.totalCount).toString()
+                    resultFacebookFriends.value = (res.summary!!.totalCount).toString()
 
             }
 
-        smmsCompositeDisposable.add(friendsDisposable)
+        smmsCompositeDisposable.add(friendsFacebookDisposable)
+
+    }
+
+    fun instaInfo() {
+        instaInfoDisposable = userInteractor.infoIg(app.baseContext.getString(R.string.instagram_user_id))
+            .subscribe { res, error ->
+                if (res != null) {
+                    resultInstaInfo.value = SmmsData.Success(res)
+
+                }
+
+            }
+
+        smmsCompositeDisposable.add(instaInfoDisposable)
 
     }
 

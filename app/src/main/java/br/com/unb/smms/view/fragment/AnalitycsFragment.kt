@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
 import br.com.unb.smms.viewmodel.AnalitycsViewModel
 
@@ -35,7 +38,20 @@ class AnalitycsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getFriendsCount()
+        viewModel.instaInfo()
 
+        viewModel.resultInstaInfo.observe(this, Observer {
+            when (it) {
+                is SmmsData.Error -> Toast.makeText(
+                    context,
+                    it.error.localizedMessage,
+                    Toast.LENGTH_LONG
+                ).show()
+                is SmmsData.Success -> {
+                    binding.tvCountInstagramFriends.text = "${it.data.follow_count}"
+                }
+            }
+        })
 
 
     }

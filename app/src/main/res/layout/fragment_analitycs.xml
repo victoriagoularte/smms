@@ -19,19 +19,8 @@
         android:layout_height="match_parent"
         tools:context=".view.activity.SelectSocialMediaActivity">
 
-        <TextView
-            android:id="@+id/tvFriendsCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/count_friends"
-            style="@style/CommonTitleText"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clCardCountFriend"
+            android:id="@+id/clCardFacebookCountFriend"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -49,7 +38,58 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
+                android:background="@color/transparent"
                 android:text="@string/facebook"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvCountFacebookFriends"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:background="@color/transparent"
+                android:text="@={viewModel.resultFacebookFriends}"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvFacebook"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvFacebook"
+                tools:text="1" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tvFriendsCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/count_friends"
+            style="@style/CommonTitleText"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clCardInstagramCountFriend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/card_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clCardFacebookCountFriend">
+
+            <TextView
+                android:id="@+id/tvInstagram"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="Instagram"
                 android:textSize="18sp"
                 android:background="@color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -57,17 +97,16 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvCountFriends"
+                android:id="@+id/tvCountInstagramFriends"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="24dp"
                 tools:text="1"
                 android:textSize="14sp"
-                android:text="@={viewModel.resultFriends}"
                 android:background="@color/transparent"
-                app:layout_constraintBottom_toBottomOf="@+id/tvFacebook"
+                app:layout_constraintBottom_toBottomOf="@+id/tvInstagram"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvFacebook" />
+                app:layout_constraintTop_toTopOf="@+id/tvInstagram" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

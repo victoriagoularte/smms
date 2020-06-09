@@ -44,7 +44,10 @@ class SelectSocialMediaActivity : AppCompatActivity() {
                 "pages_manage_engagement",
                 "pages_read_engagement",
                 "pages_read_user_content",
-                "pages_manage_posts"
+                "pages_manage_posts",
+                "instagram_basic",
+                "instagram_manage_comments",
+                "instagram_manage_insights"
             )
         );
 

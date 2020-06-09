@@ -12,10 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import org.mapstruct.factory.Mappers
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 
 interface FacebookService {
@@ -37,9 +34,19 @@ interface FacebookService {
 
 }
 
+interface InstagramService {
+
+    @GET("{id}?fields=follow_count")
+    fun info(@Path("id") userId: String): Single<InstagramInfoDTO>
+
+}
+
+
+
 class SmmsUserRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
 
     private val facebookService = retrofit.create(FacebookService::class.java)
+    private val instagramService = retrofit.create(InstagramService::class.java)
 
     fun access(id: String): Single<Account> {
 
@@ -66,6 +73,17 @@ class SmmsUserRepository(val context: Context, val baseUrl: String, val accessTo
 
         return facebookService.friends(id).map { friendsDTO ->
             domainMapper.toDomain(friendsDTO)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun infoIg(id: String): Single<InstagramInfo> {
+
+        val domainMapper = Mappers.getMapper(InstagramInfoMapper::class.java)
+
+        return instagramService.info(id).map { infoDTO ->
+            domainMapper.toDomain(infoDTO)
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
