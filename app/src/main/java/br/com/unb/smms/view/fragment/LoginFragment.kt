@@ -56,16 +56,16 @@ class LoginFragment : Fragment() {
 
 
 
-        viewModel.resultSignIn.observe(this, Observer {
-            when (it) {
-                is SmmsData.Success -> goToChooseApplication()
-                is SmmsData.Error -> Toast.makeText(
-                    context,
-                    it.getMessage(),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
+//        viewModel.resultSignIn.observe(this, Observer {
+//            when (it) {
+//                is SmmsData.Success -> goToChooseApplication()
+//                is SmmsData.Error -> Toast.makeText(
+//                    context,
+//                    it.getMessage(),
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            }
+//        })
 
         viewModel.resultRegister.observe(this, Observer {
             when (it) {
@@ -93,6 +93,8 @@ class LoginFragment : Fragment() {
             } else {
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
                     goToChooseApplication()
+                }.addOnFailureListener {
+                    Toast.makeText(context, it.getMessage(), Toast.LENGTH_LONG).show()
                 }
             }
         } catch (e: Exception) {

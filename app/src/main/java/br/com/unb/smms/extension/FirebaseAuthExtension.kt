@@ -6,7 +6,7 @@ import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 
-fun SmmsData<Error>.getMessage() = when((this as SmmsData.Error).error) {
+fun Exception.getMessage() = when(this) {
     is FirebaseNetworkException -> "Tempo de resposta esgotado."
     is FirebaseAuthInvalidCredentialsException -> "Usuário ou senha incorretos."
     is FirebaseTooManyRequestsException -> "Bloqueamos todas as solicitações deste dispositivo devido a atividades incomuns. Tente mais tarde."
@@ -14,5 +14,5 @@ fun SmmsData<Error>.getMessage() = when((this as SmmsData.Error).error) {
     is FirebaseAuthUserCollisionException -> "Usuário já possui cadastro."
     is FirebaseAuthInvalidUserException -> "Usuário não encontrado."
     is FirebaseAuthWeakPasswordException -> "Senha fraca. Sua senha deve conter no mínimo 6 caracteres."
-    else -> this.error.localizedMessage
+    else -> "Erro de conexao com Firebase"
 }
