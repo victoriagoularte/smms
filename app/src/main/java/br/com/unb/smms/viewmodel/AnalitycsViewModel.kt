@@ -33,7 +33,8 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
     var resultPageInfo = MutableLiveData<SmmsData<String>>()
     var resultPic = MutableLiveData<SmmsData<Bitmap>>()
-    var resultFacebookFriends = MutableLiveData<String>("0")
+    var resultFacebookFriends = MutableLiveData<String>()
+    var followCount = MutableLiveData<String>()
     var resultInstaInfo = MutableLiveData<SmmsData<InstagramInfo>>()
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
 
@@ -82,10 +83,12 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
     fun instaInfo() {
         instaInfoDisposable = userInteractor.infoIg(app.baseContext.getString(R.string.instagram_user_id))
             .subscribe { res, error ->
-                if (res != null) {
-                    resultInstaInfo.value = SmmsData.Success(res)
-
+                if(error != null) {
+                    resultInstaInfo.value = SmmsData.Error(error)
+                    return@subscribe
                 }
+
+                followCount.value = "${res.follow_count}"
 
             }
 

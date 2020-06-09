@@ -47,9 +47,6 @@ class AnalitycsFragment : Fragment() {
                     it.error.localizedMessage,
                     Toast.LENGTH_LONG
                 ).show()
-                is SmmsData.Success -> {
-                    binding.tvCountInstagramFriends.text = "${it.data.follow_count}"
-                }
             }
         })
 
