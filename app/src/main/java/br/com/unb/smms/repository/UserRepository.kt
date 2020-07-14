@@ -29,24 +29,12 @@ interface FacebookService {
     @GET("{id}/friends")
     fun friends(@Path("id") userId: String): Single<FriendsDTO>
 
-    @POST("{page-id}/feed")
-    fun feed(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
-
-}
-
-interface InstagramService {
-
-    @GET("{id}?fields=follow_count")
-    fun info(@Path("id") userId: String): Single<InstagramInfoDTO>
-
 }
 
 
-
-class SmmsUserRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
+class UserRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
 
     private val facebookService = retrofit.create(FacebookService::class.java)
-    private val instagramService = retrofit.create(InstagramService::class.java)
 
     fun access(id: String): Single<Account> {
 
@@ -78,14 +66,5 @@ class SmmsUserRepository(val context: Context, val baseUrl: String, val accessTo
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun infoIg(id: String): Single<InstagramInfo> {
 
-        val domainMapper = Mappers.getMapper(InstagramInfoMapper::class.java)
-
-        return instagramService.info(id).map { infoDTO ->
-            domainMapper.toDomain(infoDTO)
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-    }
 }

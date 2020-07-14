@@ -12,6 +12,7 @@ class SecurityConstants {
         val LOGIN_RESULT = ".loginResult"
         val ACCESS_TOKEN = ".access_token"
         val PAGE_INFO = ".pageInfo"
+        val IG_BUSINESS_ACCOUNT = ".igBusinessAccount"
     }
 }
 

@@ -3,10 +3,7 @@ package br.com.unb.smms.repository
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import br.com.unb.smms.domain.Account
-import br.com.unb.smms.domain.Feed
-import br.com.unb.smms.domain.Friends
-import br.com.unb.smms.domain.NodeGraph
+import br.com.unb.smms.domain.*
 import br.com.unb.smms.repository.dto.*
 import br.com.unb.smms.repository.mapper.*
 import io.reactivex.Single
@@ -26,9 +23,15 @@ interface FacebookPageService {
     @POST("{page-id}/photos")
     fun photo(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
+    @POST("{page-id}?fields=instagram_business_account")
+    fun igBusinessAccount(@Path("page-id") id: String): Single<IgBusinessAccountDTO>
+
+    @POST("{ig-user-id}/media")
+    fun mediaIg(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
+
 }
 
-class SmmsPageRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
+class PageRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
 
     private val facebookService = retrofit.create(FacebookPageService::class.java)
 
@@ -54,6 +57,18 @@ class SmmsPageRepository(val context: Context, val baseUrl: String, val accessTo
 
         return facebookService.photo(id, dto).map { nodeDTO ->
             nodeGraphDomainMapper.toDomain(nodeDTO)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+    }
+
+    fun igBusinessAccount(id: String): Single<IgBusinessAccount?> {
+
+        val domainMapper = Mappers.getMapper(IgBusinessAccountMapper::class.java)
+
+        return facebookService.igBusinessAccount(id).map { dto ->
+            domainMapper.toDomain(dto)
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

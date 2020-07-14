@@ -38,7 +38,7 @@ class AnalitycsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getFriendsCount()
-        viewModel.instaInfo()
+        viewModel.userIdIg()
 
         viewModel.resultInstaInfo.observe(this, Observer {
             when (it) {
@@ -49,7 +49,6 @@ class AnalitycsFragment : Fragment() {
                 ).show()
             }
         })
-
 
     }
 

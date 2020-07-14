@@ -1,18 +1,9 @@
 <resources>
     <string name="app_name">smms</string>
 
-    <!--    Facebooks`s configuration -->
-    <string name="facebook_app_id">1821801631289669</string>
-    <string name="fb_login_protocol_scheme">fb1821801631289669</string>
-    <string name="page_id">109187477422515</string>
-    <string name="instagram_user_id">2934584483302395</string>
-
-    <string name="facebook_server">https://graph.facebook.com/v7.0/</string>
-
     <!--    Errors-->
     <string name="invalid_email">E-mail inválido.</string>
     <string name="text_invalid">Texto inválido</string>
-
 
     <string name="facebook">Facebook</string>
     <string name="count_friends">Quantidade de seguidores</string>

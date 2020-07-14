@@ -7,13 +7,13 @@ import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.Feed
 import br.com.unb.smms.domain.NodeGraph
-import br.com.unb.smms.interactor.SmmsPageInteractor
+import br.com.unb.smms.interactor.PageInteractor
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
-    private val pageInteractor = SmmsPageInteractor(app.applicationContext)
+    private val pageInteractor = PageInteractor(app.applicationContext)
 
     private val smmsCompositeDisposable = CompositeDisposable()
     private lateinit var feedDisposable: Disposable
@@ -31,7 +31,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
         if (!textErrorMessage.value.isNullOrEmpty()) return
 
         if(downloadUri.isNullOrEmpty()) {
-            feedDisposable = pageInteractor.feed(app.baseContext.getString(R.string.page_id), feed)
+            feedDisposable = pageInteractor.feed(feed)
                 .subscribe { res, error ->
                     resultPost.value = SmmsData.Success(res!!)
                 }
