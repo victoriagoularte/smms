@@ -48,7 +48,7 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
         instaInfoDisposable = pageInteractor.igBusinessAccount()
             .subscribe { res, error ->
                 if(error != null) {
-                    resultInstaInfo.value = SmmsData.Error(error)
+                    resultUserIdIg.value = SmmsData.Error(error)
                     return@subscribe
                 }
 
@@ -57,10 +57,10 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
                 resultUserIdIg.value = SmmsData.Success(res.igBusinessAccount!!)
                 infoIg()
-
             }
 
         smmsCompositeDisposable.add(instaInfoDisposable)
+
 
     }
 

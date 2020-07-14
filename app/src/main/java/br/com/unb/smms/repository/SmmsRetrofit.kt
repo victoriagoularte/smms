@@ -1,15 +1,15 @@
 package br.com.unb.smms.repository
 
 import android.content.Context
-import br.com.unb.smms.R
-import br.com.unb.smms.security.SecurityConstants
-import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import okhttp3.*
+import okhttp3.HttpUrl
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory

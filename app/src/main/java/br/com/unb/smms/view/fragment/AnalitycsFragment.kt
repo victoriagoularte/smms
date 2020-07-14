@@ -40,7 +40,7 @@ class AnalitycsFragment : Fragment() {
         viewModel.getFriendsCount()
         viewModel.userIdIg()
 
-        viewModel.resultInstaInfo.observe(this, Observer {
+        viewModel.resultUserIdIg.observe(this, Observer {
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
                     context,

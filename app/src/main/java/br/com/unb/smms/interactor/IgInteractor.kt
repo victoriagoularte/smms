@@ -2,6 +2,7 @@ package br.com.unb.smms.interactor
 
 import android.content.Context
 import br.com.unb.smms.R
+import br.com.unb.smms.domain.Account
 import br.com.unb.smms.domain.IgInfo
 import br.com.unb.smms.repository.IgRepository
 import br.com.unb.smms.security.SecurityConstants
@@ -13,14 +14,14 @@ import io.reactivex.Single
 
 class IgInteractor(val context: Context) {
 
-    private val accessToken = getUserAccessToken();
+    private val accessToken = getPageAccessToken();
     private val idUserIg = getIdUserIg();
 
     private val igRepository =
         IgRepository(
             context,
             context.getString(R.string.facebook_server),
-            accessToken.token
+            accessToken!!.accessToken
         )
 
     fun igInfo() : Single<IgInfo> {
@@ -29,15 +30,15 @@ class IgInteractor(val context: Context) {
 
 
 
-    private fun getUserAccessToken(): AccessToken {
+    private fun getPageAccessToken(): Account? {
         val gson = Gson()
         val loginResultString = getEncrypSharedPreferences(context).getString(
-            SecurityConstants.LOGIN_RESULT,
+            SecurityConstants.PAGE_INFO,
             ""
         )
 
-        val loginResult = gson.fromJson(loginResultString, LoginResult::class.java)
-        return loginResult.accessToken
+        return gson.fromJson(loginResultString, Account::class.java)
+
     }
 
     private fun getIdUserIg(): String? {

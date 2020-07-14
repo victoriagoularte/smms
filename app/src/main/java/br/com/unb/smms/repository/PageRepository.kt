@@ -11,6 +11,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import org.mapstruct.factory.Mappers
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 
@@ -23,7 +24,7 @@ interface FacebookPageService {
     @POST("{page-id}/photos")
     fun photo(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
-    @POST("{page-id}?fields=instagram_business_account")
+    @GET("{page-id}?fields=instagram_business_account")
     fun igBusinessAccount(@Path("page-id") id: String): Single<IgBusinessAccountDTO>
 
     @POST("{ig-user-id}/media")
