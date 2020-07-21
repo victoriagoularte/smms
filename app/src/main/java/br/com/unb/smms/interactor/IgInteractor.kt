@@ -2,13 +2,11 @@ package br.com.unb.smms.interactor
 
 import android.content.Context
 import br.com.unb.smms.R
-import br.com.unb.smms.domain.Account
-import br.com.unb.smms.domain.IgInfo
+import br.com.unb.smms.domain.facebook.Account
+import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.repository.IgRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
-import com.facebook.AccessToken
-import com.facebook.login.LoginResult
 import com.google.gson.Gson
 import io.reactivex.Single
 

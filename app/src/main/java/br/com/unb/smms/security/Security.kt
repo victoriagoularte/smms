@@ -9,6 +9,7 @@ import androidx.security.crypto.MasterKeys
 class SecurityConstants {
     companion object{
         val FILE_SHARED_PREF = "prefSmms"
+        val UID_FIREBASE = ".uidFirebase"
         val LOGIN_RESULT = ".loginResult"
         val ACCESS_TOKEN = ".access_token"
         val PAGE_INFO = ".pageInfo"

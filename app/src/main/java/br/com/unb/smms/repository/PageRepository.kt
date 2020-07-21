@@ -1,9 +1,9 @@
 package br.com.unb.smms.repository
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import br.com.unb.smms.domain.*
+import br.com.unb.smms.domain.facebook.Feed
+import br.com.unb.smms.domain.facebook.IgBusinessAccount
+import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.repository.dto.*
 import br.com.unb.smms.repository.mapper.*
 import io.reactivex.Single
@@ -32,7 +32,7 @@ interface FacebookPageService {
 
 }
 
-class PageRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
+class PageRepository(val context: Context, val baseUrl: String, val accessToken: String) : SmmsRetrofit(context, baseUrl, accessToken) {
 
     private val facebookService = retrofit.create(FacebookPageService::class.java)
 

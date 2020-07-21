@@ -3,8 +3,8 @@ package br.com.unb.smms.interactor
 import android.content.Context
 import android.graphics.Bitmap
 import br.com.unb.smms.R
-import br.com.unb.smms.domain.Account
-import br.com.unb.smms.domain.Friends
+import br.com.unb.smms.domain.facebook.Account
+import br.com.unb.smms.domain.facebook.Friends
 import br.com.unb.smms.repository.UserRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences

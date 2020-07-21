@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.extension.toJson
 import br.com.unb.smms.interactor.UserInteractor
-import br.com.unb.smms.domain.NodeGraph
+import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
@@ -18,11 +18,9 @@ import io.reactivex.disposables.Disposable
 class SmmsViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val userInteractor = UserInteractor(app.applicationContext)
-    private val pageInteractor = PageInteractor(app.applicationContext)
 
     private val smmsCompositeDisposable = CompositeDisposable()
     private lateinit var pageInfoDisposable: Disposable
-    private lateinit var feedDisposable: Disposable
     private lateinit var picDisposable: Disposable
 
     var resultPageInfo = MutableLiveData<SmmsData<String>>()

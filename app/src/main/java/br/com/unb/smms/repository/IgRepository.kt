@@ -1,7 +1,7 @@
 package br.com.unb.smms.repository
 
 import android.content.Context
-import br.com.unb.smms.domain.IgInfo
+import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.repository.dto.IgInfoDTO
 import br.com.unb.smms.repository.mapper.IgInfoMapper
 import io.reactivex.Single

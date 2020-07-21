@@ -16,7 +16,10 @@ import br.com.unb.smms.SmmsException
 import br.com.unb.smms.databinding.FragmentLoginBinding
 import br.com.unb.smms.extension.getMessage
 import br.com.unb.smms.extension.isValidEmail
+import br.com.unb.smms.extension.toJson
 import br.com.unb.smms.interactor.LoginInteractor
+import br.com.unb.smms.security.SecurityConstants
+import br.com.unb.smms.security.getEncrypSharedPreferences
 import br.com.unb.smms.viewmodel.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
 
@@ -54,19 +57,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
-//        viewModel.resultSignIn.observe(this, Observer {
-//            when (it) {
-//                is SmmsData.Success -> goToChooseApplication()
-//                is SmmsData.Error -> Toast.makeText(
-//                    context,
-//                    it.getMessage(),
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            }
-//        })
-
         viewModel.resultRegister.observe(this, Observer {
             when (it) {
                 is SmmsData.Success -> Toast.makeText(context, it.data, Toast.LENGTH_SHORT).show()
@@ -92,6 +82,10 @@ class LoginFragment : Fragment() {
                 )
             } else {
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
+
+                    getEncrypSharedPreferences(context!!).edit()
+                        .putString(SecurityConstants.UID_FIREBASE, it.user!!.uid).apply()
+
                     goToChooseApplication()
                 }.addOnFailureListener {
                     Toast.makeText(context, it.getMessage(), Toast.LENGTH_LONG).show()

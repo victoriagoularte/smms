@@ -4,9 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import br.com.unb.smms.SmmsData
-import br.com.unb.smms.domain.IgBusinessAccount
-import br.com.unb.smms.domain.IgInfo
-import br.com.unb.smms.domain.NodeGraph
+import br.com.unb.smms.domain.facebook.IgInfo
+import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.interactor.IgInteractor
 import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.interactor.UserInteractor

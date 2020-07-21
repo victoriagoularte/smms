@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "683946812675",
+    "firebase_url": "https://smms-c3162.firebaseio.com",
+    "project_id": "smms-c3162",
+    "storage_bucket": "smms-c3162.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683946812675:android:2acc96a1c2492746d83536",
+        "android_client_info": {
+          "package_name": "br.com.unb.smms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683946812675-o166eh9kbv6q5mon4ush3p5q7luof2mt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.unb.smms",
+            "certificate_hash": "395b2d7e1c13192ff533ea6cc7ecb2250fe52ed7"
+          }
+        },
+        {
+          "client_id": "683946812675-32q7kd58ib97kp2qki8blahjehng6oad.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.unb.smms",
+            "certificate_hash": "37776b163d509650814706a22acb1f41405c4915"
+          }
+        },
+        {
+          "client_id": "683946812675-o4sdes6ogv0antka6fiql3lf5lg0guqi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdWscmDLw61f7AHy7SQCMEpg5YdVe5yHo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683946812675-o4sdes6ogv0antka6fiql3lf5lg0guqi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,13 +6,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import br.com.unb.smms.R
+import br.com.unb.smms.extension.fromJson
 import br.com.unb.smms.extension.toJson
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.FacebookSdk
+import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import kotlinx.android.synthetic.main.activity_select_social_media.*
@@ -59,16 +57,19 @@ class SelectSocialMediaActivity : AppCompatActivity() {
             )
         )
 
-        if (getEncrypSharedPreferences(this@SelectSocialMediaActivity).getString(
-                SecurityConstants.LOGIN_RESULT,
-                ""
-            )!!.isNotEmpty()
+        val loginStoraged = getEncrypSharedPreferences(this@SelectSocialMediaActivity).getString(
+            SecurityConstants.LOGIN_RESULT,
+            ""
+        )
+        val login = loginStoraged!!.fromJson<LoginResult>()
+
+        if (login.accessToken.token!!.isNotEmpty()
         ) {
-            startActivity(Intent(this@SelectSocialMediaActivity, SmmsActivity::class.java))
-            return
+            if(login.accessToken.token.equals(AccessToken.getCurrentAccessToken().token, true)) {
+                startActivity(Intent(this@SelectSocialMediaActivity, SmmsActivity::class.java))
+                return
+            }
         }
-
-
 
         loginButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult?> {
             override fun onSuccess(loginResult: LoginResult?) {

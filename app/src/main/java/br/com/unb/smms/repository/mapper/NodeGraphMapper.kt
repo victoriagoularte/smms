@@ -1,6 +1,6 @@
 package br.com.unb.smms.repository.mapper
 
-import br.com.unb.smms.domain.NodeGraph
+import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.repository.dto.NodeGraphDTO
 import org.mapstruct.Mapper
 

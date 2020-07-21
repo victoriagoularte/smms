@@ -3,10 +3,10 @@ package br.com.unb.smms.repository
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import br.com.unb.smms.domain.*
+import br.com.unb.smms.domain.facebook.Account
+import br.com.unb.smms.domain.facebook.Friends
 import br.com.unb.smms.repository.dto.*
 import br.com.unb.smms.repository.mapper.*
-import com.facebook.AccessToken
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
 import br.com.unb.smms.viewmodel.NewPostViewModel
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
@@ -31,13 +32,15 @@ class NewPostFragment : Fragment() {
         const val SELECTED_PIC = 1
     }
 
+    lateinit var binding: FragmentNewPostBinding
+    private lateinit var database: DatabaseReference
+
+
     private var bitmap: Bitmap? = null
     private var imagePath: String? = null
     private var userSelectedPhoto: Boolean = false
     lateinit var mStorageRef: StorageReference
-    lateinit var downloadUri: Uri
-
-    lateinit var binding: FragmentNewPostBinding
+    var downloadUri: Uri? = null
 
     private val viewModel: NewPostViewModel by lazy {
         ViewModelProviders.of(this).get(NewPostViewModel::class.java)
@@ -97,7 +100,18 @@ class NewPostFragment : Fragment() {
     }
 
     fun post(view: View?) {
-        viewModel.feed(downloadUri.toString())
+        viewModel.feed(downloadUri)
+//        createInstagramIntent();
+    }
+
+    fun createInstagramIntent() {
+        val type = "image/*";
+        val intent = Intent(Intent.ACTION_SEND)
+        val media = File(imagePath)
+        val uri = Uri.fromFile(media)
+        intent.setType(type)
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        activity!!.startActivity(Intent.createChooser(intent, "Compartilhar com"))
     }
 
     override fun onRequestPermissionsResult(
