@@ -9,7 +9,7 @@ data class Post (
     var title : String? = "",
     var body: String? = "",
     var urlPicture: String? = "",
-    var annotations: Array<Annotation>? = null,
+    var annotations: List<Tag>? = null,
     var categories: Array<Category>? = null
 ) {
 
@@ -35,10 +35,7 @@ data class Post (
         if (title != other.title) return false
         if (body != other.body) return false
         if (urlPicture != other.urlPicture) return false
-        if (annotations != null) {
-            if (other.annotations == null) return false
-            if (!annotations!!.contentEquals(other.annotations!!)) return false
-        } else if (other.annotations != null) return false
+        if (annotations != other.annotations) return false
         if (categories != null) {
             if (other.categories == null) return false
             if (!categories!!.contentEquals(other.categories!!)) return false
@@ -52,9 +49,11 @@ data class Post (
         result = 31 * result + (title?.hashCode() ?: 0)
         result = 31 * result + (body?.hashCode() ?: 0)
         result = 31 * result + (urlPicture?.hashCode() ?: 0)
-        result = 31 * result + (annotations?.contentHashCode() ?: 0)
+        result = 31 * result + (annotations?.hashCode() ?: 0)
         result = 31 * result + (categories?.contentHashCode() ?: 0)
         return result
     }
+
+
 }
 

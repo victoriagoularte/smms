@@ -9,11 +9,11 @@ import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.firebase.Post
+import br.com.unb.smms.domain.firebase.Tag
 import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -28,6 +28,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
 
     val text = MutableLiveData<String>()
+    val tags = MutableLiveData<String>()
     val textErrorMessage = MutableLiveData<String>()
 
     fun feed(downloadUri: Uri?) {
@@ -61,11 +62,34 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     private fun writeNewPost(downloadUri: String?) {
 
+        val annotations : MutableList<Tag>? = null
+        val tags = (tags.value)?.split(",")
         val database = FirebaseDatabase.getInstance().reference
+        val newPostRef = database.child("posts")
+        val newTagRef = database.child("tags")
 
-        val newPostRef = database.child("posts").push()
-        val post = Post(getUid(), "teste", text.value, downloadUri)
-        newPostRef.setValue(post)
+        for(tag in tags!!) {
+            annotations?.add(Tag(tag))
+            newTagRef.child("description").addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                }
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(!snapshot.child(tag).exists()) {
+                        newTagRef.push().setValue(Tag(tag))
+                    }
+                }
+
+            })
+        }
+
+
+        val post = Post(getUid(), "teste", text.value, downloadUri, annotations)
+
+        newPostRef.push().setValue(post)
+
+
 
     }
 

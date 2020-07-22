@@ -150,7 +150,7 @@
                             style="@style/DefaultTextField"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@={ viewModel.text }" />
+                            android:text="@={ viewModel.tags }" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
