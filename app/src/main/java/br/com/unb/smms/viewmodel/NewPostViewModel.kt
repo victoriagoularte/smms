@@ -2,7 +2,7 @@ package br.com.unb.smms.viewmodel
 
 import android.app.Application
 import android.net.Uri
-import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import br.com.unb.smms.SmmsData
@@ -16,6 +16,7 @@ import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.google.firebase.database.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+
 
 class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
@@ -62,26 +63,28 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     private fun writeNewPost(downloadUri: String?) {
 
-        val annotations : MutableList<Tag>? = null
-        val tags = (tags.value)?.split(",")
+        var annotations : MutableList<Tag> = arrayListOf()
+        val tags = (tags.value)?.split(",")?.distinct()
         val database = FirebaseDatabase.getInstance().reference
         val newPostRef = database.child("posts")
         val newTagRef = database.child("tags")
 
         for(tag in tags!!) {
-            annotations?.add(Tag(tag))
-            newTagRef.child("description").addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                }
 
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if(!snapshot.child(tag).exists()) {
-                        newTagRef.push().setValue(Tag(tag))
+            annotations.add(Tag(tag))
+
+            newTagRef.orderByChild("description").equalTo(tag)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        newTagRef.push().child("description").setValue(tag)
                     }
-                }
 
-            })
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (!snapshot.exists()) {
+                            newTagRef.push().child("description").setValue(tag)
+                        }
+                    }
+                })
         }
 
 
