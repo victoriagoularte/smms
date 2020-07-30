@@ -15,5 +15,6 @@
     <string name="annotation">Anotações</string>
     <string name="text_post_hint">O que você quer publicar?</string>
     <string name="upload_text">Clique para adicionar uma foto</string>
+    <string name="annotation_div">\n.\n.\n.\n.\n.\n</string>
 
 </resources>

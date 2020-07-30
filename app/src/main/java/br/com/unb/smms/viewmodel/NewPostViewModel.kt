@@ -34,7 +34,17 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     fun feed(downloadUri: Uri?) {
 
-        var feed = Feed(text.value)
+        var tagsPost : String
+        var textPost : String
+        var feed : Feed? = null
+
+        if(tags.value != null) {
+            tagsPost = "${ "#" + (tags.value)?.split(", ", ",")?.distinct()!!.joinToString(" #")}"
+            textPost = text.value + "\n.\n.\n.\n.\n.\n" + tagsPost
+            feed = Feed(textPost)
+        } else {
+            feed = Feed(text.value)
+        }
 
         if (downloadUri != null) {
             feed.url = downloadUri.toString()
@@ -64,7 +74,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
     private fun writeNewPost(downloadUri: String?) {
 
         var annotations : MutableList<Tag> = arrayListOf()
-        val tags = (tags.value)?.split(",")?.distinct()
+        val tags = (tags.value)?.split(", " , ",")?.distinct()
         val database = FirebaseDatabase.getInstance().reference
         val newPostRef = database.child("posts")
         val newTagRef = database.child("tags")
@@ -86,7 +96,6 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
                     }
                 })
         }
-
 
         val post = Post(getUid(), "teste", text.value, downloadUri, annotations)
 
