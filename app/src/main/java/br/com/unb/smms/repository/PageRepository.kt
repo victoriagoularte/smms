@@ -30,6 +30,10 @@ interface FacebookPageService {
     @POST("{ig-user-id}/media")
     fun mediaIg(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
+//    17841432940842153/insights?period=day&metric=page_impressions_unique
+    @GET("{page-id}/insights/{metric-name}")
+    fun insights(@Path("page-id") id: String, @Path("metric-name") metric: String): Single<NodeGraphDTO>
+
 }
 
 class PageRepository(val context: Context, val baseUrl: String, val accessToken: String) : SmmsRetrofit(context, baseUrl, accessToken) {
