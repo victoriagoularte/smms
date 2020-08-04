@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
@@ -18,7 +19,7 @@ class AnalitycsFragment : Fragment() {
     lateinit var binding: FragmentAnalitycsBinding
 
     private val viewModel: AnalitycsViewModel by lazy {
-        ViewModelProviders.of(this).get(AnalitycsViewModel::class.java)
+        ViewModelProvider(this).get(AnalitycsViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -40,7 +41,7 @@ class AnalitycsFragment : Fragment() {
         viewModel.getFriendsCount()
         viewModel.userIdIg()
 
-        viewModel.resultUserIdIg.observe(this, Observer {
+        viewModel.resultUserIdIg.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
                     context,

@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
@@ -43,7 +44,7 @@ class NewPostFragment : Fragment() {
     var downloadUri: Uri? = null
 
     private val viewModel: NewPostViewModel by lazy {
-        ViewModelProviders.of(this).get(NewPostViewModel::class.java)
+        ViewModelProvider(this).get(NewPostViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +70,7 @@ class NewPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.resultPost.observe(this, Observer { it ->
+        viewModel.resultPost.observe(viewLifecycleOwner, Observer { it ->
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
                     context,
@@ -88,7 +89,7 @@ class NewPostFragment : Fragment() {
 
     fun choosePhoto(view: View) {
         val checkSelfPermission = ContextCompat.checkSelfPermission(
-            context!!,
+            requireContext(),
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         if (checkSelfPermission != PackageManager.PERMISSION_GRANTED) {
@@ -111,7 +112,7 @@ class NewPostFragment : Fragment() {
         val uri = Uri.fromFile(media)
         intent.setType(type)
         intent.putExtra(Intent.EXTRA_STREAM, uri)
-        activity!!.startActivity(Intent.createChooser(intent, "Compartilhar com"))
+        requireActivity().startActivity(Intent.createChooser(intent, "Compartilhar com"))
     }
 
     override fun onRequestPermissionsResult(
@@ -186,7 +187,7 @@ class NewPostFragment : Fragment() {
     private fun imagePath(uri: Uri?, selection: String?): String {
         var path: String? = null
 
-        val cursor = activity!!.contentResolver.query(uri!!, null, selection, null, null)
+        val cursor = requireActivity().contentResolver.query(uri!!, null, selection, null, null)
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))

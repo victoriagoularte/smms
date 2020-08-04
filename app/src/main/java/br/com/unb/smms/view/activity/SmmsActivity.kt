@@ -36,21 +36,12 @@ class SmmsActivity : AppCompatActivity() {
         setContentView(view)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
-        navController =
-            Navigation.findNavController(this@SmmsActivity, R.id.smmsNavigationFragment)
-
-        navOptions = NavOptions.Builder()
-            .setLaunchSingleTop(true)
-            .setPopUpTo(navController.graph.startDestination, false)
-            .build()
     }
 
     override fun onResume() {
         super.onResume()
 
         setParameters()
-        configNav()
     }
 
     private fun setParameters() {
@@ -71,17 +62,28 @@ class SmmsActivity : AppCompatActivity() {
 
         viewModel.resultPageInfo.observe(this@SmmsActivity, Observer {
             when (it) {
-                is SmmsData.Error -> Toast.makeText(
+                is Error -> Toast.makeText(
                     this@SmmsActivity,
                     it.error.localizedMessage,
                     Toast.LENGTH_SHORT
                 ).show()
+
+                is Success -> configNav()
             }
         })
 
     }
 
     private fun configNav() {
+
+        navController =
+            Navigation.findNavController(this@SmmsActivity, R.id.smmsNavigationFragment)
+
+        navOptions = NavOptions.Builder()
+            .setLaunchSingleTop(true)
+            .setPopUpTo(navController.graph.startDestination, false)
+            .build()
+
         binding.tabLayout.addOnTabSelectedListener(object : OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {

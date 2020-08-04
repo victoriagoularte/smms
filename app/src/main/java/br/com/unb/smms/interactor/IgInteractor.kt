@@ -10,33 +10,19 @@ import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.google.gson.Gson
 import io.reactivex.Single
 
-class IgInteractor(val context: Context) {
+class IgInteractor(val context: Context, val accessToken: String) {
 
-    private val accessToken = getPageAccessToken();
     private val idUserIg = getIdUserIg();
 
     private val igRepository =
         IgRepository(
             context,
             context.getString(R.string.facebook_server),
-            accessToken!!.accessToken
+            accessToken
         )
 
     fun igInfo() : Single<IgInfo> {
         return igRepository.igInfo(idUserIg!!)
-    }
-
-
-
-    private fun getPageAccessToken(): Account? {
-        val gson = Gson()
-        val loginResultString = getEncrypSharedPreferences(context).getString(
-            SecurityConstants.PAGE_INFO,
-            ""
-        )
-
-        return gson.fromJson(loginResultString, Account::class.java)
-
     }
 
     private fun getIdUserIg(): String? {

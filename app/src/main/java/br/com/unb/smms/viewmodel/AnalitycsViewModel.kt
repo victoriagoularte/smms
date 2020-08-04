@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import br.com.unb.smms.SmmsData
+import br.com.unb.smms.domain.facebook.Account
 import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.interactor.IgInteractor
@@ -11,14 +12,13 @@ import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.interactor.UserInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
+import com.google.gson.Gson
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val userInteractor = UserInteractor(app.applicationContext)
-    private val pageInteractor = PageInteractor(app.applicationContext)
-    private val igInteractor = IgInteractor(app.applicationContext)
 
     private val smmsCompositeDisposable = CompositeDisposable()
     private lateinit var friendsFacebookDisposable: Disposable
@@ -44,39 +44,60 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
     fun userIdIg() {
 
-        instaInfoDisposable = pageInteractor.igBusinessAccount()
-            .subscribe { res, error ->
-                if(error != null) {
-                    resultUserIdIg.value = SmmsData.Error(error)
-                    return@subscribe
+        if(getPageAccessToken()?.accessToken != null) {
+
+            val pageInteractor = PageInteractor(app.applicationContext)
+            instaInfoDisposable = pageInteractor.igBusinessAccount()
+                .subscribe { res, error ->
+                    if(error != null) {
+                        resultUserIdIg.value = SmmsData.Error(error)
+                        return@subscribe
+                    }
+
+                    getEncrypSharedPreferences(app.baseContext).edit()
+                        .putString(SecurityConstants.IG_BUSINESS_ACCOUNT, res!!.igBusinessAccount!!.id).apply()
+
+                    resultUserIdIg.value = SmmsData.Success(res.igBusinessAccount!!)
+                    infoIg()
                 }
 
-                getEncrypSharedPreferences(app.baseContext).edit()
-                    .putString(SecurityConstants.IG_BUSINESS_ACCOUNT, res!!.igBusinessAccount!!.id).apply()
-
-                resultUserIdIg.value = SmmsData.Success(res.igBusinessAccount!!)
-                infoIg()
-            }
-
-        smmsCompositeDisposable.add(instaInfoDisposable)
+            smmsCompositeDisposable.add(instaInfoDisposable)
+        }
 
 
     }
 
-    fun infoIg() {
+    private fun infoIg() {
 
-        igInteractor.igInfo()
-            .subscribe { res, error ->
-                if(error != null) {
-                    resultInstaInfo.value = SmmsData.Error(error)
-                    return@subscribe
+        if(getPageAccessToken()?.accessToken != null) {
+
+            val igInteractor = IgInteractor(app.applicationContext, getPageAccessToken()?.accessToken!!)
+
+            instaInfoDisposable = igInteractor.igInfo()
+                .subscribe { res, error ->
+                    if(error != null) {
+                        resultInstaInfo.value = SmmsData.Error(error)
+                        return@subscribe
+                    }
+
+                    followersCount.value = res.followersCount.toString()
+
                 }
 
-                followersCount.value = res.followersCount.toString()
+            smmsCompositeDisposable.add(instaInfoDisposable)
 
-            }
+        }
 
+    }
 
+    private fun getPageAccessToken(): Account? {
+        val gson = Gson()
+        val loginResultString = getEncrypSharedPreferences(app.baseContext).getString(
+            SecurityConstants.PAGE_INFO,
+            ""
+        )
+
+        return gson.fromJson(loginResultString, Account::class.java)
 
     }
 
