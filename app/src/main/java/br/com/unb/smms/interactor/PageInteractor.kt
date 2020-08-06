@@ -2,10 +2,7 @@ package br.com.unb.smms.interactor
 
 import android.content.Context
 import br.com.unb.smms.R
-import br.com.unb.smms.domain.facebook.Account
-import br.com.unb.smms.domain.facebook.Feed
-import br.com.unb.smms.domain.facebook.IgBusinessAccount
-import br.com.unb.smms.domain.facebook.NodeGraph
+import br.com.unb.smms.domain.facebook.*
 import br.com.unb.smms.repository.PageRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
@@ -35,6 +32,10 @@ class PageInteractor(val context: Context) {
 
     fun igBusinessAccount(): Single<IgBusinessAccount?> {
         return smmsRepository.igBusinessAccount(accessToken.id!!)
+    }
+
+    fun insights(period: String): Single<ListInsight?> {
+        return smmsRepository.insights(accessToken.id!!, period)
     }
 
     private fun getPageAccessToken(): Account {

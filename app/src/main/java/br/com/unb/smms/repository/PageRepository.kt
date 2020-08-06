@@ -3,9 +3,16 @@ package br.com.unb.smms.repository
 import android.content.Context
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.IgBusinessAccount
+import br.com.unb.smms.domain.facebook.ListInsight
 import br.com.unb.smms.domain.facebook.NodeGraph
-import br.com.unb.smms.repository.dto.*
-import br.com.unb.smms.repository.mapper.*
+import br.com.unb.smms.repository.dto.FeedDTO
+import br.com.unb.smms.repository.dto.IgBusinessAccountDTO
+import br.com.unb.smms.repository.dto.ListInsightDTO
+import br.com.unb.smms.repository.dto.NodeGraphDTO
+import br.com.unb.smms.repository.mapper.FeedResponseMapper
+import br.com.unb.smms.repository.mapper.IgBusinessAccountMapper
+import br.com.unb.smms.repository.mapper.InsightMapper
+import br.com.unb.smms.repository.mapper.NodeGraphMapper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -30,9 +37,11 @@ interface FacebookPageService {
     @POST("{ig-user-id}/media")
     fun mediaIg(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
-//    17841432940842153/insights?period=day&metric=page_impressions_unique
-    @GET("{page-id}/insights/{metric-name}")
-    fun insights(@Path("page-id") id: String, @Path("metric-name") metric: String): Single<NodeGraphDTO>
+    @GET("{page-id}/insights?metric=impressions,reach,profile_views&period={period}")
+    fun insights(
+        @Path("page-id") id: String,
+        @Path("period") metric: String
+    ): Single<ListInsightDTO>
 
 }
 
@@ -65,7 +74,6 @@ class PageRepository(val context: Context, val baseUrl: String, val accessToken:
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-
     }
 
     fun igBusinessAccount(id: String): Single<IgBusinessAccount?> {
@@ -77,6 +85,16 @@ class PageRepository(val context: Context, val baseUrl: String, val accessToken:
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+    }
 
+    fun insights(id: String, period: String): Single<ListInsight?> {
+
+        val domainMapper = Mappers.getMapper(InsightMapper::class.java)
+
+        return facebookService.insights(id, period).map { dto ->
+            domainMapper.toDomain(dto)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 }

@@ -63,8 +63,6 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
             smmsCompositeDisposable.add(instaInfoDisposable)
         }
-
-
     }
 
     private fun infoIg() {
@@ -87,8 +85,30 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
             smmsCompositeDisposable.add(instaInfoDisposable)
 
         }
-
     }
+
+//    private fun insights() {
+//
+//        if(getPageAccessToken()?.accessToken != null) {
+//
+//            val igInteractor = PageInteractor(app.applicationContext, getPageAccessToken()?.accessToken!!)
+//
+//            instaInfoDisposable = igInteractor
+//                .subscribe { res, error ->
+//                    if(error != null) {
+//                        resultInstaInfo.value = SmmsData.Error(error)
+//                        return@subscribe
+//                    }
+//
+//                    followersCount.value = res.followersCount.toString()
+//
+//                }
+//
+//            smmsCompositeDisposable.add(instaInfoDisposable)
+//
+//        }
+//
+//    }
 
     private fun getPageAccessToken(): Account? {
         val gson = Gson()
