@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -17,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
 import br.com.unb.smms.viewmodel.NewPostViewModel
@@ -35,13 +35,14 @@ class NewPostFragment : Fragment() {
 
     lateinit var binding: FragmentNewPostBinding
     private lateinit var database: DatabaseReference
-
-
     private var bitmap: Bitmap? = null
+
+
     private var imagePath: String? = null
     private var userSelectedPhoto: Boolean = false
     lateinit var mStorageRef: StorageReference
     var downloadUri: Uri? = null
+    private var localUri : Uri? = null
 
     private val viewModel: NewPostViewModel by lazy {
         ViewModelProvider(this).get(NewPostViewModel::class.java)
@@ -101,18 +102,21 @@ class NewPostFragment : Fragment() {
     }
 
     fun post(view: View?) {
-        viewModel.feed(downloadUri)
-//        createInstagramIntent();
+//        viewModel.feed(downloadUri)
+        createInstagramIntent();
     }
 
-    fun createInstagramIntent() {
-        val type = "image/*";
-        val intent = Intent(Intent.ACTION_SEND)
-        val media = File(imagePath)
-        val uri = Uri.fromFile(media)
-        intent.setType(type)
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
-        requireActivity().startActivity(Intent.createChooser(intent, "Compartilhar com"))
+    private fun createInstagramIntent() {
+        val type = "image/*"
+        createInstagramIntent(type);
+    }
+
+    private fun createInstagramIntent(type: String) {
+        val share = Intent(Intent.ACTION_SEND)
+        share.type = type
+        val uri = localUri
+        share.putExtra(Intent.EXTRA_STREAM, uri)
+        startActivity(Intent.createChooser(share, "Share to"));
     }
 
     override fun onRequestPermissionsResult(
@@ -133,26 +137,27 @@ class NewPostFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             SELECTED_PIC -> {
-                val uri = data!!.data
+                 localUri = data!!.data
 
-                if (DocumentsContract.isDocumentUri(context, uri)) {
-                    val docId = DocumentsContract.getDocumentId(uri)
-                    if ("com.android.providers.media.documents" == uri!!.authority) {
+                if (localUri != null && DocumentsContract.isDocumentUri(context, localUri)) {
+                    val docId = DocumentsContract.getDocumentId(localUri)
+                    if ("com.android.providers.media.documents" == localUri!!.authority) {
                         val id = docId.split(":")[1]
                         val selsetion = MediaStore.Images.Media._ID + "=" + id
                         imagePath =
                             imagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selsetion)
-                    } else if ("com.android.providers.downloads.documents" == uri.authority) {
+                    } else if ("com.android.providers.downloads.documents" ==
+                        localUri!!.authority) {
                         val contentUri = ContentUris.withAppendedId(
                             Uri.parse("content://downloads/public_downloads"),
                             java.lang.Long.valueOf(docId)
                         )
                         imagePath = imagePath(contentUri, null)
                     }
-                } else if ("content".equals(uri!!.scheme, ignoreCase = true)) {
-                    imagePath = imagePath(uri, null)
-                } else if ("file".equals(uri.scheme, ignoreCase = true)) {
-                    imagePath = uri.path
+                } else if ("content".equals(localUri!!.scheme, ignoreCase = true)) {
+                    imagePath = imagePath(localUri, null)
+                } else if ("file".equals(localUri!!.scheme, ignoreCase = true)) {
+                    imagePath = localUri!!.path
                 }
 
                 userSelectedPhoto = true

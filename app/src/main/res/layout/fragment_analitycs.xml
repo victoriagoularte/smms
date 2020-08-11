@@ -146,8 +146,10 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+<!--        app:selectedCurrency = "@{viewModel.}"-->
 
         <RadioGroup
+
             android:id="@+id/rgSelectSocialMedia"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -155,10 +157,11 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinnerMetric">
+            app:layout_constraintTop_toBottomOf="@id/spinnerPeriod">
 
             <RadioButton
                 android:id="@+id/rbFacebook"
+                android:checked="@={viewModel.facebookChecked}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
@@ -168,6 +171,7 @@
 
             <RadioButton
                 android:id="@+id/rbInstagram"
+                android:checked="@={viewModel.instagramChecked}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
@@ -177,9 +181,11 @@
         </RadioGroup>
 
         <Spinner
-            android:id="@+id/spinnerMetric"
+            android:id="@+id/spinnerPeriod"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:hint="@string/select_period"
+            style="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_height="32dp"
             android:layout_marginStart="32dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="32dp"

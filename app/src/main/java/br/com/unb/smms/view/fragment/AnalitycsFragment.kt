@@ -45,13 +45,12 @@ class AnalitycsFragment : Fragment() {
             android.R.layout.simple_spinner_item
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerMetric.adapter = adapter
+            binding.spinnerPeriod.adapter = adapter
         }
 
         events()
         viewModel.getFriendsCount()
         viewModel.userIdIg()
-
 
         viewModel.resultUserIdIg.observe(viewLifecycleOwner, Observer {
             when (it) {
@@ -66,9 +65,9 @@ class AnalitycsFragment : Fragment() {
     }
 
     private fun events() {
-        binding.spinnerMetric.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        binding.spinnerPeriod.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
+                viewModel.periodSelected.value = "day"
             }
 
             override fun onItemSelected(
@@ -77,11 +76,14 @@ class AnalitycsFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-
+                viewModel.periodSelected.value = when (position) {
+                    0 -> "day"
+                    2 -> "month"
+                    else -> "year"
+                }
             }
-
         }
-    }
 
+    }
 
 }

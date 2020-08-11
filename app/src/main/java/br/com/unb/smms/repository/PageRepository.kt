@@ -37,7 +37,7 @@ interface FacebookPageService {
     @POST("{ig-user-id}/media")
     fun mediaIg(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
-    @GET("{page-id}/insights?metric=impressions,reach,profile_views&period={period}")
+    @GET("{page-id}/insights?fields=period={period}&metric= page_engaged_users,page_actions_post_reactions_like_total, page_impressions, page_post_engagements")
     fun insights(
         @Path("page-id") id: String,
         @Path("period") metric: String

@@ -34,8 +34,8 @@ class PageInteractor(val context: Context) {
         return smmsRepository.igBusinessAccount(accessToken.id!!)
     }
 
-    fun insights(period: String): Single<ListInsight?> {
-        return smmsRepository.insights(accessToken.id!!, period)
+    fun insights(id: String, period: String): Single<ListInsight?> {
+        return smmsRepository.insights(id, period)
     }
 
     private fun getPageAccessToken(): Account {
@@ -46,16 +46,8 @@ class PageInteractor(val context: Context) {
         )
 
         return gson.fromJson(loginResultString, Account::class.java)
-
     }
 
-    private fun getIgBusinessAccount(): String? {
-        val gson = Gson()
-        return getEncrypSharedPreferences(context).getString(
-            SecurityConstants.IG_BUSINESS_ACCOUNT,
-            ""
-        )
-    }
 
 
 
