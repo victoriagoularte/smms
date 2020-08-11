@@ -112,11 +112,11 @@ class NewPostFragment : Fragment() {
     }
 
     private fun createInstagramIntent(type: String) {
-        val share = Intent(Intent.ACTION_SEND)
+        val share = Intent("com.instagram.share.ADD_TO_FEED")
         share.type = type
         val uri = localUri
         share.putExtra(Intent.EXTRA_STREAM, uri)
-        startActivity(Intent.createChooser(share, "Share to"));
+        startActivity(share)
     }
 
     override fun onRequestPermissionsResult(
