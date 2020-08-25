@@ -1,30 +1,15 @@
 package br.com.unb.smms.domain.firebase
 
-import com.google.firebase.database.Exclude
-import com.google.firebase.database.IgnoreExtraProperties
 
-@IgnoreExtraProperties
 data class Post (
-    var uid: String? = "",
-    var title : String? = "",
-    var body: String? = "",
-    var urlPicture: String? = "",
+    var uid: String? = null,
+    var title : String? = null,
+    var body: String? = null,
+    var postId : String? = null,
+    var urlPicture: String? = null,
     var annotations: List<Tag>? = null,
     var categories: Array<Category>? = null
 ) {
-
-    @Exclude
-    fun toMap() : Map<String, Any?> {
-        return mapOf(
-            "uid" to uid,
-            "title" to title,
-            "body" to body,
-            "urlPicture" to urlPicture,
-            "annotations" to annotations,
-            "categories" to categories
-        )
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -34,6 +19,7 @@ data class Post (
         if (uid != other.uid) return false
         if (title != other.title) return false
         if (body != other.body) return false
+        if (postId != other.postId) return false
         if (urlPicture != other.urlPicture) return false
         if (annotations != other.annotations) return false
         if (categories != null) {
@@ -48,12 +34,10 @@ data class Post (
         var result = uid?.hashCode() ?: 0
         result = 31 * result + (title?.hashCode() ?: 0)
         result = 31 * result + (body?.hashCode() ?: 0)
+        result = 31 * result + (postId?.hashCode() ?: 0)
         result = 31 * result + (urlPicture?.hashCode() ?: 0)
         result = 31 * result + (annotations?.hashCode() ?: 0)
         result = 31 * result + (categories?.contentHashCode() ?: 0)
         return result
     }
-
-
 }
-

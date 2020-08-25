@@ -2,7 +2,6 @@ package br.com.unb.smms.viewmodel
 
 import android.app.Application
 import android.net.Uri
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import br.com.unb.smms.SmmsData
@@ -28,6 +27,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
 
+    val title = MutableLiveData<String>()
     val text = MutableLiveData<String>()
     val tags = MutableLiveData<String>()
     val textErrorMessage = MutableLiveData<String>()
@@ -39,7 +39,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
         var feed : Feed? = null
 
         if(tags.value != null) {
-            tagsPost = "${ "#" + (tags.value)?.split(", ", ",")?.distinct()!!.joinToString(" #")}"
+            tagsPost = "#" + (tags.value)?.split(", ", ",")?.distinct()!!.joinToString(" #")
             textPost = text.value + "\n.\n.\n.\n.\n.\n" + tagsPost
             feed = Feed(textPost)
         } else {
@@ -56,30 +56,34 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
         if (downloadUri == null) {
             feedDisposable = pageInteractor.feed(feed)
                 .subscribe { res, _ ->
-                    writeNewPost(downloadUri)
-                    resultPost.value = SmmsData.Success(res!!)
+                    if (res != null) {
+                        writeNewPost(res.id!!, downloadUri)
+                        resultPost.value = SmmsData.Success(res)
+                    }
                 }
 
         } else {
             feedDisposable = pageInteractor.photo(feed)
                 .subscribe { res, _ ->
-                    writeNewPost(downloadUri.toString())
-                    resultPost.value = SmmsData.Success(res!!)
+                    if (res != null) {
+                        writeNewPost(res.id!!, downloadUri.toString())
+                        resultPost.value = SmmsData.Success(res)
+                    }
                 }
         }
 
         smmsCompositeDisposable.add(feedDisposable)
     }
 
-    private fun writeNewPost(downloadUri: String?) {
+    private fun writeNewPost(postId: String, downloadUri: String?) {
 
-        var annotations : MutableList<Tag> = arrayListOf()
-        val tags = (tags.value)?.split(", " , ",")?.distinct()
+        var annotations: MutableList<Tag> = arrayListOf()
+        val tags = (tags.value)?.split(", ", ",", " ")?.distinct()
         val database = FirebaseDatabase.getInstance().reference
         val newPostRef = database.child("posts")
         val newTagRef = database.child("tags")
 
-        for(tag in tags!!) {
+        for (tag in tags!!) {
 
             annotations.add(Tag(tag))
 
@@ -97,8 +101,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
                 })
         }
 
-        val post = Post(getUid(), "teste", text.value, downloadUri, annotations)
-
+        val post = Post(getUid(), title.value, text.value, postId, downloadUri, annotations)
         newPostRef.push().setValue(post)
 
 

@@ -37,13 +37,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tiTitlePost"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="32dp"
+                        android:layout_marginEnd="24dp"
+                        android:hint="@string/title"
+                        app:counterEnabled="true"
+                        app:counterMaxLength="100"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/clPhoto">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etTitlePost"
+                            style="@style/DefaultTextField"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@={ viewModel.title }" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clPhoto"
-                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/clUploadPhoto"
@@ -51,9 +75,9 @@
                             android:layout_height="100dp"
                             android:layout_marginStart="24dp"
                             android:layout_marginTop="24dp"
-                            android:onClick="@{fragment::choosePhoto}"
                             android:layout_marginEnd="24dp"
                             android:background="@drawable/card_background"
+                            android:onClick="@{fragment::choosePhoto}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
@@ -100,7 +124,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="24dp"
-                        android:layout_marginTop="32dp"
                         android:layout_marginEnd="24dp"
                         android:hint="@string/text_post_hint"
                         app:counterEnabled="true"
@@ -108,7 +131,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/clPhoto">
+                        app:layout_constraintTop_toBottomOf="@id/tiTitlePost"
+                        tools:layout_editor_absoluteY="156dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etTextPost"
@@ -165,21 +189,81 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tiAnnotations" />
 
+
+                    <Spinner
+                        android:id="@+id/spinnerCategories"
+                        android:layout_width="0dp"
+                        android:hint="@string/category"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="32dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvCategory" />
+
                     <Button
                         android:id="@+id/btSignIn"
                         style="@style/ButtonBaseGreen"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
+                        android:layout_marginTop="24dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginBottom="24dp"
                         android:onClick="@{fragment::post}"
                         android:text="@string/publish"
-                        android:layout_marginTop="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvCategory" />
+                        app:layout_constraintTop_toBottomOf="@+id/ckFace" />
+
+                    <TextView
+                        android:id="@+id/tvShareSocialMedia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:text="@string/select_share"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/spinnerCategories" />
+
+                    <CheckBox
+                        android:id="@+id/ckFace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/facebook"
+                        android:textColor="@color/gray"
+                        app:layout_constraintEnd_toStartOf="@+id/ckInsta"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvShareSocialMedia" />
+
+                    <CheckBox
+                        android:id="@+id/ckInsta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray"
+                        android:text="@string/instagram"
+                        app:layout_constraintEnd_toStartOf="@+id/ckWhatsApp"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/ckFace"
+                        app:layout_constraintTop_toTopOf="@+id/ckFace" />
+
+                    <CheckBox
+                        android:id="@+id/ckWhatsApp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray"
+                        android:layout_marginEnd="24dp"
+                        android:text="@string/whatsapp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toEndOf="@+id/ckInsta"
+                        app:layout_constraintTop_toTopOf="@+id/ckInsta" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
