@@ -3,23 +3,23 @@ package br.com.unb.smms.viewmodel
 import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.domain.firebase.Tag
+import br.com.unb.smms.extension.toString
 import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.google.firebase.database.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-
+import java.util.*
 
 class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
-
-    private lateinit var database: DatabaseReference
 
     private val pageInteractor = PageInteractor(app.applicationContext)
     private val smmsCompositeDisposable = CompositeDisposable()
@@ -32,7 +32,13 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
     val tags = MutableLiveData<String>()
     val textErrorMessage = MutableLiveData<String>()
 
+    private val _dataLoading = MutableLiveData<Boolean>()
+    val dataLoading: LiveData<Boolean>
+        get() = _dataLoading
+
     fun feed(downloadUri: Uri?) {
+
+        _dataLoading.value = true
 
         var tagsPost : String
         var textPost : String
@@ -101,10 +107,12 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
                 })
         }
 
-        val post = Post(getUid(), title.value, text.value, postId, downloadUri, annotations)
+        val currentDate = Calendar.getInstance().time
+
+        val post = Post(getUid(), title.value, text.value, postId, downloadUri, currentDate.toString("MM/yyyy"), annotations)
         newPostRef.push().setValue(post)
 
-
+        _dataLoading.value = false
 
     }
 

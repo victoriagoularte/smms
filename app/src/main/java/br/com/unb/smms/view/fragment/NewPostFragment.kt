@@ -24,6 +24,7 @@ import br.com.unb.smms.viewmodel.NewPostViewModel
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.android.synthetic.main.fragment_new_post.*
 import java.io.File
 
 
@@ -71,6 +72,10 @@ class NewPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> { loading ->
+            clLoading.visibility = if (loading) View.VISIBLE else View.INVISIBLE
+        })
+
         viewModel.resultPost.observe(viewLifecycleOwner, Observer { it ->
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
@@ -78,11 +83,14 @@ class NewPostFragment : Fragment() {
                     it.error.localizedMessage,
                     Toast.LENGTH_LONG
                 ).show()
-                is SmmsData.Success -> Toast.makeText(
-                    context,
-                    "Publicado com sucesso!",
-                    Toast.LENGTH_LONG
-                ).show()
+                is SmmsData.Success -> {
+                    resetAllFields()
+                    Toast.makeText(
+                        context,
+                        "Publicado com sucesso!",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         })
 
@@ -211,6 +219,14 @@ class NewPostFragment : Fragment() {
         } else {
             Toast.makeText(context, "Failed to get image", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun resetAllFields() {
+        viewModel.text.value = ""
+        viewModel.title.value = ""
+        viewModel.tags.value = ""
+        binding.clUploadPhoto.visibility = View.VISIBLE
+        binding.ivPhoto.visibility = View.GONE
     }
 
 
