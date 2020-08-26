@@ -25,6 +25,7 @@
     <string name="title">Título</string>
     <string name="whatsapp">Whatsapp</string>
     <string name="select_share">Selecione onde compartilhar</string>
+    <string name="instagram_story">Instagram - Story</string>
 
     <string-array name="string_array_metrics">
         <item>Dia</item>
@@ -33,7 +34,9 @@
     </string-array>
 
     <string-array name="string_array_categories">
-        <item>text_string</item>
+        <item>Saúde</item>
+        <item>Esporte</item>
+        <item>Universidade</item>
     </string-array>
 
 </resources>

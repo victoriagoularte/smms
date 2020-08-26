@@ -46,7 +46,7 @@
                     <ProgressBar
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="32dp"
+                        android:layout_marginTop="72dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -211,7 +211,7 @@
                     android:id="@+id/spinnerCategories"
                     style="@style/Widget.AppCompat.Spinner.Underlined"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
+                    android:layout_height="45dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="32dp"
@@ -265,17 +265,17 @@
                     android:layout_height="wrap_content"
                     android:text="@string/instagram"
                     android:textColor="@color/gray"
-                    app:layout_constraintEnd_toStartOf="@+id/ckWhatsApp"
+                    app:layout_constraintEnd_toStartOf="@+id/ckInstaStory"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/ckFace"
                     app:layout_constraintTop_toTopOf="@+id/ckFace" />
 
                 <CheckBox
-                    android:id="@+id/ckWhatsApp"
+                    android:id="@+id/ckInstaStory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
-                    android:text="@string/whatsapp"
+                    android:text="@string/instagram_story"
                     android:textColor="@color/gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"

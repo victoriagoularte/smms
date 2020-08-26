@@ -1,6 +1,7 @@
 package br.com.unb.smms.viewmodel
 
 import android.app.Application
+import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -29,8 +30,10 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     val title = MutableLiveData<String>()
     val text = MutableLiveData<String>()
+    val textPost = MutableLiveData<String>()
     val tags = MutableLiveData<String>()
     val textErrorMessage = MutableLiveData<String>()
+    var categorySelected = MutableLiveData<String>()
 
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean>
@@ -41,13 +44,12 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
         _dataLoading.value = true
 
         var tagsPost : String
-        var textPost : String
         var feed : Feed? = null
 
         if(tags.value != null) {
             tagsPost = "#" + (tags.value)?.split(", ", ",")?.distinct()!!.joinToString(" #")
-            textPost = text.value + "\n.\n.\n.\n.\n.\n" + tagsPost
-            feed = Feed(textPost)
+            textPost.value = text.value + "\n.\n.\n.\n.\n.\n" + tagsPost
+            feed = Feed(textPost.value)
         } else {
             feed = Feed(text.value)
         }
@@ -109,12 +111,13 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
         val currentDate = Calendar.getInstance().time
 
-        val post = Post(getUid(), title.value, text.value, postId, downloadUri, currentDate.toString("MM/yyyy"), annotations)
+        val post = Post(getUid(), title.value, text.value, postId, downloadUri, currentDate.toString("MM/yyyy"), annotations, categorySelected.value)
         newPostRef.push().setValue(post)
 
         _dataLoading.value = false
 
     }
+
 
     private fun getUid(): String? {
         return getEncrypSharedPreferences(app.baseContext).getString(

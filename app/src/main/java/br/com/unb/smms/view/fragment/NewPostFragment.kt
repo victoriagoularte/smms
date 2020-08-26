@@ -1,27 +1,28 @@
 package br.com.unb.smms.view.fragment
 
-import android.content.ContentUris
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
+import android.os.Handler
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
 import br.com.unb.smms.viewmodel.NewPostViewModel
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.fragment_new_post.*
@@ -35,7 +36,6 @@ class NewPostFragment : Fragment() {
     }
 
     lateinit var binding: FragmentNewPostBinding
-    private lateinit var database: DatabaseReference
     private var bitmap: Bitmap? = null
 
 
@@ -73,7 +73,7 @@ class NewPostFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> { loading ->
-            clLoading.visibility = if (loading) View.VISIBLE else View.INVISIBLE
+            binding.clLoading.visibility = if (loading) View.VISIBLE else View.INVISIBLE
         })
 
         viewModel.resultPost.observe(viewLifecycleOwner, Observer { it ->
@@ -84,17 +84,78 @@ class NewPostFragment : Fragment() {
                     Toast.LENGTH_LONG
                 ).show()
                 is SmmsData.Success -> {
+                    copy()
                     resetAllFields()
-                    Toast.makeText(
-                        context,
-                        "Publicado com sucesso!",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
+                        Toast.makeText(
+                            context,
+                            "Publicado com sucesso no Facebook, aguarde enquanto redirecionamos para o Instagram! O seu texto foi copiado na área de transferência.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        Handler().postDelayed({
+                            createInstagramIntent()
+                        }, 2500)
+                    }
                 }
             }
         })
 
+        ArrayAdapter.createFromResource(
+            requireContext(), R.array.string_array_categories,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinnerCategories.adapter = adapter
+        }
+
+        binding.spinnerCategories.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    viewModel.categorySelected.value = "day"
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val categories = resources.getStringArray(R.array.string_array_categories)
+                    viewModel.categorySelected.value = categories[position]
+                }
+            }
     }
+
+    fun copy() {
+        val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData = ClipData.newPlainText("texto", viewModel.textPost.value)
+        clipboard.setPrimaryClip(clip)
+    }
+
+    fun createInstagramIntent() {
+        val type = "image/*"
+        createInstagramIntent(type);
+    }
+
+    private fun createInstagramIntent(type: String) {
+        if (binding.ckInsta.isChecked) {
+            val share = Intent("com.instagram.share.ADD_TO_FEED")
+            share.type = type
+            share.putExtra(Intent.EXTRA_STREAM, localUri)
+            startActivity(share)
+        } else {
+            val share = Intent("com.instagram.share.ADD_TO_STORY");
+            share.setDataAndType(localUri, type);
+            share.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            share.putExtra("content_url", "https://www.google.com");
+
+            if (activity?.packageManager?.resolveActivity(share, 0) != null) {
+                activity?.startActivityForResult(share, 0);
+            }
+        }
+
+    }
+
 
     fun choosePhoto(view: View) {
         val checkSelfPermission = ContextCompat.checkSelfPermission(
@@ -110,21 +171,11 @@ class NewPostFragment : Fragment() {
     }
 
     fun post(view: View?) {
-        viewModel.feed(downloadUri)
-//        createInstagramIntent();
-    }
-
-    private fun createInstagramIntent() {
-        val type = "image/*"
-        createInstagramIntent(type);
-    }
-
-    private fun createInstagramIntent(type: String) {
-        val share = Intent("com.instagram.share.ADD_TO_FEED")
-        share.type = type
-        val uri = localUri
-        share.putExtra(Intent.EXTRA_STREAM, uri)
-        startActivity(share)
+        if (binding.ckFace.isChecked) {
+            viewModel.feed(downloadUri)
+        } else if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
+            createInstagramIntent()
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -227,6 +278,9 @@ class NewPostFragment : Fragment() {
         viewModel.tags.value = ""
         binding.clUploadPhoto.visibility = View.VISIBLE
         binding.ivPhoto.visibility = View.GONE
+        ckFace.isChecked = false
+        ckInsta.isChecked = false
+        ckInstaStory.isChecked = false
     }
 
 
