@@ -1,18 +1,9 @@
 package br.com.unb.smms.repository
 
 import android.content.Context
-import br.com.unb.smms.domain.facebook.Feed
-import br.com.unb.smms.domain.facebook.IgBusinessAccount
-import br.com.unb.smms.domain.facebook.ListInsight
-import br.com.unb.smms.domain.facebook.NodeGraph
-import br.com.unb.smms.repository.dto.FeedDTO
-import br.com.unb.smms.repository.dto.IgBusinessAccountDTO
-import br.com.unb.smms.repository.dto.ListInsightDTO
-import br.com.unb.smms.repository.dto.NodeGraphDTO
-import br.com.unb.smms.repository.mapper.FeedResponseMapper
-import br.com.unb.smms.repository.mapper.IgBusinessAccountMapper
-import br.com.unb.smms.repository.mapper.InsightMapper
-import br.com.unb.smms.repository.mapper.NodeGraphMapper
+import br.com.unb.smms.domain.facebook.*
+import br.com.unb.smms.repository.dto.*
+import br.com.unb.smms.repository.mapper.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -42,6 +33,12 @@ interface FacebookPageService {
         @Path("page-id") id: String,
         @Path("period") metric: String
     ): Single<ListInsightDTO>
+
+    @GET("{post-id}/comments?summary=total_count")
+    fun postComments(@Path("post-id") id: String) : Single<FriendsDTO>
+
+    @GET("{post-id}/likes?summary=total_count")
+    fun postLikes(@Path("post-id") id: String) : Single<FriendsDTO>
 
 }
 
@@ -92,6 +89,26 @@ class PageRepository(val context: Context, val baseUrl: String, val accessToken:
         val domainMapper = Mappers.getMapper(InsightMapper::class.java)
 
         return facebookService.insights(id, period).map { dto ->
+            domainMapper.toDomain(dto)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun comments(id: String) : Single<Friends> {
+        val domainMapper = Mappers.getMapper(FriendsResponseMapper::class.java)
+
+        return facebookService.postComments(id).map {dto ->
+            domainMapper.toDomain(dto)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+    }
+
+    fun likes(id: String) : Single<Friends> {
+        val domainMapper = Mappers.getMapper(FriendsResponseMapper::class.java)
+
+        return facebookService.postLikes(id).map {dto ->
             domainMapper.toDomain(dto)
         }
             .subscribeOn(Schedulers.io())

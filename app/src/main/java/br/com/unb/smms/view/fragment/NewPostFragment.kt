@@ -153,7 +153,6 @@ class NewPostFragment : Fragment() {
                 activity?.startActivityForResult(share, 0);
             }
         }
-
     }
 
 
