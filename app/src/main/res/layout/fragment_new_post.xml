@@ -46,7 +46,7 @@
                     <ProgressBar
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="72dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -250,6 +250,7 @@
                     android:id="@+id/ckFace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="@={viewModel.postFacebook}"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="8dp"
                     android:text="@string/facebook"
@@ -264,6 +265,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/instagram"
+                    android:checked="@={viewModel.postInsta}"
                     android:textColor="@color/gray"
                     app:layout_constraintEnd_toStartOf="@+id/ckInstaStory"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -276,6 +278,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
                     android:text="@string/instagram_story"
+                    android:checked="@={viewModel.postInstaStory}"
                     android:textColor="@color/gray"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"

@@ -1,7 +1,6 @@
 package br.com.unb.smms.viewmodel
 
 import android.app.Application
-import android.content.Intent
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -10,12 +9,11 @@ import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.firebase.Post
-import br.com.unb.smms.domain.firebase.Tag
 import br.com.unb.smms.extension.toString
+import br.com.unb.smms.interactor.FirebaseInteractor
 import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
-import com.google.firebase.database.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import java.util.*
@@ -23,15 +21,23 @@ import java.util.*
 class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val pageInteractor = PageInteractor(app.applicationContext)
+    private val firebaseInteractor = FirebaseInteractor(app.applicationContext)
+
     private val smmsCompositeDisposable = CompositeDisposable()
     private lateinit var feedDisposable: Disposable
+    private lateinit var photoDisposable: Disposable
 
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
+    var resultUploadPhoto = MutableLiveData<SmmsData<Uri>>()
 
+    val uriPhoto = MutableLiveData<String>()
     val title = MutableLiveData<String>()
     val text = MutableLiveData<String>()
     val textPost = MutableLiveData<String>()
     val tags = MutableLiveData<String>()
+    val postFacebook = MutableLiveData<Boolean>(false)
+    val postInsta = MutableLiveData<Boolean>(false)
+    val postInstaStory = MutableLiveData<Boolean>(false)
     val textErrorMessage = MutableLiveData<String>()
     var categorySelected = MutableLiveData<String>()
 
@@ -39,7 +45,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
     val dataLoading: LiveData<Boolean>
         get() = _dataLoading
 
-    fun feed(downloadUri: Uri?) {
+    fun feed(downloadUri: String?) {
 
         _dataLoading.value = true
 
@@ -54,12 +60,8 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
             feed = Feed(text.value)
         }
 
-        if (downloadUri != null) {
-            feed.url = downloadUri.toString()
-        }
-
-        textErrorMessage.value = pageInteractor.validateTextPost(feed)
-        if (!textErrorMessage.value.isNullOrEmpty()) return
+//        textErrorMessage.value = pageInteractor.validateTextPost(feed)
+//        if (!textErrorMessage.value.isNullOrEmpty()) return
 
         if (downloadUri == null) {
             feedDisposable = pageInteractor.feed(feed)
@@ -71,10 +73,11 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
                 }
 
         } else {
+            feed.url = downloadUri
             feedDisposable = pageInteractor.photo(feed)
                 .subscribe { res, _ ->
                     if (res != null) {
-                        writeNewPost(res.id!!, downloadUri.toString())
+                        writeNewPost(res.id!!, downloadUri)
                         resultPost.value = SmmsData.Success(res)
                     }
                 }
@@ -85,39 +88,48 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
 
     private fun writeNewPost(postId: String, downloadUri: String?) {
 
-        var annotations: MutableList<Tag> = arrayListOf()
-        val tags = (tags.value)?.split(", ", ",", " ")?.distinct()
-        val database = FirebaseDatabase.getInstance().reference
-        val newPostRef = database.child("posts")
-        val newTagRef = database.child("tags")
-
-        for (tag in tags!!) {
-
-            annotations.add(Tag(tag))
-
-            newTagRef.orderByChild("description").equalTo(tag)
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onCancelled(error: DatabaseError) {
-                        newTagRef.push().child("description").setValue(tag)
-                    }
-
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (!snapshot.exists()) {
-                            newTagRef.push().child("description").setValue(tag)
-                        }
-                    }
-                })
-        }
-
         val currentDate = Calendar.getInstance().time
+        val post = Post(
+            getUid(),
+            title.value,
+            text.value,
+            postId,
+            downloadUri,
+            currentDate.toString("MM/yyyy"),
+            category = categorySelected.value
+        )
 
-        val post = Post(getUid(), title.value, text.value, postId, downloadUri, currentDate.toString("MM/yyyy"), annotations, categorySelected.value)
-        newPostRef.push().setValue(post)
-
+        firebaseInteractor.writeNewPost(tags.value, post)
         _dataLoading.value = false
 
     }
 
+    fun uploadFirebaseImage() {
+        _dataLoading.value = true
+
+        photoDisposable = firebaseInteractor.uploadImageFirebase(uriPhoto.value!!).subscribe { res, error ->
+            if (res != null) {
+                resultUploadPhoto.value = SmmsData.Success(res)
+                uriPhoto.value = res.toString()
+                return@subscribe
+            }
+
+            resultUploadPhoto.value = SmmsData.Error(error)
+        }
+
+        smmsCompositeDisposable.add(photoDisposable)
+    }
+
+    fun validateFields(): Boolean {
+
+        if(postFacebook.value!! && tags.value == null && text.value == null && uriPhoto.value == null) {
+            return false
+        } else if(postInsta.value!! && uriPhoto.value == null) {
+            return false
+        }
+
+        return true
+    }
 
     private fun getUid(): String? {
         return getEncrypSharedPreferences(app.baseContext).getString(
@@ -126,7 +138,10 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
         )
     }
 
-
+    override fun onCleared() {
+        super.onCleared()
+        smmsCompositeDisposable.dispose()
+    }
 
 
 }

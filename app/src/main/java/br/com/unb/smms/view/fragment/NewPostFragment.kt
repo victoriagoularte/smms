@@ -23,10 +23,6 @@ import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
 import br.com.unb.smms.viewmodel.NewPostViewModel
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.fragment_new_post.*
-import java.io.File
 
 
 class NewPostFragment : Fragment() {
@@ -38,10 +34,7 @@ class NewPostFragment : Fragment() {
     lateinit var binding: FragmentNewPostBinding
     private var bitmap: Bitmap? = null
 
-
-    private var imagePath: String? = null
     private var userSelectedPhoto: Boolean = false
-    lateinit var mStorageRef: StorageReference
     var downloadUri: Uri? = null
     private var localUri : Uri? = null
 
@@ -64,8 +57,6 @@ class NewPostFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        mStorageRef = FirebaseStorage.getInstance().reference;
-
         return binding.root
     }
 
@@ -74,6 +65,23 @@ class NewPostFragment : Fragment() {
 
         viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> { loading ->
             binding.clLoading.visibility = if (loading) View.VISIBLE else View.INVISIBLE
+        })
+
+        viewModel.resultUploadPhoto.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is SmmsData.Error -> Toast.makeText(
+                    context,
+                    it.error.localizedMessage,
+                    Toast.LENGTH_LONG
+                ).show()
+                is SmmsData.Success -> {
+                    if (viewModel.postFacebook.value!!) {
+                        viewModel.feed(it.data.toString())
+                    } else if (viewModel.postInsta.value!! || viewModel.postInstaStory.value!!) {
+                        createInstagramIntent()
+                    }
+                }
+            }
         })
 
         viewModel.resultPost.observe(viewLifecycleOwner, Observer { it ->
@@ -85,16 +93,16 @@ class NewPostFragment : Fragment() {
                 ).show()
                 is SmmsData.Success -> {
                     copy()
-                    resetAllFields()
+                    Toast.makeText(
+                        context,
+                        "Publicado com sucesso no Facebook, aguarde enquanto redirecionamos para o Instagram! O seu texto foi copiado na área de transferência.",
+                        Toast.LENGTH_LONG
+                    ).show()
                     if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
-                        Toast.makeText(
-                            context,
-                            "Publicado com sucesso no Facebook, aguarde enquanto redirecionamos para o Instagram! O seu texto foi copiado na área de transferência.",
-                            Toast.LENGTH_LONG
-                        ).show()
                         Handler().postDelayed({
                             createInstagramIntent()
                         }, 2500)
+                        resetAllFields()
                     }
                 }
             }
@@ -138,7 +146,7 @@ class NewPostFragment : Fragment() {
     }
 
     private fun createInstagramIntent(type: String) {
-        if (binding.ckInsta.isChecked) {
+        if (viewModel.postInsta.value!!) {
             val share = Intent("com.instagram.share.ADD_TO_FEED")
             share.type = type
             share.putExtra(Intent.EXTRA_STREAM, localUri)
@@ -170,11 +178,23 @@ class NewPostFragment : Fragment() {
     }
 
     fun post(view: View?) {
-        if (binding.ckFace.isChecked) {
-            viewModel.feed(downloadUri)
-        } else if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
-            createInstagramIntent()
+
+        if (!viewModel.validateFields()) {
+            Toast.makeText(
+                context,
+                "Campos de publicação incompletos.",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            if (viewModel.uriPhoto.value != null) {
+                viewModel.uploadFirebaseImage()
+            } else if (binding.ckFace.isChecked) {
+                viewModel.feed(null)
+            } else if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
+                createInstagramIntent()
+            }
         }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -195,56 +215,36 @@ class NewPostFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             SELECTED_PIC -> {
-                 localUri = data!!.data
+                if (data == null) return
+                localUri = data.data
 
                 if (localUri != null && DocumentsContract.isDocumentUri(context, localUri)) {
                     val docId = DocumentsContract.getDocumentId(localUri)
                     if ("com.android.providers.media.documents" == localUri!!.authority) {
                         val id = docId.split(":")[1]
                         val selsetion = MediaStore.Images.Media._ID + "=" + id
-                        imagePath =
+                        viewModel.uriPhoto.value =
                             imagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selsetion)
                     } else if ("com.android.providers.downloads.documents" ==
-                        localUri!!.authority) {
+                        localUri!!.authority
+                    ) {
                         val contentUri = ContentUris.withAppendedId(
                             Uri.parse("content://downloads/public_downloads"),
                             java.lang.Long.valueOf(docId)
                         )
-                        imagePath = imagePath(contentUri, null)
+                        viewModel.uriPhoto.value = imagePath(contentUri, null)
                     }
                 } else if ("content".equals(localUri!!.scheme, ignoreCase = true)) {
-                    imagePath = imagePath(localUri, null)
+                    viewModel.uriPhoto.value = imagePath(localUri, null)
                 } else if ("file".equals(localUri!!.scheme, ignoreCase = true)) {
-                    imagePath = localUri!!.path
+                    viewModel.uriPhoto.value = localUri!!.path
                 }
 
                 userSelectedPhoto = true
-                displayImage(imagePath)
-                uploadImageFirebase()
+                displayImage()
 
             }
         }
-    }
-
-    private fun uploadImageFirebase() {
-
-        val file = Uri.fromFile(File(imagePath))
-        val ref: StorageReference = mStorageRef.child("images/${file.lastPathSegment}")
-        var uploadTask = ref.putFile(file)
-
-        val urlTask = uploadTask.continueWithTask { task ->
-            if (!task.isSuccessful) {
-                task.exception?.let {
-                    throw it
-                }
-            }
-            ref.downloadUrl
-        }.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                downloadUri = task.result!!
-            }
-        }
-
     }
 
     private fun imagePath(uri: Uri?, selection: String?): String {
@@ -260,9 +260,9 @@ class NewPostFragment : Fragment() {
         return path!!
     }
 
-    private fun displayImage(imagePath: String?) {
-        if (imagePath != null) {
-            bitmap = BitmapFactory.decodeFile(imagePath)
+    private fun displayImage() {
+        if (viewModel.uriPhoto.value != null) {
+            bitmap = BitmapFactory.decodeFile(viewModel.uriPhoto.value)
             binding.ivPhoto?.setImageBitmap(bitmap)
             binding.clUploadPhoto.visibility = View.INVISIBLE
             binding.ivPhoto.visibility = View.VISIBLE
@@ -277,9 +277,9 @@ class NewPostFragment : Fragment() {
         viewModel.tags.value = ""
         binding.clUploadPhoto.visibility = View.VISIBLE
         binding.ivPhoto.visibility = View.GONE
-        ckFace.isChecked = false
-        ckInsta.isChecked = false
-        ckInstaStory.isChecked = false
+        viewModel.postFacebook.value = false
+        viewModel.postInsta.value = false
+        viewModel.postInstaStory.value = false
     }
 
 

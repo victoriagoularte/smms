@@ -81,6 +81,4 @@ open class SmmsRetrofit(context: Context, baseUrl: String, accessType: String?) 
             .build()
     }
 
-    fun toJson(obj: Any): String = gson.toJson(obj)
-    inline fun <reified T> fromJson(json: String) = gson.fromJson(json, T::class.java)
 }
