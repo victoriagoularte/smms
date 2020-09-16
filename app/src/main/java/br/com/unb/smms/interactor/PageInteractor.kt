@@ -20,29 +20,30 @@ class PageInteractor @Inject constructor(val smmsRepository: PageRepository, @Ap
     }
 
     fun feed(feed: Feed): Single<NodeGraph?> {
-        return smmsRepository.feed(getPageAccessToken().id!!, feed)
+        return smmsRepository.feed(getIdAccount(), feed)
     }
 
     fun photo(feed: Feed): Single<NodeGraph?> {
-        return smmsRepository.photo(getPageAccessToken().id!!, feed)
+        return smmsRepository.photo(getIdAccount(), feed)
     }
 
     fun igBusinessAccount(): Single<IgBusinessAccount?> {
-        return smmsRepository.igBusinessAccount(getPageAccessToken().id!!)
+        return smmsRepository.igBusinessAccount(getIdAccount())
     }
 
 //    fun insights(id: String, period: String): Single<ListInsight?> {
 //        return smmsRepository.insights(id, period)
 //    }
 
-    private fun getPageAccessToken(): Account {
+    private fun getIdAccount(): String {
         val gson = Gson()
         val loginResultString = getEncrypSharedPreferences(context).getString(
             SecurityConstants.PAGE_INFO,
             ""
         )
 
-        return gson.fromJson(loginResultString, Account::class.java)
+        val account = gson.fromJson(loginResultString, Account::class.java)
+        return if (account?.id != null) account.id!! else "109187477422515"
     }
 
 

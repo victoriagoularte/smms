@@ -3,7 +3,7 @@ package br.com.unb.smms.domain.facebook
 data class Account(
     var categoryList: Array<NodeGraph>? = null,
     var accessToken: String? = null,
-    var id: String? = null,
+    var id: String? = "109187477422515",
     var name: String? = null
 ) {
     override fun equals(other: Any?): Boolean {

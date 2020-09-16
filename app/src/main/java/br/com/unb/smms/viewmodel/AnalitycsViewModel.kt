@@ -61,7 +61,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                 infoIg()
             }
 
-        smmsCompositeDisposable.add(instaInfoDisposable)
+        smmsCompositeDisposable.add(instaUserDisposable)
 
 
     }
