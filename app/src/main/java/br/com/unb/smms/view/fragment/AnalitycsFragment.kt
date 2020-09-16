@@ -8,21 +8,20 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
 import br.com.unb.smms.viewmodel.AnalitycsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class AnalitycsFragment : Fragment() {
 
     lateinit var binding: FragmentAnalitycsBinding
-
-    private val viewModel: AnalitycsViewModel by lazy {
-        ViewModelProvider(this).get(AnalitycsViewModel::class.java)
-    }
+    private val viewModel: AnalitycsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

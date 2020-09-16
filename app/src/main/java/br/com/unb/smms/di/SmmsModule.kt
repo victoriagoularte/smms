@@ -1,6 +1,7 @@
 package br.com.unb.smms.di
 
 import android.content.Context
+import br.com.unb.smms.interactor.FirebaseInteractor
 import br.com.unb.smms.interactor.IgInteractor
 import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.interactor.UserInteractor
@@ -41,6 +42,11 @@ object SmmsModule {
 
     @Singleton
     @Provides
+    fun provideFirebaseRepository() =
+        FirebaseRepository()
+
+    @Singleton
+    @Provides
     fun provideIgRepository(igService: IgService) =
         IgRepository(igService)
 
@@ -70,6 +76,11 @@ object SmmsModule {
     @Provides
     fun provideIgInteractor(repository: IgRepository, @ApplicationContext context: Context) =
         IgInteractor(repository, context)
+
+    @Singleton
+    @Provides
+    fun provideFirebaseInteractor(repository: FirebaseRepository) =
+        FirebaseInteractor(repository)
 
 
 

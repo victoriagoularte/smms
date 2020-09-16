@@ -98,7 +98,7 @@ class NewPostFragment : Fragment() {
     }
 
     fun post(view: View?) {
-        viewModel.feed(downloadUri)
+        viewModel.feed(downloadUri.toString())
 //        createInstagramIntent();
     }
 

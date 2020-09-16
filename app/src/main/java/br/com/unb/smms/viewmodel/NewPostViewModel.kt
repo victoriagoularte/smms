@@ -3,106 +3,132 @@ package br.com.unb.smms.viewmodel
 import android.content.Context
 import android.net.Uri
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.firebase.Post
-import br.com.unb.smms.domain.firebase.Tag
+import br.com.unb.smms.extension.toString
+import br.com.unb.smms.interactor.FirebaseInteractor
 import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
-import com.google.firebase.database.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import java.util.*
 
 
-class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInteractor, @ApplicationContext val context: Context) : ViewModel() {
-
-    private lateinit var database: DatabaseReference
+class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInteractor, val firebaseInteractor: FirebaseInteractor, @ApplicationContext val context: Context) : ViewModel() {
 
     private val smmsCompositeDisposable = CompositeDisposable()
     private lateinit var feedDisposable: Disposable
+    private lateinit var photoDisposable: Disposable
 
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
+    var resultUploadPhoto = MutableLiveData<SmmsData<Uri>>()
 
+    val uriPhoto = MutableLiveData<String>()
+    val title = MutableLiveData<String>()
     val text = MutableLiveData<String>()
+    val textPost = MutableLiveData<String>()
     val tags = MutableLiveData<String>()
+    val postFacebook = MutableLiveData<Boolean>(false)
+    val postInsta = MutableLiveData<Boolean>(false)
+    val postInstaStory = MutableLiveData<Boolean>(false)
     val textErrorMessage = MutableLiveData<String>()
+    var categorySelected = MutableLiveData<String>()
 
-    fun feed(downloadUri: Uri?) {
+    private val _dataLoading = MutableLiveData<Boolean>()
+    val dataLoading: LiveData<Boolean>
+        get() = _dataLoading
+
+    fun feed(downloadUri: String?) {
+
+        _dataLoading.value = true
 
         var tagsPost : String
-        var textPost : String
         var feed : Feed? = null
 
         if(tags.value != null) {
-            tagsPost = "${ "#" + (tags.value)?.split(", ", ",")?.distinct()!!.joinToString(" #")}"
-            textPost = text.value + "\n.\n.\n.\n.\n.\n" + tagsPost
-            feed = Feed(textPost)
+            tagsPost = "#" + (tags.value)?.split(", ", ",")?.distinct()!!.joinToString(" #")
+            textPost.value = text.value + "\n.\n.\n.\n.\n.\n" + tagsPost
+            feed = Feed(textPost.value)
         } else {
             feed = Feed(text.value)
         }
 
-        if (downloadUri != null) {
-            feed.url = downloadUri.toString()
-        }
-
-        textErrorMessage.value = pageInteractor.validateTextPost(feed)
-        if (!textErrorMessage.value.isNullOrEmpty()) return
+//        textErrorMessage.value = pageInteractor.validateTextPost(feed)
+//        if (!textErrorMessage.value.isNullOrEmpty()) return
 
         if (downloadUri == null) {
             feedDisposable = pageInteractor.feed(feed)
                 .subscribe { res, _ ->
-                    writeNewPost(downloadUri)
-                    resultPost.value = SmmsData.Success(res!!)
+                    if (res != null) {
+                        writeNewPost(res.id!!, downloadUri)
+                        resultPost.value = SmmsData.Success(res)
+                    }
                 }
 
         } else {
+            feed.url = downloadUri
             feedDisposable = pageInteractor.photo(feed)
                 .subscribe { res, _ ->
-                    writeNewPost(downloadUri.toString())
-                    resultPost.value = SmmsData.Success(res!!)
+                    if (res != null) {
+                        writeNewPost(res.id!!, downloadUri)
+                        resultPost.value = SmmsData.Success(res)
+                    }
                 }
         }
 
         smmsCompositeDisposable.add(feedDisposable)
     }
 
-    private fun writeNewPost(downloadUri: String?) {
+    private fun writeNewPost(postId: String, downloadUri: String?) {
 
-        var annotations : MutableList<Tag> = arrayListOf()
-        val tags = (tags.value)?.split(", " , ",")?.distinct()
-        val database = FirebaseDatabase.getInstance().reference
-        val newPostRef = database.child("posts")
-        val newTagRef = database.child("tags")
+        val currentDate = Calendar.getInstance().time
+        val post = Post(
+            getUid(),
+            title.value,
+            text.value,
+            postId,
+            downloadUri,
+            currentDate.toString("MM/yyyy"),
+            category = categorySelected.value
+        )
 
-        for(tag in tags!!) {
+        firebaseInteractor.writeNewPost(tags.value, post)
+        _dataLoading.value = false
 
-            annotations.add(Tag(tag))
+    }
 
-            newTagRef.orderByChild("description").equalTo(tag)
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onCancelled(error: DatabaseError) {
-                        newTagRef.push().child("description").setValue(tag)
-                    }
+    fun uploadFirebaseImage() {
+        _dataLoading.value = true
 
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (!snapshot.exists()) {
-                            newTagRef.push().child("description").setValue(tag)
-                        }
-                    }
-                })
+        photoDisposable = firebaseInteractor.uploadImageFirebase(uriPhoto.value!!).subscribe { res, error ->
+            if (res != null) {
+                resultUploadPhoto.value = SmmsData.Success(res)
+                uriPhoto.value = res.toString()
+                return@subscribe
+            }
+
+            resultUploadPhoto.value = SmmsData.Error(error)
         }
 
-        val post = Post(getUid(), "teste", text.value, downloadUri, annotations)
+        smmsCompositeDisposable.add(photoDisposable)
+    }
 
-        newPostRef.push().setValue(post)
+    fun validateFields(): Boolean {
 
+        if(postFacebook.value!! && tags.value == null && text.value == null && uriPhoto.value == null) {
+            return false
+        } else if(postInsta.value!! && uriPhoto.value == null) {
+            return false
+        }
 
-
+        return true
     }
 
     private fun getUid(): String? {
@@ -110,6 +136,11 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
             SecurityConstants.UID_FIREBASE,
             null
         )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        smmsCompositeDisposable.dispose()
     }
 
 

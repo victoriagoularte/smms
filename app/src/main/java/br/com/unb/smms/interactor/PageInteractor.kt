@@ -31,9 +31,9 @@ class PageInteractor @Inject constructor(val smmsRepository: PageRepository, @Ap
         return smmsRepository.igBusinessAccount(getPageAccessToken().id!!)
     }
 
-    fun insights(id: String, period: String): Single<ListInsight?> {
-        return smmsRepository.insights(id, period)
-    }
+//    fun insights(id: String, period: String): Single<ListInsight?> {
+//        return smmsRepository.insights(id, period)
+//    }
 
     private fun getPageAccessToken(): Account {
         val gson = Gson()

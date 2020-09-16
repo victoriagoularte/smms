@@ -28,6 +28,9 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
     var resultUserIdIg = MutableLiveData<SmmsData<NodeGraph>>()
     var resultInstaInfo = MutableLiveData<SmmsData<IgInfo>>()
+    var periodSelected = MutableLiveData<String>()
+    var facebookChecked = MutableLiveData<Boolean>()
+    var instagramChecked = MutableLiveData<Boolean>()
 
     fun getFriendsCount() {
 
