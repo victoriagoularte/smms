@@ -6,6 +6,14 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'dagger.hilt.android.plugin'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/Users/victoria.goularte/Documents/vic/smms/keystore/keystore')
+            storePassword 'Smms@123'
+            keyPassword 'Smms@123'
+            keyAlias = 'smms-dev'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
@@ -16,6 +24,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
     buildTypes {
         release {
             minifyEnabled false

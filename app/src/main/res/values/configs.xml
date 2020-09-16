@@ -4,11 +4,6 @@
     <!--    Facebooks`s configuration -->
     <string name="facebook_app_id">1821801631289669</string>
     <string name="fb_login_protocol_scheme">fb1821801631289669</string>
-    <string name="page_id">109187477422515</string>
-
-    <!--    Instagram`s configuration -->
-    <string name="instagram_id">2934584483302395</string>
-    <string name="instagram_user_id">17841432940842153</string>
 
     <string name="facebook_server">https://graph.facebook.com/v7.0/</string>
 </resources>

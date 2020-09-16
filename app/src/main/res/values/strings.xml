@@ -16,5 +16,27 @@
     <string name="text_post_hint">O que você quer publicar?</string>
     <string name="upload_text">Clique para adicionar uma foto</string>
     <string name="annotation_div">\n.\n.\n.\n.\n.\n</string>
+    <string name="insights_interaction">Quantidade de interações</string>
+    <string name="instagram">Instagram</string>
+    <string name="impressions">Impressões</string>
+    <string name="likes">Curtidas</string>
+    <string name="comments">Comentários</string>
+    <string name="select_period">Selecione um período</string>
+    <string name="title">Título</string>
+    <string name="whatsapp">Whatsapp</string>
+    <string name="select_share">Selecione onde compartilhar</string>
+    <string name="instagram_story">Instagram - Story</string>
+
+    <string-array name="string_array_metrics">
+        <item>Dia</item>
+        <item>Mês</item>
+        <item>Ano</item>
+    </string-array>
+
+    <string-array name="string_array_categories">
+        <item>Saúde</item>
+        <item>Esporte</item>
+        <item>Universidade</item>
+    </string-array>
 
 </resources>

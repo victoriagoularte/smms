@@ -2,10 +2,7 @@ package br.com.unb.smms.interactor
 
 import android.content.Context
 import br.com.unb.smms.R
-import br.com.unb.smms.domain.facebook.Account
-import br.com.unb.smms.domain.facebook.Feed
-import br.com.unb.smms.domain.facebook.IgBusinessAccount
-import br.com.unb.smms.domain.facebook.NodeGraph
+import br.com.unb.smms.domain.facebook.*
 import br.com.unb.smms.repository.PageRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
@@ -34,6 +31,10 @@ class PageInteractor @Inject constructor(val smmsRepository: PageRepository, @Ap
         return smmsRepository.igBusinessAccount(getPageAccessToken().id!!)
     }
 
+    fun insights(id: String, period: String): Single<ListInsight?> {
+        return smmsRepository.insights(id, period)
+    }
+
     private fun getPageAccessToken(): Account {
         val gson = Gson()
         val loginResultString = getEncrypSharedPreferences(context).getString(
@@ -42,16 +43,8 @@ class PageInteractor @Inject constructor(val smmsRepository: PageRepository, @Ap
         )
 
         return gson.fromJson(loginResultString, Account::class.java)
-
     }
 
-    private fun getIgBusinessAccount(): String? {
-        val gson = Gson()
-        return getEncrypSharedPreferences(context).getString(
-            SecurityConstants.IG_BUSINESS_ACCOUNT,
-            ""
-        )
-    }
 
 
 
