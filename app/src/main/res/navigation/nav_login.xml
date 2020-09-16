@@ -5,7 +5,6 @@
     android:id="@+id/nav_smms"
     app:startDestination="@id/loginFragment">
 
-
     <fragment
         android:id="@+id/loginFragment"
         android:name="br.com.unb.smms.view.fragment.LoginFragment"

@@ -1,8 +1,9 @@
 package br.com.unb.smms.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.Context
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.domain.facebook.NodeGraph
@@ -11,18 +12,16 @@ import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.interactor.UserInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
-
-    private val userInteractor = UserInteractor(app.applicationContext)
-    private val pageInteractor = PageInteractor(app.applicationContext)
-    private val igInteractor = IgInteractor(app.applicationContext)
+class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor: UserInteractor, private val pageInteractor: PageInteractor, private val igInteractor: IgInteractor, @ApplicationContext val context: Context) : ViewModel() {
 
     private val smmsCompositeDisposable = CompositeDisposable()
     private lateinit var friendsFacebookDisposable: Disposable
     private lateinit var instaInfoDisposable: Disposable
+    private lateinit var instaUserDisposable: Disposable
 
     var resultFacebookFriends = MutableLiveData<String>()
     var followersCount = MutableLiveData<String>()
@@ -31,6 +30,7 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
     var resultInstaInfo = MutableLiveData<SmmsData<IgInfo>>()
 
     fun getFriendsCount() {
+
         friendsFacebookDisposable = userInteractor.getFriendsCount()
             .subscribe { res, error ->
                 if (res?.summary != null)
@@ -44,14 +44,14 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
     fun userIdIg() {
 
-        instaInfoDisposable = pageInteractor.igBusinessAccount()
+        instaUserDisposable = pageInteractor.igBusinessAccount()
             .subscribe { res, error ->
                 if(error != null) {
                     resultUserIdIg.value = SmmsData.Error(error)
                     return@subscribe
                 }
 
-                getEncrypSharedPreferences(app.baseContext).edit()
+                getEncrypSharedPreferences(context).edit()
                     .putString(SecurityConstants.IG_BUSINESS_ACCOUNT, res!!.igBusinessAccount!!.id).apply()
 
                 resultUserIdIg.value = SmmsData.Success(res.igBusinessAccount!!)
@@ -65,7 +65,7 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
     fun infoIg() {
 
-        igInteractor.igInfo()
+        instaInfoDisposable = igInteractor.igInfo()
             .subscribe { res, error ->
                 if(error != null) {
                     resultInstaInfo.value = SmmsData.Error(error)
@@ -76,7 +76,7 @@ class AnalitycsViewModel(val app: Application) : AndroidViewModel(app) {
 
             }
 
-
+        smmsCompositeDisposable.add(instaInfoDisposable)
 
     }
 

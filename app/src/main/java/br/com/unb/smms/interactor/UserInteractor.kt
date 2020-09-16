@@ -12,13 +12,11 @@ import com.facebook.AccessToken
 import com.facebook.login.LoginResult
 import com.google.gson.Gson
 import io.reactivex.Single
+import javax.inject.Inject
 
-class UserInteractor(val context: Context) {
+class UserInteractor @Inject constructor(val smmsRepository: UserRepository, val context: Context) {
 
     private val accessToken = getUserAccessToken();
-
-    private val smmsRepository =
-        UserRepository(context, context.getString(R.string.facebook_server), accessToken.token)
 
     fun access(): Single<Account> {
         return smmsRepository.access(accessToken.userId)

@@ -1,6 +1,5 @@
 package br.com.unb.smms.repository
 
-import android.content.Context
 import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.repository.dto.IgInfoDTO
 import br.com.unb.smms.repository.mapper.IgInfoMapper
@@ -10,6 +9,7 @@ import io.reactivex.schedulers.Schedulers
 import org.mapstruct.factory.Mappers
 import retrofit2.http.GET
 import retrofit2.http.Path
+import javax.inject.Inject
 
 
 interface IgService {
@@ -19,11 +19,7 @@ interface IgService {
 
 }
 
-class IgRepository(val context: Context, val baseUrl: String, val accessToken: String?) :
-    SmmsRetrofit(context, baseUrl, accessToken) {
-
-    private val igService = retrofit.create(IgService::class.java)
-
+class IgRepository @Inject constructor(private val igService: IgService) {
 
     fun igInfo(id: String): Single<IgInfo> {
 

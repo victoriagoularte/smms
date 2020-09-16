@@ -49,23 +49,23 @@ class SelectSocialMediaActivity : AppCompatActivity() {
             )
         );
 
-        LoginManager.getInstance().logInWithPublishPermissions(
-            this@SelectSocialMediaActivity,
-            listOf(
-                "manage_pages",
-                "publish_pages"
-            )
-        )
+//        LoginManager.getInstance().logInWithPublishPermissions(
+//            this@SelectSocialMediaActivity,
+//            listOf(
+//                "manage_pages",
+//                "publish_pages"
+//            )
+//        )
 
         val loginStoraged = getEncrypSharedPreferences(this@SelectSocialMediaActivity).getString(
             SecurityConstants.LOGIN_RESULT,
             ""
         )
+
         val login = loginStoraged!!.fromJson<LoginResult>()
 
-        if (login.accessToken.token!!.isNotEmpty()
-        ) {
-            if(login.accessToken.token.equals(AccessToken.getCurrentAccessToken().token, true)) {
+        if (login != null && login.accessToken.token!!.isNotEmpty()) {
+            if (login.accessToken.token.equals(AccessToken.getCurrentAccessToken().token, true)) {
                 startActivity(Intent(this@SelectSocialMediaActivity, SmmsActivity::class.java))
                 return
             }

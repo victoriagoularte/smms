@@ -1,11 +1,14 @@
 package br.com.unb.smms.repository
 
-import android.content.Context
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.IgBusinessAccount
 import br.com.unb.smms.domain.facebook.NodeGraph
-import br.com.unb.smms.repository.dto.*
-import br.com.unb.smms.repository.mapper.*
+import br.com.unb.smms.repository.dto.FeedDTO
+import br.com.unb.smms.repository.dto.IgBusinessAccountDTO
+import br.com.unb.smms.repository.dto.NodeGraphDTO
+import br.com.unb.smms.repository.mapper.FeedResponseMapper
+import br.com.unb.smms.repository.mapper.IgBusinessAccountMapper
+import br.com.unb.smms.repository.mapper.NodeGraphMapper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -14,6 +17,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import javax.inject.Inject
 
 
 interface FacebookPageService {
@@ -32,9 +36,7 @@ interface FacebookPageService {
 
 }
 
-class PageRepository(val context: Context, val baseUrl: String, val accessToken: String) : SmmsRetrofit(context, baseUrl, accessToken) {
-
-    private val facebookService = retrofit.create(FacebookPageService::class.java)
+class PageRepository @Inject constructor(private val facebookService: FacebookPageService) {
 
     fun feed(id: String, feed: Feed): Single<NodeGraph?> {
 

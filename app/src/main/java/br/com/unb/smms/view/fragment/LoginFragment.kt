@@ -57,7 +57,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.resultRegister.observe(this, Observer {
+        viewModel.resultRegister.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is SmmsData.Success -> Toast.makeText(context, it.data, Toast.LENGTH_SHORT).show()
                 is SmmsData.Error -> Toast.makeText(
@@ -83,7 +83,7 @@ class LoginFragment : Fragment() {
             } else {
                 auth.signInWithEmailAndPassword(email, password).addOnSuccessListener {
 
-                    getEncrypSharedPreferences(context!!).edit()
+                    getEncrypSharedPreferences(requireContext()).edit()
                         .putString(SecurityConstants.UID_FIREBASE, it.user!!.uid).apply()
 
                     goToChooseApplication()

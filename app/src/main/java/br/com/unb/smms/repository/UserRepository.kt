@@ -1,18 +1,22 @@
 package br.com.unb.smms.repository
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import br.com.unb.smms.domain.facebook.Account
 import br.com.unb.smms.domain.facebook.Friends
-import br.com.unb.smms.repository.dto.*
-import br.com.unb.smms.repository.mapper.*
+import br.com.unb.smms.repository.dto.AccessDTO
+import br.com.unb.smms.repository.dto.FriendsDTO
+import br.com.unb.smms.repository.dto.NodeGraphDTO
+import br.com.unb.smms.repository.mapper.AccountMapper
+import br.com.unb.smms.repository.mapper.FriendsResponseMapper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import org.mapstruct.factory.Mappers
-import retrofit2.http.*
+import retrofit2.http.GET
+import retrofit2.http.Path
+import javax.inject.Inject
 
 
 interface FacebookService {
@@ -32,9 +36,9 @@ interface FacebookService {
 }
 
 
-class UserRepository(val context: Context, val baseUrl: String, val accessToken: String?) : SmmsRetrofit(context, baseUrl, accessToken) {
-
-    private val facebookService = retrofit.create(FacebookService::class.java)
+class UserRepository @Inject constructor(
+    private val facebookService: FacebookService
+) {
 
     fun access(id: String): Single<Account> {
 

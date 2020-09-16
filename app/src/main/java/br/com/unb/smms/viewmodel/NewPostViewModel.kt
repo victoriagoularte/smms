@@ -1,10 +1,10 @@
 package br.com.unb.smms.viewmodel
 
-import android.app.Application
+import android.content.Context
 import android.net.Uri
-import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.NodeGraph
@@ -14,15 +14,15 @@ import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.google.firebase.database.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 
-class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
+class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInteractor, @ApplicationContext val context: Context) : ViewModel() {
 
     private lateinit var database: DatabaseReference
 
-    private val pageInteractor = PageInteractor(app.applicationContext)
     private val smmsCompositeDisposable = CompositeDisposable()
     private lateinit var feedDisposable: Disposable
 
@@ -106,7 +106,7 @@ class NewPostViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     private fun getUid(): String? {
-        return getEncrypSharedPreferences(app.baseContext).getString(
+        return getEncrypSharedPreferences(context).getString(
             SecurityConstants.UID_FIREBASE,
             null
         )

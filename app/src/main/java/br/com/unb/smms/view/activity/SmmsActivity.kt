@@ -2,61 +2,72 @@ package br.com.unb.smms.view.activity
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import br.com.unb.smms.R
-import br.com.unb.smms.SmmsData
 import br.com.unb.smms.SmmsData.Error
 import br.com.unb.smms.SmmsData.Success
 import br.com.unb.smms.databinding.ActivitySmmsBinding
 import br.com.unb.smms.viewmodel.SmmsViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SmmsActivity : AppCompatActivity() {
 
     lateinit var binding: ActivitySmmsBinding
+    private val viewModel: SmmsViewModel by viewModels()
+
     private lateinit var navOptions: NavOptions
     private lateinit var navController: NavController
-
-
-    private val viewModel: SmmsViewModel by lazy {
-        ViewModelProviders.of(this).get(SmmsViewModel::class.java)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySmmsBinding.inflate(layoutInflater)
+
         val view = binding.root
         setContentView(view)
+
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        navController =
-            Navigation.findNavController(this@SmmsActivity, R.id.smmsNavigationFragment)
-
-        navOptions = NavOptions.Builder()
-            .setLaunchSingleTop(true)
-            .setPopUpTo(navController.graph.startDestination, false)
-            .build()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
         setParameters()
-        configNav()
     }
+
 
     private fun setParameters() {
 
+        configNav()
+
         viewModel.access()
         viewModel.getUserProfilePicture()
+
+        viewModel.resultAccess.observe(this@SmmsActivity, Observer {
+            when (it) {
+                is Success -> {
+                    navController =
+                        Navigation.findNavController(this@SmmsActivity, R.id.smmsNavigationFragment)
+
+                    navOptions = NavOptions.Builder()
+                        .setLaunchSingleTop(true)
+                        .setPopUpTo(navController.graph.startDestination, false)
+                        .build()
+
+                    configNav()
+                }
+                is Error -> Toast.makeText(
+                    this@SmmsActivity,
+                    it.error.localizedMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
 
         viewModel.resultPic.observe(this@SmmsActivity, Observer {
             when (it) {
@@ -69,15 +80,6 @@ class SmmsActivity : AppCompatActivity() {
             }
         })
 
-        viewModel.resultPageInfo.observe(this@SmmsActivity, Observer {
-            when (it) {
-                is SmmsData.Error -> Toast.makeText(
-                    this@SmmsActivity,
-                    it.error.localizedMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        })
 
     }
 

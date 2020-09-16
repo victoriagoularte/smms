@@ -16,38 +16,4 @@ class LoginViewModel(val app: Application) : AndroidViewModel(app) {
     val resultSignIn = MutableLiveData<SmmsData<String>>()
     val resultRegister = MutableLiveData<SmmsData<String>>()
 
-    fun signIn() {
-
-        if (email.value != null && password.value != null) {
-            val error = interactor.singIn(email.value!!, password.value!!)
-
-            if (error != null) {
-                resultSignIn.value = SmmsData.Error(Throwable(error))
-                return
-            }
-
-            resultSignIn.value = SmmsData.Success("success")
-
-        }
-    }
-
-    fun register() {
-
-        if (email.value != null && password.value != null) {
-            val error = interactor.register(email.value!!, password.value!!)
-
-            if (error != null) {
-                resultSignIn.value = SmmsData.Error(Throwable(error))
-                return
-            }
-
-            resultSignIn.value = SmmsData.Success("success")
-        }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
-    }
-
 }
