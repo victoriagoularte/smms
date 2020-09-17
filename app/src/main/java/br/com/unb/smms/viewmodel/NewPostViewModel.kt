@@ -95,7 +95,7 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
             text.value,
             postId,
             downloadUri,
-            currentDate.toString("MM/yyyy"),
+            currentDate.toString("dd/MM/yyyy"),
             category = categorySelected.value
         )
 

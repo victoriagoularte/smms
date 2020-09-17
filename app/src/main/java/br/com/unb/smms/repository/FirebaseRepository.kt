@@ -68,32 +68,7 @@ class FirebaseRepository {
             }
 
         }
-
-//        val urlTask = uploadTask.continueWithTask { task ->
-//            if (!task.isSuccessful) {
-//                task.exception?.let {
-//                    throw it
-//                }
-//            }
-//            ref.downloadUrl
-//        }.addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                downloadUri = task.result!!
-//            }
-//        }
-//
-//        if (downloadUri == null) {
-//            throw Exception("Erro ao salvar foto")
-//        } else {
-//            return Single.create<Uri> {
-//                it.onSuccess(downloadUri!!)
-//                it.onError(Exception("Erro ao salvar foto"))
-//            }
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//        }
-
-
     }
+
 
 }

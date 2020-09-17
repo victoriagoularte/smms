@@ -16,4 +16,6 @@ class FirebaseInteractor @Inject constructor(private val firebaseRepository: Fir
         return firebaseRepository.uploadImageFirebase(imagePath)
     }
 
+
+
 }

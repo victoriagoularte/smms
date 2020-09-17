@@ -38,7 +38,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             .subscribe { res, error ->
                 if (res?.summary != null)
                     resultFacebookFriends.value = (res.summary!!.totalCount).toString()
-
             }
 
         smmsCompositeDisposable.add(friendsFacebookDisposable)
@@ -80,6 +79,10 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             }
 
         smmsCompositeDisposable.add(instaInfoDisposable)
+
+    }
+
+    fun getPostsByMonth() {
 
     }
 

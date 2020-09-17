@@ -9,5 +9,6 @@ data class Post (
     var urlPicture: String? = null,
     var date: String? = null,
     var annotations: List<Tag>? = null,
-    var category: String? = null
+    var category: String? = null,
+    var media: String? = null
 )

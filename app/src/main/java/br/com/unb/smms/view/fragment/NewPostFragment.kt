@@ -1,22 +1,25 @@
 package br.com.unb.smms.view.fragment
 
-import android.content.ContentUris
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
 import br.com.unb.smms.viewmodel.NewPostViewModel
@@ -37,12 +40,13 @@ class NewPostFragment : Fragment() {
     private val viewModel: NewPostViewModel by viewModels()
     private lateinit var database: DatabaseReference
 
-
     private var bitmap: Bitmap? = null
     private var imagePath: String? = null
     private var userSelectedPhoto: Boolean = false
     lateinit var mStorageRef: StorageReference
     var downloadUri: Uri? = null
+    private var localUri : Uri? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +71,27 @@ class NewPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> { loading ->
+            binding.clLoading.visibility = if (loading) View.VISIBLE else View.INVISIBLE
+        })
+
+        viewModel.resultUploadPhoto.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is SmmsData.Error -> Toast.makeText(
+                    context,
+                    it.error.localizedMessage,
+                    Toast.LENGTH_LONG
+                ).show()
+                is SmmsData.Success -> {
+                    if (viewModel.postFacebook.value!!) {
+                        viewModel.feed(it.data.toString())
+                    } else if (viewModel.postInsta.value!! || viewModel.postInstaStory.value!!) {
+                        createInstagramIntent()
+                    }
+                }
+            }
+        })
+
         viewModel.resultPost.observe(viewLifecycleOwner, Observer { it ->
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
@@ -74,15 +99,78 @@ class NewPostFragment : Fragment() {
                     it.error.localizedMessage,
                     Toast.LENGTH_LONG
                 ).show()
-                is SmmsData.Success -> Toast.makeText(
-                    context,
-                    "Publicado com sucesso!",
-                    Toast.LENGTH_LONG
-                ).show()
+                is SmmsData.Success -> {
+                    copy()
+                    Toast.makeText(
+                        context,
+                        "Publicado com sucesso no Facebook, aguarde enquanto redirecionamos para o Instagram! O seu texto foi copiado na área de transferência.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
+                        Handler().postDelayed({
+                            createInstagramIntent()
+                        }, 2500)
+                        resetAllFields()
+                    }
+                }
             }
         })
 
+        ArrayAdapter.createFromResource(
+            requireContext(), R.array.string_array_categories,
+            android.R.layout.simple_spinner_item
+        ).also { adapter ->
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinnerCategories.adapter = adapter
+        }
+
+        binding.spinnerCategories.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    viewModel.categorySelected.value = "day"
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val categories = resources.getStringArray(R.array.string_array_categories)
+                    viewModel.categorySelected.value = categories[position]
+                }
+            }
     }
+
+    fun copy() {
+        val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData = ClipData.newPlainText("texto", viewModel.textPost.value)
+        clipboard.setPrimaryClip(clip)
+    }
+
+    fun createInstagramIntent() {
+        val type = "image/*"
+        createInstagramIntent(type);
+    }
+
+    private fun createInstagramIntent(type: String) {
+        if (viewModel.postInsta.value!!) {
+            val share = Intent("com.instagram.share.ADD_TO_FEED")
+            share.type = type
+            share.putExtra(Intent.EXTRA_STREAM, localUri)
+            startActivity(share)
+        } else {
+            val share = Intent("com.instagram.share.ADD_TO_STORY");
+            share.setDataAndType(localUri, type);
+            share.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+            share.putExtra("content_url", "https://www.google.com");
+
+            if (activity?.packageManager?.resolveActivity(share, 0) != null) {
+                activity?.startActivityForResult(share, 0);
+            }
+        }
+    }
+
 
     fun choosePhoto(view: View) {
         val checkSelfPermission = ContextCompat.checkSelfPermission(
@@ -98,18 +186,23 @@ class NewPostFragment : Fragment() {
     }
 
     fun post(view: View?) {
-        viewModel.feed(downloadUri.toString())
-//        createInstagramIntent();
-    }
 
-    fun createInstagramIntent() {
-        val type = "image/*";
-        val intent = Intent(Intent.ACTION_SEND)
-        val media = File(imagePath)
-        val uri = Uri.fromFile(media)
-        intent.setType(type)
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
-        requireContext().startActivity(Intent.createChooser(intent, "Compartilhar com"))
+        if (!viewModel.validateFields()) {
+            Toast.makeText(
+                context,
+                "Campos de publicação incompletos.",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            if (viewModel.uriPhoto.value != null) {
+                viewModel.uploadFirebaseImage()
+            } else if (binding.ckFace.isChecked) {
+                viewModel.feed(null)
+            } else if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
+                createInstagramIntent()
+            }
+        }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -130,61 +223,42 @@ class NewPostFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             SELECTED_PIC -> {
-                val uri = data!!.data
+                if (data == null) return
+                localUri = data.data
 
-                if (DocumentsContract.isDocumentUri(context, uri)) {
-                    val docId = DocumentsContract.getDocumentId(uri)
-                    if ("com.android.providers.media.documents" == uri!!.authority) {
+                if (localUri != null && DocumentsContract.isDocumentUri(context, localUri)) {
+                    val docId = DocumentsContract.getDocumentId(localUri)
+                    if ("com.android.providers.media.documents" == localUri!!.authority) {
                         val id = docId.split(":")[1]
                         val selsetion = MediaStore.Images.Media._ID + "=" + id
-                        imagePath =
+                        viewModel.uriPhoto.value =
                             imagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selsetion)
-                    } else if ("com.android.providers.downloads.documents" == uri.authority) {
+                    } else if ("com.android.providers.downloads.documents" ==
+                        localUri!!.authority
+                    ) {
                         val contentUri = ContentUris.withAppendedId(
                             Uri.parse("content://downloads/public_downloads"),
                             java.lang.Long.valueOf(docId)
                         )
-                        imagePath = imagePath(contentUri, null)
+                        viewModel.uriPhoto.value = imagePath(contentUri, null)
                     }
-                } else if ("content".equals(uri!!.scheme, ignoreCase = true)) {
-                    imagePath = imagePath(uri, null)
-                } else if ("file".equals(uri.scheme, ignoreCase = true)) {
-                    imagePath = uri.path
+                } else if ("content".equals(localUri!!.scheme, ignoreCase = true)) {
+                    viewModel.uriPhoto.value = imagePath(localUri, null)
+                } else if ("file".equals(localUri!!.scheme, ignoreCase = true)) {
+                    viewModel.uriPhoto.value = localUri!!.path
                 }
 
                 userSelectedPhoto = true
-                displayImage(imagePath)
-                uploadImageFirebase()
+                displayImage()
 
             }
         }
-    }
-
-    private fun uploadImageFirebase() {
-
-        val file = Uri.fromFile(File(imagePath))
-        val ref: StorageReference = mStorageRef.child("images/${file.lastPathSegment}")
-        var uploadTask = ref.putFile(file)
-
-        val urlTask = uploadTask.continueWithTask { task ->
-            if (!task.isSuccessful) {
-                task.exception?.let {
-                    throw it
-                }
-            }
-            ref.downloadUrl
-        }.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                downloadUri = task.result!!
-            }
-        }
-
     }
 
     private fun imagePath(uri: Uri?, selection: String?): String {
         var path: String? = null
 
-        val cursor = requireContext().contentResolver.query(uri!!, null, selection, null, null)
+        val cursor = requireActivity().contentResolver.query(uri!!, null, selection, null, null)
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
@@ -194,15 +268,26 @@ class NewPostFragment : Fragment() {
         return path!!
     }
 
-    private fun displayImage(imagePath: String?) {
-        if (imagePath != null) {
-            bitmap = BitmapFactory.decodeFile(imagePath)
+    private fun displayImage() {
+        if (viewModel.uriPhoto.value != null) {
+            bitmap = BitmapFactory.decodeFile(viewModel.uriPhoto.value)
             binding.ivPhoto?.setImageBitmap(bitmap)
             binding.clUploadPhoto.visibility = View.INVISIBLE
             binding.ivPhoto.visibility = View.VISIBLE
         } else {
             Toast.makeText(context, "Failed to get image", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun resetAllFields() {
+        viewModel.text.value = ""
+        viewModel.title.value = ""
+        viewModel.tags.value = ""
+        binding.clUploadPhoto.visibility = View.VISIBLE
+        binding.ivPhoto.visibility = View.GONE
+        viewModel.postFacebook.value = false
+        viewModel.postInsta.value = false
+        viewModel.postInstaStory.value = false
     }
 
 

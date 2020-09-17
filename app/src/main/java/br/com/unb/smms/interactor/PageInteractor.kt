@@ -11,7 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.Single
 import javax.inject.Inject
 
-class PageInteractor @Inject constructor(val smmsRepository: PageRepository, @ApplicationContext val context: Context) {
+class PageInteractor @Inject constructor(private val smmsRepository: PageRepository, val context: Context) {
 
     fun validateTextPost(feed: Feed): String? {
         return if(feed.message.isNullOrEmpty()) {
