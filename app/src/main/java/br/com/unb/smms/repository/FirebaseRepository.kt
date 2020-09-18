@@ -12,6 +12,7 @@ import com.google.firebase.storage.StorageReference
 import io.reactivex.Single
 import java.io.File
 
+
 class FirebaseRepository {
 
     private var mStorageRef: StorageReference = FirebaseStorage.getInstance().reference
@@ -46,7 +47,6 @@ class FirebaseRepository {
 
         post.annotations = annotations
         newPostRef.push().setValue(post)
-
     }
 
     fun uploadImageFirebase(imagePath: String): Single<Uri> {
@@ -55,7 +55,7 @@ class FirebaseRepository {
         val ref: StorageReference = mStorageRef.child("images/${file.lastPathSegment}")
         var uploadTask = ref.putFile(file)
 
-        return Single.create<Uri> { uri ->
+        return Single.create { uri ->
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
                     uri.onError(Throwable(task.exception))

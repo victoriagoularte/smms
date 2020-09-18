@@ -34,6 +34,12 @@ interface FacebookPageService {
     @POST("{ig-user-id}/media")
     fun mediaIg(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
+    @GET("{page-post-id}/likes")
+    fun postLikes(@Path("page-post-id") id: String): Single<NodeGraphDTO>
+
+    @GET("{page-post-id}/reactions")
+    fun postReactions(@Path("page-post-id") id: String): Single<NodeGraphDTO>
+
 }
 
 class PageRepository @Inject constructor(private val facebookService: FacebookPageService) {

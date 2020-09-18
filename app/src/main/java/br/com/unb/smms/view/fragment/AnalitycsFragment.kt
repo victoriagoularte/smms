@@ -9,8 +9,6 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
@@ -50,8 +48,9 @@ class AnalitycsFragment : Fragment() {
         events()
         viewModel.getFriendsCount()
         viewModel.userIdIg()
+        viewModel.getPostsByMonth()
 
-        viewModel.resultUserIdIg.observe(viewLifecycleOwner, Observer {
+        viewModel.resultUserIdIg.observe(viewLifecycleOwner, {
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
                     context,
@@ -59,6 +58,10 @@ class AnalitycsFragment : Fragment() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+        })
+
+        viewModel.resultPosts.observe(viewLifecycleOwner, {
+            Toast.makeText(context, it.size.toString(), Toast.LENGTH_LONG).show()
         })
 
     }

@@ -10,6 +10,7 @@ import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.firebase.Post
+import br.com.unb.smms.domain.firebase.Tag
 import br.com.unb.smms.extension.toString
 import br.com.unb.smms.interactor.FirebaseInteractor
 import br.com.unb.smms.interactor.PageInteractor
@@ -88,6 +89,11 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
 
     private fun writeNewPost(postId: String, downloadUri: String?) {
 
+        var platforms: MutableList<String> = arrayListOf()
+
+        postFacebook.value?.let { it -> if(it) platforms.add("facebook") }
+        postInsta.value?.let { it -> if(it) platforms.add("instagram") }
+
         val currentDate = Calendar.getInstance().time
         val post = Post(
             getUid(),
@@ -95,8 +101,11 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
             text.value,
             postId,
             downloadUri,
-            currentDate.toString("dd/MM/yyyy"),
-            category = categorySelected.value
+            date = currentDate.toString("dd"),
+            month = currentDate.toString("MM"),
+            year = currentDate.toString("yyyy"),
+            category = categorySelected.value,
+            media = platforms
         )
 
         firebaseInteractor.writeNewPost(tags.value, post)
