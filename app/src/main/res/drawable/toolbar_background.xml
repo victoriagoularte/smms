@@ -8,8 +8,6 @@
                 android:width="3dp"
                 android:color="#7000" />
 
-            <!-- setting the thickness of shadow (positive value will give shadow on that side) -->
-
             <padding
                 android:bottom="5dp"
                 android:left="5dp"
@@ -19,8 +17,7 @@
             <corners
                 android:bottomLeftRadius="10dp"
                 android:bottomRightRadius="10dp"
-                android:topLeftRadius="10dp"
-                android:topRightRadius="10dp" />
+                 />
         </shape>
     </item>
 

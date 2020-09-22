@@ -51,6 +51,9 @@ class SmmsActivity : AppCompatActivity() {
         viewModel.resultAccess.observe(this@SmmsActivity, Observer {
             when (it) {
                 is Success -> {
+
+                    binding.tvName.text = it.data.name
+
                     navController =
                         Navigation.findNavController(this@SmmsActivity, R.id.smmsNavigationFragment)
 

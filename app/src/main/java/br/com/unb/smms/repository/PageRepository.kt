@@ -2,13 +2,16 @@ package br.com.unb.smms.repository
 
 import br.com.unb.smms.domain.facebook.Feed
 import br.com.unb.smms.domain.facebook.IgBusinessAccount
+import br.com.unb.smms.domain.facebook.ListPost
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.repository.dto.FeedDTO
 import br.com.unb.smms.repository.dto.IgBusinessAccountDTO
+import br.com.unb.smms.repository.dto.ListPostDTO
 import br.com.unb.smms.repository.dto.NodeGraphDTO
 import br.com.unb.smms.repository.mapper.FeedResponseMapper
 import br.com.unb.smms.repository.mapper.IgBusinessAccountMapper
 import br.com.unb.smms.repository.mapper.NodeGraphMapper
+import br.com.unb.smms.repository.mapper.PostMapper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -27,6 +30,9 @@ interface FacebookPageService {
 
     @POST("{page-id}/photos")
     fun photo(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
+
+    @GET("{page-id}/posts")
+    fun posts(@Path("page-id") id: String): Single<ListPostDTO>
 
     @GET("{page-id}?fields=instagram_business_account")
     fun igBusinessAccount(@Path("page-id") id: String): Single<IgBusinessAccountDTO>
@@ -56,6 +62,17 @@ class PageRepository @Inject constructor(private val facebookService: FacebookPa
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
+    }
+
+    fun posts(id: String): Single<ListPost?> {
+
+        val mapper = Mappers.getMapper(PostMapper::class.java)
+
+        return facebookService.posts(id).map { dto ->
+            mapper.toDomain(dto)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun photo(id: String, feed: Feed): Single<NodeGraph?> {

@@ -7,7 +7,6 @@ import br.com.unb.smms.repository.PageRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.google.gson.Gson
-import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -21,6 +20,10 @@ class PageInteractor @Inject constructor(private val smmsRepository: PageReposit
 
     fun feed(feed: Feed): Single<NodeGraph?> {
         return smmsRepository.feed(getIdAccount(), feed)
+    }
+
+    fun postsFacebook(): Single<ListPost?> {
+        return smmsRepository.posts(getIdAccount())
     }
 
     fun photo(feed: Feed): Single<NodeGraph?> {

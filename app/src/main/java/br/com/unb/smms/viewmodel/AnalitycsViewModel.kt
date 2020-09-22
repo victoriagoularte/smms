@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.IgInfo
+import br.com.unb.smms.domain.facebook.ListPost
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.extension.toString
@@ -31,12 +32,13 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     private lateinit var friendsFacebookDisposable: Disposable
     private lateinit var instaInfoDisposable: Disposable
     private lateinit var instaUserDisposable: Disposable
-    private lateinit var postsMonthDisposable: Disposable
+    private lateinit var postsDisposable: Disposable
 
     var resultFacebookFriends = MutableLiveData<String>()
     var followersCount = MutableLiveData<String>()
 
     var resultUserIdIg = MutableLiveData<SmmsData<NodeGraph>>()
+    var resultFacebookPosts = MutableLiveData<SmmsData<ListPost>>()
     var resultInstaInfo = MutableLiveData<SmmsData<IgInfo>>()
     var resultPosts = MutableLiveData<List<Post>>()
     var periodSelected = MutableLiveData<String>()
@@ -52,6 +54,24 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             }
 
         smmsCompositeDisposable.add(friendsFacebookDisposable)
+
+    }
+
+    fun postsFacebook() {
+
+        postsDisposable = pageInteractor.postsFacebook().subscribe { res, error ->
+
+            res?.let {
+                resultFacebookPosts.value = SmmsData.Success(res)
+                return@subscribe
+            }
+
+            error?.let {
+                resultFacebookPosts.value = SmmsData.Error(error)
+                return@subscribe
+            }
+
+        }
 
     }
 
