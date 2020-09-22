@@ -8,6 +8,7 @@ import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.firebase.Post
+import br.com.unb.smms.extension.toString
 import br.com.unb.smms.interactor.FirebaseInteractor
 import br.com.unb.smms.interactor.IgInteractor
 import br.com.unb.smms.interactor.PageInteractor
@@ -21,6 +22,7 @@ import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import java.util.*
 
 class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor: UserInteractor, private val pageInteractor: PageInteractor, val firebaseInteractor: FirebaseInteractor,
                                                       private val igInteractor: IgInteractor, @ApplicationContext val context: Context) : ViewModel() {
@@ -91,19 +93,37 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
     }
 
-    fun getPostsByMonth() {
+    fun getPostsByPeriod(period: String?) {
+
+        val period = period ?: "day"
 
         var posts: MutableList<Post> = arrayListOf()
         val database = FirebaseDatabase.getInstance().reference
         val postsRef = database.child("posts")
 
+        val currentDay = Calendar.getInstance().time.toString("dd")
+        val currentMonth = Calendar.getInstance().time.toString("MM")
+        val currentYear = Calendar.getInstance().time.toString("yyyy")
+
         postsRef.orderByChild("month").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                for(postSnapshot in snapshot.children) {
+                for (postSnapshot in snapshot.children) {
                     val post = postSnapshot.getValue(Post::class.java)!!
-                    if(post.month == "09/2020") {
-                        posts.add(post)
-                        resultPosts.value = posts
+                    if (period == "day") {
+                        if (post.date == currentDay && post.month == currentMonth && post.year == currentYear) {
+                            posts.add(post)
+                            resultPosts.value = posts
+                        }
+                    } else if (period == "month") {
+                        if (post.month == currentMonth && post.year == currentYear) {
+                            posts.add(post)
+                            resultPosts.value = posts
+                        }
+                    } else {
+                        if (post.year == currentYear) {
+                            posts.add(post)
+                            resultPosts.value = posts
+                        }
                     }
 
                 }

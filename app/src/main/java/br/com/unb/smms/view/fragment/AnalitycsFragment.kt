@@ -48,7 +48,8 @@ class AnalitycsFragment : Fragment() {
         events()
         viewModel.getFriendsCount()
         viewModel.userIdIg()
-        viewModel.getPostsByMonth()
+
+        viewModel.getPostsByPeriod(viewModel.periodSelected.value)
 
         viewModel.resultUserIdIg.observe(viewLifecycleOwner, {
             when (it) {
@@ -80,9 +81,10 @@ class AnalitycsFragment : Fragment() {
             ) {
                 viewModel.periodSelected.value = when (position) {
                     0 -> "day"
-                    2 -> "month"
+                    1 -> "month"
                     else -> "year"
                 }
+                viewModel.getPostsByPeriod(viewModel.periodSelected.value)
             }
         }
 
