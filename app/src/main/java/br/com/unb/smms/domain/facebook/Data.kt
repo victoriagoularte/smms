@@ -1,6 +1,6 @@
 package br.com.unb.smms.domain.facebook
 
-data class Friends(
+data class Data(
     var data: Array<Any>? = null,
     var summary: Summary? = null
 ) {
@@ -8,7 +8,7 @@ data class Friends(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as Friends
+        other as Data
 
         if (data != null) {
             if (other.data == null) return false

@@ -62,13 +62,17 @@ class AnalitycsFragment : Fragment() {
             }
         })
 
-//        viewModel.resultPosts.observe(viewLifecycleOwner, {
-//            Toast.makeText(context, it.size.toString(), Toast.LENGTH_LONG).show()
-//        })
+        viewModel.resultPosts.observe(viewLifecycleOwner, {
+
+            Toast.makeText(context, it.size.toString(), Toast.LENGTH_LONG).show()
+        })
 
         viewModel.resultFacebookPosts.observe(viewLifecycleOwner, {
             when(it) {
-                is SmmsData.Success -> Toast.makeText(context, "quantidade de posts ${it.data.data?.size}", Toast.LENGTH_LONG).show()
+                is SmmsData.Success -> {
+                    val filter = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
+                    binding.tvLikesCount.text = viewModel.postLikes(filter.map { it -> it.id!! }).toString()
+                }
             }
         })
 

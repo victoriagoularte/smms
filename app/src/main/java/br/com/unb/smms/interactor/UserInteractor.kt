@@ -2,9 +2,8 @@ package br.com.unb.smms.interactor
 
 import android.content.Context
 import android.graphics.Bitmap
-import br.com.unb.smms.R
 import br.com.unb.smms.domain.facebook.Account
-import br.com.unb.smms.domain.facebook.Friends
+import br.com.unb.smms.domain.facebook.Data
 import br.com.unb.smms.repository.UserRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
@@ -26,7 +25,7 @@ class UserInteractor @Inject constructor(val smmsRepository: UserRepository, val
         return smmsRepository.userProfilePicture(accessToken.userId)
     }
 
-    fun getFriendsCount(): Single<Friends> {
+    fun getFriendsCount(): Single<Data> {
         return smmsRepository.friends(accessToken.userId)
     }
 

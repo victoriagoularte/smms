@@ -8,7 +8,9 @@ import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.domain.facebook.ListPost
 import br.com.unb.smms.domain.facebook.NodeGraph
+import br.com.unb.smms.domain.facebook.PostFacebook
 import br.com.unb.smms.domain.firebase.Post
+import br.com.unb.smms.extension.toLocalDateTime
 import br.com.unb.smms.extension.toString
 import br.com.unb.smms.interactor.FirebaseInteractor
 import br.com.unb.smms.interactor.IgInteractor
@@ -70,9 +72,35 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                 resultFacebookPosts.value = SmmsData.Error(error)
                 return@subscribe
             }
+        }
+    }
 
+    fun filterPostsByPeriod(period: String, list: List<PostFacebook>): List<PostFacebook> {
+        return list?.filter {
+            when (period) {
+                "day" -> {
+                    it.created_time?.toLocalDateTime()?.dayOfMonth.toString() == Calendar.getInstance().time.toString("dd") &&
+                            it.created_time?.toLocalDateTime()?.month.toString() == Calendar.getInstance().time.toString("MM")
+                }
+                "month" -> {
+                    it.created_time?.toLocalDateTime()?.month.toString() == Calendar.getInstance().time.toString("MM")
+                }
+                else -> {
+                    it.created_time?.toLocalDateTime()?.year.toString() == Calendar.getInstance().time.toString("yyyy")
+                }
+            }
+        }
+    }
+
+    fun postLikes(ids: List<String>) : Int {
+        var total = 0
+        pageInteractor.postLikes(ids).map {
+            it.subscribe {res, error ->
+                total += res ?: 0
+            }
         }
 
+        return total
     }
 
     fun userIdIg() {
@@ -165,4 +193,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
         super.onCleared()
         smmsCompositeDisposable.dispose()
     }
+
+
 }

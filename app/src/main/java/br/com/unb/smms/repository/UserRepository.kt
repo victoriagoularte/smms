@@ -3,12 +3,12 @@ package br.com.unb.smms.repository
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import br.com.unb.smms.domain.facebook.Account
-import br.com.unb.smms.domain.facebook.Friends
+import br.com.unb.smms.domain.facebook.Data
 import br.com.unb.smms.repository.dto.AccessDTO
-import br.com.unb.smms.repository.dto.FriendsDTO
+import br.com.unb.smms.repository.dto.DataDTO
 import br.com.unb.smms.repository.dto.NodeGraphDTO
 import br.com.unb.smms.repository.mapper.AccountMapper
-import br.com.unb.smms.repository.mapper.FriendsResponseMapper
+import br.com.unb.smms.repository.mapper.DataResponseMapper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -31,7 +31,7 @@ interface FacebookService {
     fun userProfilePicture(@Path("id") userId: String): Single<ResponseBody>
 
     @GET("{id}/friends")
-    fun friends(@Path("id") userId: String): Single<FriendsDTO>
+    fun friends(@Path("id") userId: String): Single<DataDTO>
 
 }
 
@@ -59,9 +59,9 @@ class UserRepository @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun friends(id: String): Single<Friends> {
+    fun friends(id: String): Single<Data> {
 
-        val domainMapper = Mappers.getMapper(FriendsResponseMapper::class.java)
+        val domainMapper = Mappers.getMapper(DataResponseMapper::class.java)
 
         return facebookService.friends(id).map { friendsDTO ->
             domainMapper.toDomain(friendsDTO)

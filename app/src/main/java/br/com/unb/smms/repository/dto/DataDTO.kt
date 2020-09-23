@@ -1,6 +1,6 @@
 package br.com.unb.smms.repository.dto
 
-data class FriendsDTO(
+data class DataDTO(
     var data: Array<Any>? = null,
     var summary: SummaryDTO? = null
 ) {
@@ -8,7 +8,7 @@ data class FriendsDTO(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as FriendsDTO
+        other as DataDTO
 
         if (data != null) {
             if (other.data == null) return false
