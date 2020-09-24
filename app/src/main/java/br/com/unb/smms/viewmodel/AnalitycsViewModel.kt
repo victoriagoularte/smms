@@ -2,6 +2,7 @@ package br.com.unb.smms.viewmodel
 
 import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import br.com.unb.smms.SmmsData
@@ -10,7 +11,6 @@ import br.com.unb.smms.domain.facebook.ListPost
 import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.domain.facebook.PostFacebook
 import br.com.unb.smms.domain.firebase.Post
-import br.com.unb.smms.extension.toLocalDateTime
 import br.com.unb.smms.extension.toString
 import br.com.unb.smms.interactor.FirebaseInteractor
 import br.com.unb.smms.interactor.IgInteractor
@@ -42,10 +42,23 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     var resultUserIdIg = MutableLiveData<SmmsData<NodeGraph>>()
     var resultFacebookPosts = MutableLiveData<SmmsData<ListPost>>()
     var resultInstaInfo = MutableLiveData<SmmsData<IgInfo>>()
+    var resultCountLikes = MutableLiveData(0)
     var resultPosts = MutableLiveData<List<Post>>()
     var periodSelected = MutableLiveData<String>()
     var facebookChecked = MutableLiveData<Boolean>()
     var instagramChecked = MutableLiveData<Boolean>()
+
+    private val _showLikes = MutableLiveData<Boolean>()
+    val showLikes: LiveData<Boolean>
+        get() = _showLikes
+
+    private val _showComments = MutableLiveData<Boolean>()
+    val showComments: LiveData<Boolean>
+        get() = _showComments
+
+    private val _showImpressions = MutableLiveData<Boolean>()
+    val showImpressions: LiveData<Boolean>
+        get() = _showImpressions
 
     fun getFriendsCount() {
 
@@ -60,6 +73,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     }
 
     fun postsFacebook() {
+
+        _showLikes.value = false
 
         postsDisposable = pageInteractor.postsFacebook().subscribe { res, error ->
 
@@ -79,28 +94,38 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
         return list?.filter {
             when (period) {
                 "day" -> {
-                    it.created_time?.toLocalDateTime()?.dayOfMonth.toString() == Calendar.getInstance().time.toString("dd") &&
-                            it.created_time?.toLocalDateTime()?.month.toString() == Calendar.getInstance().time.toString("MM")
+                    it.created_time?.substring(8, 10) == Calendar.getInstance().time.toString("dd") &&
+                            it.created_time?.substring(5, 7) == Calendar.getInstance().time.toString(
+                        "MM"
+                    )
                 }
                 "month" -> {
-                    it.created_time?.toLocalDateTime()?.month.toString() == Calendar.getInstance().time.toString("MM")
+                    it.created_time?.substring(5, 7) == Calendar.getInstance().time.toString("MM")
                 }
                 else -> {
-                    it.created_time?.toLocalDateTime()?.year.toString() == Calendar.getInstance().time.toString("yyyy")
+                    it.created_time?.substring(0, 4) == Calendar.getInstance().time.toString("yyyy")
                 }
             }
         }
     }
 
-    fun postLikes(ids: List<String>) : Int {
-        var total = 0
-        pageInteractor.postLikes(ids).map {
-            it.subscribe {res, error ->
-                total += res ?: 0
+    fun postLikes(ids: List<String>) {
+
+        pageInteractor.postLikes(ids).map { it ->
+            postsDisposable = it.subscribe {res, error ->
+                res?.let {
+                    resultCountLikes.value = resultCountLikes.value?.plus(it)
+                }
+
+                error?.let {
+                    resultCountLikes.value = 0
+                }
+
+                _showLikes.value = true
+
             }
         }
 
-        return total
     }
 
     fun userIdIg() {

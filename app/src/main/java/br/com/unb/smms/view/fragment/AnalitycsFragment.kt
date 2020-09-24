@@ -71,9 +71,13 @@ class AnalitycsFragment : Fragment() {
             when(it) {
                 is SmmsData.Success -> {
                     val filter = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
-                    binding.tvLikesCount.text = viewModel.postLikes(filter.map { it -> it.id!! }).toString()
+                    viewModel.postLikes(filter.map { it -> it.id!! }).toString()
                 }
             }
+        })
+
+        viewModel.resultCountLikes.observe(viewLifecycleOwner, {
+            binding.tvLikesCount.text = it.toString()
         })
 
     }
@@ -95,8 +99,11 @@ class AnalitycsFragment : Fragment() {
                     1 -> "month"
                     else -> "year"
                 }
-                viewModel.getPostsByPeriod(viewModel.periodSelected.value)
+//                viewModel.getPostsByPeriod(viewModel.periodSelected.value)
+                viewModel.resultCountLikes.value = 0
+                viewModel.postsFacebook()
             }
+
         }
 
     }

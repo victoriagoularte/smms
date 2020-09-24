@@ -36,8 +36,11 @@ interface FacebookPageService {
     @POST("{ig-user-id}/media")
     fun mediaIg(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
-    @GET("{page-post-id}/likes")
+    @GET("{page-post-id}/likes?summary=total_count")
     fun postLikes(@Path("page-post-id") id: String): Single<DataDTO>
+
+    @GET("{page-post-id}/comments?summary=total_count")
+    fun postComments(@Path("page-post-id") id: String): Single<DataDTO>
 
     @GET("{page-post-id}/reactions")
     fun postReactions(@Path("page-post-id") id: String): Single<DataDTO>
