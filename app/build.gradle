@@ -8,7 +8,7 @@ apply plugin: 'dagger.hilt.android.plugin'
 android {
     signingConfigs {
         debug {
-            storeFile file('/Users/victoria.goularte/Documents/vic/smms/keystore/keystore')
+            storeFile file('../keystore/keystore')
             storePassword 'Smms@123'
             keyPassword 'Smms@123'
             keyAlias = 'smms-dev'
