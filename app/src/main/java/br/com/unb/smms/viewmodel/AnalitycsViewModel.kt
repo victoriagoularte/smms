@@ -120,11 +120,15 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     }
 
     fun postInsightImpressions(ids: List<String>) {
-        postInsights(ids, "impressions")
+        postInsights(ids, "seen")
     }
 
     fun postInsightComments(ids: List<String>) {
         postInsights(ids, "comments")
+    }
+
+    fun postInsightReactions(ids: List<String>) {
+        postInsights(ids, "reactions")
     }
 
     fun postInsights(ids: List<String>, metric: String) {
@@ -134,7 +138,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                 res?.let {
                     when(metric) {
                         "likes" -> resultCountLikes.value = resultCountLikes.value?.plus(it)
-                        "impressions" -> resultCountImpressions.value = resultCountImpressions.value?.plus(it)
+                        "seen" -> resultCountImpressions.value = resultCountImpressions.value?.plus(it)
                         "comments" -> resultCountComments.value = resultCountComments.value?.plus(it)
                     }
 
@@ -143,14 +147,14 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                 error?.let {
                     when(metric) {
                         "likes" -> resultCountLikes.value = 0
-                        "impressions" -> resultCountImpressions.value = 0
+                        "seen" -> resultCountImpressions.value = 0
                         "comments" -> resultCountComments.value = 0
                     }
                 }
 
                 when(metric) {
                     "likes" -> _showLikes.value = true
-                    "impressions" -> _showImpressions.value = true
+                    "seen" -> _showImpressions.value = true
                     "comments" -> _showComments.value = true
                 }
 
