@@ -63,7 +63,6 @@ class AnalitycsFragment : Fragment() {
         })
 
         viewModel.resultPosts.observe(viewLifecycleOwner, {
-
             Toast.makeText(context, it.size.toString(), Toast.LENGTH_LONG).show()
         })
 
@@ -71,13 +70,23 @@ class AnalitycsFragment : Fragment() {
             when(it) {
                 is SmmsData.Success -> {
                     val filter = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
-                    viewModel.postLikes(filter.map { it -> it.id!! }).toString()
+                    viewModel.postInsightLikes(filter.map { it -> it.id!! }).toString()
+                    viewModel.postInsightImpressions(filter.map { it -> it.id!! }).toString()
+                    viewModel.postInsightComments(filter.map { it -> it.id!! }).toString()
                 }
             }
         })
 
         viewModel.resultCountLikes.observe(viewLifecycleOwner, {
             binding.tvLikesCount.text = it.toString()
+        })
+
+        viewModel.resultCountImpressions.observe(viewLifecycleOwner, {
+            binding.tvImpressionsCount.text = it.toString()
+        })
+
+        viewModel.resultCountComments.observe(viewLifecycleOwner, {
+            binding.tvCommentsCount.text = it.toString()
         })
 
     }

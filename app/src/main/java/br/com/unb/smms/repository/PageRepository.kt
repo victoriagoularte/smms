@@ -1,12 +1,8 @@
 package br.com.unb.smms.repository
 
 import br.com.unb.smms.domain.facebook.*
-import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.repository.dto.*
 import br.com.unb.smms.repository.mapper.*
-import io.reactivex.Flowable.fromIterable
-import io.reactivex.Observable
-import io.reactivex.Observable.fromIterable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -15,7 +11,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import java.util.*
 import javax.inject.Inject
 
 
@@ -36,14 +31,14 @@ interface FacebookPageService {
     @POST("{ig-user-id}/media")
     fun mediaIg(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
 
-    @GET("{page-post-id}/likes?summary=total_count")
-    fun postLikes(@Path("page-post-id") id: String): Single<DataDTO>
+    @GET("{page-post-id}/{metric}?summary=total_count")
+    fun postInsights(@Path("page-post-id") id: String, @Path("metric") metric: String): Single<DataDTO>
 
-    @GET("{page-post-id}/comments?summary=total_count")
-    fun postComments(@Path("page-post-id") id: String): Single<DataDTO>
-
-    @GET("{page-post-id}/reactions")
-    fun postReactions(@Path("page-post-id") id: String): Single<DataDTO>
+//    @GET("{page-post-id}/comments?summary=total_count")
+//    fun postComments(@Path("page-post-id") id: String): Single<DataDTO>
+//
+//    @GET("{page-post-id}/reactions")
+//    fun postReactions(@Path("page-post-id") id: String): Single<DataDTO>
 
 }
 
@@ -99,11 +94,11 @@ class PageRepository @Inject constructor(private val facebookService: FacebookPa
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun postLikes(id: String): Single<Int?> {
+    private fun postInsights(id: String, insight: String): Single<Int?> {
 
         val domainMapper = Mappers.getMapper(DataResponseMapper::class.java)
 
-        return facebookService.postLikes(id).map { dto ->
+        return facebookService.postInsights(id, insight).map { dto ->
             dto.summary?.totalCount
         }
             .subscribeOn(Schedulers.io())
@@ -111,8 +106,9 @@ class PageRepository @Inject constructor(private val facebookService: FacebookPa
 
     }
 
-    fun postLikes(idsPosts: List<String>): List<Single<Int?>> {
-        return idsPosts.map { postLikes(it) }
+    fun postInsights(idsPosts: List<String>, metric: String): List<Single<Int?>> {
+        return idsPosts.map { postInsights(it, metric) }
     }
+
 
 }

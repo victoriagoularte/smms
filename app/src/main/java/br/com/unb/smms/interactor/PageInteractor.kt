@@ -22,8 +22,8 @@ class PageInteractor @Inject constructor(private val smmsRepository: PageReposit
         return smmsRepository.feed(getIdAccount(), feed)
     }
 
-    fun postLikes(ids: List<String>): List<Single<Int?>> {
-        return smmsRepository.postLikes(ids)
+    fun postInsights(ids: List<String>, metric: String): List<Single<Int?>> {
+        return smmsRepository.postInsights(ids, metric)
     }
 
     fun postsFacebook(): Single<ListPost?> {

@@ -42,7 +42,11 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     var resultUserIdIg = MutableLiveData<SmmsData<NodeGraph>>()
     var resultFacebookPosts = MutableLiveData<SmmsData<ListPost>>()
     var resultInstaInfo = MutableLiveData<SmmsData<IgInfo>>()
+
     var resultCountLikes = MutableLiveData(0)
+    var resultCountImpressions = MutableLiveData(0)
+    var resultCountComments = MutableLiveData(0)
+
     var resultPosts = MutableLiveData<List<Post>>()
     var periodSelected = MutableLiveData<String>()
     var facebookChecked = MutableLiveData<Boolean>()
@@ -75,6 +79,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     fun postsFacebook() {
 
         _showLikes.value = false
+        _showImpressions.value = false
+        _showComments.value = false
 
         postsDisposable = pageInteractor.postsFacebook().subscribe { res, error ->
 
@@ -109,19 +115,44 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
         }
     }
 
-    fun postLikes(ids: List<String>) {
+    fun postInsightLikes(ids: List<String>) {
+        postInsights(ids, "likes")
+    }
 
-        pageInteractor.postLikes(ids).map { it ->
+    fun postInsightImpressions(ids: List<String>) {
+        postInsights(ids, "impressions")
+    }
+
+    fun postInsightComments(ids: List<String>) {
+        postInsights(ids, "comments")
+    }
+
+    fun postInsights(ids: List<String>, metric: String) {
+
+        pageInteractor.postInsights(ids, metric).map { it ->
             postsDisposable = it.subscribe {res, error ->
                 res?.let {
-                    resultCountLikes.value = resultCountLikes.value?.plus(it)
+                    when(metric) {
+                        "likes" -> resultCountLikes.value = resultCountLikes.value?.plus(it)
+                        "impressions" -> resultCountImpressions.value = resultCountImpressions.value?.plus(it)
+                        "comments" -> resultCountComments.value = resultCountComments.value?.plus(it)
+                    }
+
                 }
 
                 error?.let {
-                    resultCountLikes.value = 0
+                    when(metric) {
+                        "likes" -> resultCountLikes.value = 0
+                        "impressions" -> resultCountImpressions.value = 0
+                        "comments" -> resultCountComments.value = 0
+                    }
                 }
 
-                _showLikes.value = true
+                when(metric) {
+                    "likes" -> _showLikes.value = true
+                    "impressions" -> _showImpressions.value = true
+                    "comments" -> _showComments.value = true
+                }
 
             }
         }

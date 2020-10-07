@@ -1,7 +1,5 @@
 package br.com.unb.smms.extension
 
-import br.com.unb.smms.SmmsData
-import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
