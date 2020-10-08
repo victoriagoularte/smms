@@ -84,7 +84,6 @@ class AnalitycsFragment : Fragment() {
 
         viewModel.resultCountLikes.observe(viewLifecycleOwner) {
             binding.tvLikesCount.text = it.toString()
-            drawChart(viewModel.entries.value)
         }
 
         viewModel.resultCountImpressions.observe(viewLifecycleOwner) {
@@ -93,6 +92,10 @@ class AnalitycsFragment : Fragment() {
 
         viewModel.resultCountComments.observe(viewLifecycleOwner) {
             binding.tvCommentsCount.text = it.toString()
+        }
+
+        viewModel.entries.observe(viewLifecycleOwner) {
+            drawChart(it)
         }
 
     }
@@ -110,7 +113,7 @@ class AnalitycsFragment : Fragment() {
         binding.lineChart.xAxis.labelRotationAngle = 0f
         binding.lineChart.data = LineData(vl)
         binding.lineChart.axisRight.isEnabled = false
-        binding.lineChart.xAxis.axisMaximum = 10+0.1f
+//        binding.lineChart.xAxis.axisMaximum = 10+0.1f
         binding.lineChart.setTouchEnabled(true)
         binding.lineChart.setPinchZoom(true)
         binding.lineChart.description.text = "Days"

@@ -146,6 +146,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             postsDisposable = it.subscribe {res, error ->
 
                 var index = 0
+                val entrylist = ArrayList<Entry>()
 
                 res?.let {
                     when(metric) {
@@ -154,7 +155,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                         "comments" -> resultCountComments.value = resultCountComments.value?.plus(it)
                     }
 
-                    entries.value?.add(Entry(index + 1f, it.toFloat()))
+                    entrylist.add(Entry(index + 1f, it.toFloat()))
+                    entries.value = entrylist
                 }
 
                 error?.let {
@@ -173,6 +175,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
             }
         }
+
+
 
 
     }
