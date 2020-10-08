@@ -1,10 +1,12 @@
 package br.com.unb.smms.viewmodel
 
 import android.content.Context
+import android.graphics.Color.red
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.domain.facebook.ListPost
@@ -18,6 +20,9 @@ import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.interactor.UserInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -26,6 +31,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor: UserInteractor, private val pageInteractor: PageInteractor, val firebaseInteractor: FirebaseInteractor,
                                                       private val igInteractor: IgInteractor, @ApplicationContext val context: Context) : ViewModel() {
@@ -51,6 +57,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     var periodSelected = MutableLiveData<String>()
     var facebookChecked = MutableLiveData<Boolean>()
     var instagramChecked = MutableLiveData<Boolean>()
+
+    var entries = MutableLiveData<ArrayList<Entry>>()
 
     private val _showLikes = MutableLiveData<Boolean>()
     val showLikes: LiveData<Boolean>
@@ -135,6 +143,9 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
         pageInteractor.postInsights(ids, metric).map { it ->
             postsDisposable = it.subscribe {res, error ->
+
+                var index = 0
+
                 res?.let {
                     when(metric) {
                         "likes" -> resultCountLikes.value = resultCountLikes.value?.plus(it)
@@ -142,6 +153,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                         "comments" -> resultCountComments.value = resultCountComments.value?.plus(it)
                     }
 
+                    entries.value?.add(Entry(index + 1f, it.toFloat()))
                 }
 
                 error?.let {
@@ -160,6 +172,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
             }
         }
+
 
     }
 
@@ -180,7 +193,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             }
 
         smmsCompositeDisposable.add(instaUserDisposable)
-
 
     }
 

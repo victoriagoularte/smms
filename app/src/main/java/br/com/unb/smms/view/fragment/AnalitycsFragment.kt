@@ -9,10 +9,15 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
 import br.com.unb.smms.viewmodel.AnalitycsViewModel
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -66,7 +71,7 @@ class AnalitycsFragment : Fragment() {
             Toast.makeText(context, it.size.toString(), Toast.LENGTH_LONG).show()
         })
 
-        viewModel.resultFacebookPosts.observe(viewLifecycleOwner, {
+        viewModel.resultFacebookPosts.observe(viewLifecycleOwner) {
             when(it) {
                 is SmmsData.Success -> {
                     val filter = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
@@ -75,19 +80,44 @@ class AnalitycsFragment : Fragment() {
                     viewModel.postInsightComments(filter.map { it -> it.id!! }).toString()
                 }
             }
-        })
+        }
 
-        viewModel.resultCountLikes.observe(viewLifecycleOwner, {
+        viewModel.resultCountLikes.observe(viewLifecycleOwner) {
             binding.tvLikesCount.text = it.toString()
-        })
+            drawChart(viewModel.entries.value)
+        }
 
-        viewModel.resultCountImpressions.observe(viewLifecycleOwner, {
+        viewModel.resultCountImpressions.observe(viewLifecycleOwner) {
             binding.tvImpressionsCount.text = it.toString()
-        })
+        }
 
-        viewModel.resultCountComments.observe(viewLifecycleOwner, {
+        viewModel.resultCountComments.observe(viewLifecycleOwner) {
             binding.tvCommentsCount.text = it.toString()
-        })
+        }
+
+    }
+
+    private fun drawChart(entries: ArrayList<Entry>?) {
+
+        val vl = LineDataSet(entries, viewModel.periodSelected.value)
+
+        vl.setDrawValues(false)
+        vl.setDrawFilled(true)
+        vl.lineWidth = 3f
+        vl.fillColor = R.color.gray
+        vl.fillAlpha = R.color.colorAccent
+
+        binding.lineChart.xAxis.labelRotationAngle = 0f
+        binding.lineChart.data = LineData(vl)
+        binding.lineChart.axisRight.isEnabled = false
+        binding.lineChart.xAxis.axisMaximum = 10+0.1f
+        binding.lineChart.setTouchEnabled(true)
+        binding.lineChart.setPinchZoom(true)
+        binding.lineChart.description.text = "Days"
+        binding.lineChart.setNoDataText("No forex yet!")
+        binding.lineChart.animateX(1800, Easing.EaseInExpo)
+//        val markerView = CustomMarker(this@ShowForexActivity, R.layout.marker_view)
+//        binding.lineChart.marker = markerView
 
     }
 
@@ -108,7 +138,7 @@ class AnalitycsFragment : Fragment() {
                     1 -> "month"
                     else -> "year"
                 }
-//                viewModel.getPostsByPeriod(viewModel.periodSelected.value)
+
                 viewModel.resultCountLikes.value = 0
                 viewModel.postsFacebook()
             }
@@ -118,3 +148,5 @@ class AnalitycsFragment : Fragment() {
     }
 
 }
+
+//enum {NONE, LIKE, LOVE, WOW, HAHA, SAD, ANGRY, THANKFUL, PRIDE, CARE} to reations
