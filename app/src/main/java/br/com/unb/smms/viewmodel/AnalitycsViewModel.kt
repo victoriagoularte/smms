@@ -1,12 +1,10 @@
 package br.com.unb.smms.viewmodel
 
 import android.content.Context
-import android.graphics.Color.red
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.IgInfo
 import br.com.unb.smms.domain.facebook.ListPost
@@ -21,8 +19,6 @@ import br.com.unb.smms.interactor.UserInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
 import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -31,7 +27,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import java.util.*
-import kotlin.collections.ArrayList
 
 class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor: UserInteractor, private val pageInteractor: PageInteractor, val firebaseInteractor: FirebaseInteractor,
                                                       private val igInteractor: IgInteractor, @ApplicationContext val context: Context) : ViewModel() {
@@ -105,13 +100,19 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     }
 
     fun filterPostsByPeriod(period: String, list: List<PostFacebook>): List<PostFacebook> {
-        return list?.filter {
+        return list.filter {
             when (period) {
                 "day" -> {
-                    it.created_time?.substring(8, 10) == Calendar.getInstance().time.toString("dd") &&
-                            it.created_time?.substring(5, 7) == Calendar.getInstance().time.toString(
-                        "MM"
-                    )
+
+                    var nextDate = Date()
+                    val cal = Calendar.getInstance()
+                    cal.time = nextDate
+                    cal.add(Calendar.DATE, 1)
+                    nextDate = cal.time
+
+                    (it.created_time?.substring(8, 10) == cal.time.toString("dd") ||
+                            it.created_time?.substring(8, 10) == nextDate.toString("dd")) &&
+                            it.created_time?.substring(5, 7) == Calendar.getInstance().time.toString("MM")
                 }
                 "month" -> {
                     it.created_time?.substring(5, 7) == Calendar.getInstance().time.toString("MM")

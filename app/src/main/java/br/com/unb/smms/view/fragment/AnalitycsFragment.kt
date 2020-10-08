@@ -57,7 +57,7 @@ class AnalitycsFragment : Fragment() {
 //        viewModel.getPostsByPeriod(viewModel.periodSelected.value)
         viewModel.postsFacebook()
 
-        viewModel.resultUserIdIg.observe(viewLifecycleOwner, {
+        viewModel.resultUserIdIg.observe(viewLifecycleOwner) {
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
                     context,
@@ -65,11 +65,11 @@ class AnalitycsFragment : Fragment() {
                     Toast.LENGTH_LONG
                 ).show()
             }
-        })
+        }
 
-        viewModel.resultPosts.observe(viewLifecycleOwner, {
+        viewModel.resultPosts.observe(viewLifecycleOwner) {
             Toast.makeText(context, it.size.toString(), Toast.LENGTH_LONG).show()
-        })
+        }
 
         viewModel.resultFacebookPosts.observe(viewLifecycleOwner) {
             when(it) {
@@ -140,6 +140,9 @@ class AnalitycsFragment : Fragment() {
                 }
 
                 viewModel.resultCountLikes.value = 0
+                viewModel.resultCountComments.value = 0
+                viewModel.resultCountImpressions.value = 0
+
                 viewModel.postsFacebook()
             }
 
