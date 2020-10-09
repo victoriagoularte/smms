@@ -27,6 +27,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor: UserInteractor, private val pageInteractor: PageInteractor, val firebaseInteractor: FirebaseInteractor,
                                                       private val igInteractor: IgInteractor, @ApplicationContext val context: Context) : ViewModel() {
@@ -142,11 +143,11 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
     fun postInsights(ids: List<String>, metric: String) {
 
+        val entrylist = ArrayList<Entry>()
+        var index = 0
+
         pageInteractor.postInsights(ids, metric).map { it ->
             postsDisposable = it.subscribe {res, error ->
-
-                var index = 0
-                val entrylist = ArrayList<Entry>()
 
                 res?.let {
                     when(metric) {
@@ -175,9 +176,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
             }
         }
-
-
-
 
     }
 

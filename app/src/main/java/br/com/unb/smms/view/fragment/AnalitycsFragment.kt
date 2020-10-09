@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
@@ -15,10 +16,17 @@ import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
 import br.com.unb.smms.viewmodel.AnalitycsViewModel
 import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.formatter.ValueFormatter
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
+import com.github.mikephil.charting.utils.MPPointF
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
 
 @AndroidEntryPoint
 class AnalitycsFragment : Fragment() {
@@ -35,6 +43,8 @@ class AnalitycsFragment : Fragment() {
         binding.fragment = this@AnalitycsFragment
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+
+        configureChart()
 
         return binding.root
     }
@@ -75,9 +85,9 @@ class AnalitycsFragment : Fragment() {
             when(it) {
                 is SmmsData.Success -> {
                     val filter = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
-                    viewModel.postInsightLikes(filter.map { it -> it.id!! }).toString()
-                    viewModel.postInsightImpressions(filter.map { it -> it.id!! }).toString()
-                    viewModel.postInsightComments(filter.map { it -> it.id!! }).toString()
+                    viewModel.postInsightLikes(filter.map { it.id!! }).toString()
+                    viewModel.postInsightImpressions(filter.map { it.id!! }).toString()
+                    viewModel.postInsightComments(filter.map { it.id!! }).toString()
                 }
             }
         }
@@ -95,34 +105,66 @@ class AnalitycsFragment : Fragment() {
         }
 
         viewModel.entries.observe(viewLifecycleOwner) {
-            drawChart(it)
+            plotChartData(it)
         }
 
     }
 
-    private fun drawChart(entries: ArrayList<Entry>?) {
+    private fun configureChart() {
+        val chart = binding.lineChart
 
-        val vl = LineDataSet(entries, viewModel.periodSelected.value)
+        chart.dragDecelerationFrictionCoef = 0.95f
+        chart.isHighlightPerTapEnabled = true
 
-        vl.setDrawValues(false)
-        vl.setDrawFilled(true)
-        vl.lineWidth = 3f
-        vl.fillColor = R.color.gray
-        vl.fillAlpha = R.color.colorAccent
+        chart.legend.isEnabled = false
+        chart.description.isEnabled = false
 
-        binding.lineChart.xAxis.labelRotationAngle = 0f
-        binding.lineChart.data = LineData(vl)
-        binding.lineChart.axisRight.isEnabled = false
-//        binding.lineChart.xAxis.axisMaximum = 10+0.1f
-        binding.lineChart.setTouchEnabled(true)
-        binding.lineChart.setPinchZoom(true)
-        binding.lineChart.description.text = "Days"
-        binding.lineChart.setNoDataText("No forex yet!")
-        binding.lineChart.animateX(1800, Easing.EaseInExpo)
-//        val markerView = CustomMarker(this@ShowForexActivity, R.layout.marker_view)
-//        binding.lineChart.marker = markerView
-
+        chart.animateY(1400, Easing.EaseInOutQuad)
+        chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+        chart.setNoDataText("Gráfico sem informações")
+        chart.xAxis.valueFormatter = ChartDateFormatter()
+//        chart.axisLeft.valueFormatter = ChartCurrencyFormatter()
+        chart.xAxis.setDrawGridLines(false)
+        chart.axisRight.isEnabled = false
     }
+
+    private fun plotChartData(entries: List<Entry>) {
+        val chart = binding.lineChart
+
+        if (entries.isNotEmpty()) {
+            val dataSet = LineDataSet(entries, null)
+
+            dataSet.setDrawIcons(true)
+            dataSet.iconsOffset = MPPointF(0f, 40f)
+
+            dataSet.fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_bg)
+            dataSet.setDrawFilled(true)
+            dataSet.lineWidth = 2.0F
+            dataSet.color = R.color.biometric_error_color
+
+            dataSet.setDrawCircles(false)
+            dataSet.setDrawCircleHole(false)
+
+            val data = LineData(dataSet)
+            data.setDrawValues(false)
+
+            chart.data = data
+        } else {
+            chart.data = null
+        }
+
+        chart.invalidate()
+    }
+
+    class ChartDateFormatter : ValueFormatter() {
+        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+            val date = Date(value.toLong())
+            val format = SimpleDateFormat("dd/MM", Locale.getDefault())
+            return format.format(date)
+        }
+    }
+
+
 
     private fun events() {
         binding.spinnerPeriod.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -153,6 +195,9 @@ class AnalitycsFragment : Fragment() {
 
     }
 
+
 }
+
+
 
 //enum {NONE, LIKE, LOVE, WOW, HAHA, SAD, ANGRY, THANKFUL, PRIDE, CARE} to reations
