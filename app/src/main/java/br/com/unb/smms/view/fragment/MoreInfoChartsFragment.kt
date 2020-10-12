@@ -123,7 +123,7 @@ class MoreInfoChartsFragment : Fragment(), OnChartValueSelectedListener {
         e?.let {
             it.x.let {
                 Toast.makeText(
-                    requireContext(), "Post > ${listPost[it.toInt() - 1].message}",
+                    requireContext(), "${listPost[it.toInt() - 1].created_time} > ${listPost[it.toInt() - 1].message}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
