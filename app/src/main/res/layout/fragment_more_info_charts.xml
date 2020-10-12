@@ -16,8 +16,8 @@
 
         <ImageView
             android:id="@+id/ivClose"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
             android:onClick="@{() -> fragment.activity.onBackPressed()}"
@@ -32,7 +32,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="24dp"
             tools:text="> Ano"
-            android:textSize="18sp"
+            android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/ivClose" />
 
@@ -41,10 +41,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvPeriod">
+
+            <TextView
+                android:id="@+id/tvLikes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/likes"
+                android:textColor="@color/colorAccent"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChartLikes"
@@ -58,7 +73,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.26"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/tvLikes" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -72,6 +87,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/clChartLikes">
 
+            <TextView
+                android:id="@+id/tvComments"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/comments"
+                android:textColor="@color/colorAccent"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lineChartComments"
                 android:layout_width="0dp"
@@ -84,7 +112,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.26"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/tvComments" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

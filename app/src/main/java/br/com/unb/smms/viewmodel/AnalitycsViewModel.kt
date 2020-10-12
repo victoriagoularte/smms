@@ -187,6 +187,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             }
         }
 
+        smmsCompositeDisposable.add(postsDisposable)
+
     }
 
     fun userIdIg() {

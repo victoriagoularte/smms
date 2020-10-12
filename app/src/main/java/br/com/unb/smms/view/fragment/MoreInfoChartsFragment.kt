@@ -43,16 +43,22 @@ class MoreInfoChartsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        likeEntries = arguments?.getSerializable("likesEntries") as ArrayList<Entry>
-        commentsEntries = arguments?.getSerializable("commentsEntries") as ArrayList<Entry>
-        binding.tvPeriod.text = "> ${arguments?.getString("period")}"
-
-        likeEntries?.let {
+        arguments?.getSerializable("likesEntries")?.let {
+            likeEntries = it as ArrayList<Entry>
             plotChartData(likeEntries, binding.lineChartLikes)
         }
 
-        commentsEntries?.let {
+        arguments?.getSerializable("commentsEntries")?.let {
+            commentsEntries = it as ArrayList<Entry>
             plotChartData(commentsEntries, binding.lineChartComments)
+        }
+
+        arguments?.getString("period")?.let {
+            when(it) {
+                "day" -> binding.tvPeriod.text = "> Valores relacionados aos posts do dia"
+                "month" -> binding.tvPeriod.text = "> Valores relacionados aos posts do mês"
+                "year" -> binding.tvPeriod.text = "> Valores relacionados aos posts do ano"
+            }
         }
     }
 
