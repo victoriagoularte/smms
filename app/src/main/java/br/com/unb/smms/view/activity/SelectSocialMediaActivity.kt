@@ -49,13 +49,13 @@ class SelectSocialMediaActivity : AppCompatActivity() {
             )
         );
 
-        LoginManager.getInstance().logInWithPublishPermissions(
-            this@SelectSocialMediaActivity,
-            listOf(
-                "manage_pages",
-                "publish_pages"
-            )
-        )
+//        LoginManager.getInstance().logInWithPublishPermissions(
+//            this@SelectSocialMediaActivity,
+//            listOf(
+//                "manage_pages",
+//                "publish_pages"
+//            )
+//        )
 
         val loginStoraged = getEncrypSharedPreferences(this@SelectSocialMediaActivity).getString(
             SecurityConstants.LOGIN_RESULT,

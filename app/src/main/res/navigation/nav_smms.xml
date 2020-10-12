@@ -9,10 +9,19 @@
         android:id="@+id/smmsFragment"
         tools:layout="@layout/fragment_analitycs"
         android:name="br.com.unb.smms.view.fragment.AnalitycsFragment"
-        android:label="SmmsFragment" />
+        android:label="SmmsFragment" >
+        <action
+            android:id="@+id/action_smmsFragment_to_moreInfoChartsFragment"
+            app:destination="@id/moreInfoChartsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/newPostFragment"
         android:name="br.com.unb.smms.view.fragment.NewPostFragment"
         android:label="fragment_new_post"
         tools:layout="@layout/fragment_new_post" />
+    <fragment
+        android:id="@+id/moreInfoChartsFragment"
+        android:name="br.com.unb.smms.view.fragment.MoreInfoChartsFragment"
+        android:label="fragment_more_info_charts"
+        tools:layout="@layout/fragment_more_info_charts" />
 </navigation>

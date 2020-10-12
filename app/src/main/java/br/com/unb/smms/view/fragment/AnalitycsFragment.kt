@@ -7,26 +7,16 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.findNavController
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
 import br.com.unb.smms.viewmodel.AnalitycsViewModel
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.components.AxisBase
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.github.mikephil.charting.utils.MPPointF
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.*
 
 @AndroidEntryPoint
 class AnalitycsFragment : Fragment() {
@@ -44,7 +34,7 @@ class AnalitycsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        configureChart()
+        resetFields()
 
         return binding.root
     }
@@ -104,69 +94,17 @@ class AnalitycsFragment : Fragment() {
             binding.tvCommentsCount.text = it.toString()
         }
 
-        viewModel.entries.observe(viewLifecycleOwner) {
-            plotChartData(it)
-        }
+//        viewModel.entries.observe(viewLifecycleOwner) {
+//            plotChartData(it)
+//        }
 
     }
 
-    private fun configureChart() {
-        val chart = binding.lineChart
-
-        chart.dragDecelerationFrictionCoef = 0.95f
-        chart.isHighlightPerTapEnabled = true
-
-        chart.legend.isEnabled = false
-        chart.description.isEnabled = false
-
-        chart.animateY(1400, Easing.EaseInOutQuad)
-        chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-        chart.setNoDataText("Gráfico sem informações")
-        chart.xAxis.granularity = 1.0f
-        chart.axisLeft.granularity = 1f
-//        chart.xAxis.valueFormatter = ChartDateFormatter()
-//        chart.axisLeft.valueFormatter = ChartCurrencyFormatter()
-        chart.xAxis.setDrawGridLines(false)
-        chart.axisRight.isEnabled = false
+    private fun resetFields() {
+        viewModel.resultCountComments.value = 0
+        viewModel.resultCountLikes.value = 0
+        viewModel.resultCountImpressions.value = 0
     }
-
-    private fun plotChartData(entries: List<Entry>) {
-        val chart = binding.lineChart
-
-        if (entries.isNotEmpty()) {
-            val dataSet = LineDataSet(entries, null)
-
-            dataSet.setDrawIcons(true)
-            dataSet.iconsOffset = MPPointF(0f, 40f)
-
-            dataSet.fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_bg)
-            dataSet.setDrawFilled(true)
-            dataSet.lineWidth = 2.0F
-            dataSet.color = R.color.biometric_error_color
-
-            dataSet.setDrawCircles(false)
-            dataSet.setDrawCircleHole(false)
-
-            val data = LineData(dataSet)
-            data.setDrawValues(false)
-
-            chart.data = data
-        } else {
-            chart.data = null
-        }
-
-        chart.invalidate()
-    }
-
-    class ChartDateFormatter : ValueFormatter() {
-        override fun getAxisLabel(value: Float, axis: AxisBase?): String {
-            val date = Date(value.toLong())
-            val format = SimpleDateFormat("dd/MM", Locale.getDefault())
-            return format.format(date)
-        }
-    }
-
-
 
     private fun events() {
         binding.spinnerPeriod.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -195,6 +133,11 @@ class AnalitycsFragment : Fragment() {
 
         }
 
+    }
+
+    fun moreInfoChart(view: View) {
+        val bundle = bundleOf("period" to viewModel.periodSelected.value, "likesEntries" to viewModel.entriesLikes.value, "commentsEntries" to viewModel.entriesComments.value)
+        findNavController().navigate(R.id.action_smmsFragment_to_moreInfoChartsFragment, bundle)
     }
 
 

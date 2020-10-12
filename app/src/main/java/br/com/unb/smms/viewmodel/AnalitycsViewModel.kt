@@ -54,7 +54,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     var facebookChecked = MutableLiveData<Boolean>()
     var instagramChecked = MutableLiveData<Boolean>()
 
-    var entries = MutableLiveData<ArrayList<Entry>>()
+    var entriesLikes = MutableLiveData<ArrayList<Entry>>()
+    var entriesComments = MutableLiveData<ArrayList<Entry>>()
 
     private val _showLikes = MutableLiveData<Boolean>()
     val showLikes: LiveData<Boolean>
@@ -150,16 +151,24 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             postsDisposable = it.subscribe {res, error ->
 
                 res?.let {
-                    when(metric) {
-                        "likes" -> resultCountLikes.value = resultCountLikes.value?.plus(it)
-                        "seen" -> resultCountImpressions.value = resultCountImpressions.value?.plus(it)
-                        "comments" -> resultCountComments.value = resultCountComments.value?.plus(it)
-                    }
+                    when (metric) {
+                        "likes" -> {
+                            resultCountLikes.value = resultCountLikes.value?.plus(it)
+                            index += 1
+                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
+                            entriesLikes.value = entrylist
+                        }
+                        "seen" -> resultCountImpressions.value =
+                            resultCountImpressions.value?.plus(it)
+                        "comments" -> {
+                            resultCountComments.value = resultCountComments.value?.plus(it)
+                            index += 1
+                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
+                            entriesComments.value = entrylist
 
-                    index += 1
-                    entrylist.add(Entry(index.toFloat(), it.toFloat()))
-                    entries.value = entrylist
-                }
+                        }
+                    }
+            }
 
                 error?.let {
                     when(metric) {
@@ -259,14 +268,17 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
         })
 
-//        return posts
-
     }
 
 
 
     override fun onCleared() {
         super.onCleared()
+
+        resultCountLikes.value = 0
+        resultCountImpressions.value = 0
+        resultCountComments.value = 0
+
         smmsCompositeDisposable.dispose()
     }
 
