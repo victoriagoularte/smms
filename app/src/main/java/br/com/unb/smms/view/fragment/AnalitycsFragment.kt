@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentAnalitycsBinding
+import br.com.unb.smms.domain.facebook.PostFacebook
 import br.com.unb.smms.viewmodel.AnalitycsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +24,7 @@ class AnalitycsFragment : Fragment() {
 
     lateinit var binding: FragmentAnalitycsBinding
     private val viewModel: AnalitycsViewModel by viewModels()
+    lateinit var listPosts: List<PostFacebook>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,10 +76,10 @@ class AnalitycsFragment : Fragment() {
         viewModel.resultFacebookPosts.observe(viewLifecycleOwner) {
             when(it) {
                 is SmmsData.Success -> {
-                    val filter = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
-                    viewModel.postInsightLikes(filter.map { it.id!! }).toString()
-                    viewModel.postInsightImpressions(filter.map { it.id!! }).toString()
-                    viewModel.postInsightComments(filter.map { it.id!! }).toString()
+                    listPosts = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
+                    viewModel.postInsightLikes(listPosts.map { it.id!! }).toString()
+                    viewModel.postInsightImpressions(listPosts.map { it.id!! }).toString()
+                    viewModel.postInsightComments(listPosts.map { it.id!! }).toString()
                 }
             }
         }
@@ -136,7 +138,7 @@ class AnalitycsFragment : Fragment() {
     }
 
     fun moreInfoChart(view: View) {
-        val bundle = bundleOf("period" to viewModel.periodSelected.value, "likesEntries" to viewModel.entriesLikes.value, "commentsEntries" to viewModel.entriesComments.value)
+        val bundle = bundleOf("period" to viewModel.periodSelected.value, "likesEntries" to viewModel.entriesLikes.value, "commentsEntries" to viewModel.entriesComments.value, "listPostIds" to listPosts)
         findNavController().navigate(R.id.action_smmsFragment_to_moreInfoChartsFragment, bundle)
     }
 

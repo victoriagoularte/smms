@@ -4,24 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import br.com.unb.smms.R
 import br.com.unb.smms.databinding.FragmentMoreInfoChartsBinding
+import br.com.unb.smms.domain.facebook.PostFacebook
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.MPPointF
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MoreInfoChartsFragment : Fragment() {
+class MoreInfoChartsFragment : Fragment(), OnChartValueSelectedListener {
 
     private lateinit var likeEntries: ArrayList<Entry>
     private lateinit var commentsEntries: ArrayList<Entry>
+    private lateinit var listPost: List<PostFacebook>
     lateinit var binding: FragmentMoreInfoChartsBinding
 
     override fun onCreateView(
@@ -54,11 +59,15 @@ class MoreInfoChartsFragment : Fragment() {
         }
 
         arguments?.getString("period")?.let {
-            when(it) {
+            when (it) {
                 "day" -> binding.tvPeriod.text = "> Valores relacionados aos posts do dia"
                 "month" -> binding.tvPeriod.text = "> Valores relacionados aos posts do mês"
                 "year" -> binding.tvPeriod.text = "> Valores relacionados aos posts do ano"
             }
+        }
+
+        arguments?.getSerializable("listPostIds")?.let {
+            listPost = it as List<PostFacebook>
         }
     }
 
@@ -78,6 +87,7 @@ class MoreInfoChartsFragment : Fragment() {
         chart.axisLeft.granularity = 1f
         chart.xAxis.setDrawGridLines(false)
         chart.axisRight.isEnabled = false
+        chart.setOnChartValueSelectedListener(this)
     }
 
     private fun plotChartData(entries: List<Entry>, chart: LineChart) {
@@ -108,6 +118,24 @@ class MoreInfoChartsFragment : Fragment() {
         chart.invalidate()
     }
 
+    override fun onValueSelected(e: Entry?, h: Highlight?) {
+
+        e?.let {
+            it.x.let {
+                Toast.makeText(
+                    requireContext(), "Post > ${listPost[it.toInt() - 1].message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+
+
+    }
+
+    override fun onNothingSelected() {
+
+    }
 
 
 }
