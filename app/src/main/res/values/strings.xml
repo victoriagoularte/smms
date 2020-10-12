@@ -26,6 +26,7 @@
     <string name="whatsapp">Whatsapp</string>
     <string name="select_share">Selecione onde compartilhar</string>
     <string name="instagram_story">Instagram - Story</string>
+    <string name="schedule">Agendar</string>
 
     <string-array name="string_array_metrics">
         <item>Dia</item>

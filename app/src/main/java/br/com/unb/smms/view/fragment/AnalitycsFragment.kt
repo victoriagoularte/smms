@@ -122,7 +122,9 @@ class AnalitycsFragment : Fragment() {
         chart.animateY(1400, Easing.EaseInOutQuad)
         chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
         chart.setNoDataText("Gráfico sem informações")
-        chart.xAxis.valueFormatter = ChartDateFormatter()
+        chart.xAxis.granularity = 1.0f
+        chart.axisLeft.granularity = 1f
+//        chart.xAxis.valueFormatter = ChartDateFormatter()
 //        chart.axisLeft.valueFormatter = ChartCurrencyFormatter()
         chart.xAxis.setDrawGridLines(false)
         chart.axisRight.isEnabled = false

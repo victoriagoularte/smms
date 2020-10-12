@@ -156,7 +156,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                         "comments" -> resultCountComments.value = resultCountComments.value?.plus(it)
                     }
 
-                    entrylist.add(Entry(index + 1f, it.toFloat()))
+                    index += 1
+                    entrylist.add(Entry(index.toFloat(), it.toFloat()))
                     entries.value = entrylist
                 }
 
