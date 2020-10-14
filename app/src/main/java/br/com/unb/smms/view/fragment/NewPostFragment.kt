@@ -1,5 +1,10 @@
 package br.com.unb.smms.view.fragment
 
+import DatePickerFragment
+import TimePickerFragment
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.TimePickerDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -14,20 +19,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
+import br.com.unb.smms.AlarmReceiver
 import br.com.unb.smms.databinding.FragmentNewPostBinding
 import br.com.unb.smms.viewmodel.NewPostViewModel
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.File
+import java.util.*
 
 @AndroidEntryPoint
 class NewPostFragment : Fragment() {
@@ -39,6 +47,7 @@ class NewPostFragment : Fragment() {
     lateinit var binding: FragmentNewPostBinding
     private val viewModel: NewPostViewModel by viewModels()
     private lateinit var database: DatabaseReference
+
 
     private var bitmap: Bitmap? = null
     private var imagePath: String? = null
@@ -289,6 +298,25 @@ class NewPostFragment : Fragment() {
         viewModel.postInsta.value = false
         viewModel.postInstaStory.value = false
     }
+
+    fun showTimerPickerFragment(view: View) {
+//        val timePickerFragment = TimePickerFragment()
+//        timePickerFragment.show(parentFragmentManager, "time_picker")
+        val datePickerFragment = DatePickerFragment()
+        datePickerFragment.show(parentFragmentManager, "date_picker")
+    }
+
+    fun cancelAlarm(view: View) {
+        val alarmManager = requireActivity().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(requireContext(), 0, intent, 0)
+        alarmManager.cancel(pendingIntent)
+//        alarm_time_text.text = getString(R.string.time_dosent_set)
+    }
+
+
+
+
 
 
 }

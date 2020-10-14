@@ -244,7 +244,7 @@
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="24dp"
-                    android:onClick="@{fragment::post}"
+                    android:onClick="@{fragment::showTimerPickerFragment}"
                     android:text="@string/schedule"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
