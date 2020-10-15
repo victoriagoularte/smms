@@ -48,9 +48,9 @@ class  NotificationUtils(base: Context) : ContextWrapper(base) {
         }
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
         return NotificationCompat.Builder(applicationContext, MYCHANNEL_ID)
-            .setContentTitle("Alarm!")
-            .setContentText("Your AlarmManager is working.")
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setContentTitle("Ei, hora de publicar seu post!")
+            .setContentText("Você agendou uma publicação em seu app. Clique aqui para confirmar a publicação.")
+            .setSmallIcon(R.drawable.onboarding_pager_circle_icon)
             .setColor(Color.YELLOW)
             .setContentIntent(pendingIntent)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
