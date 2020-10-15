@@ -117,7 +117,7 @@ class SmmsActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ti
         calendar.set(Calendar.HOUR_OF_DAY, hour)
         calendar.set(Calendar.MINUTE, minute)
         calendar.set(Calendar.SECOND, 0)
-        startAlarm(calendar)
+        startAlarm(calendar.timeInMillis)
     }
 
     private fun showTimerPickerFragment() {
@@ -132,11 +132,11 @@ class SmmsActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ti
         showTimerPickerFragment()
     }
 
-    private fun startAlarm(calendar: Calendar) {
+    private fun startAlarm(time: Long) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent)
     }
 
 }
