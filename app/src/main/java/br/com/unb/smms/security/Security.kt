@@ -14,6 +14,8 @@ class SecurityConstants {
         val ACCESS_TOKEN = ".access_token"
         val PAGE_INFO = ".pageInfo"
         val IG_BUSINESS_ACCOUNT = ".igBusinessAccount"
+        val LIST_POST_SCHEDULER = ".listPostScheduler"
+        val POST_SCHEDULER_PENDING = ".postSchedulerPending"
     }
 }
 

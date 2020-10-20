@@ -32,6 +32,7 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
     var resultUploadPhoto = MutableLiveData<SmmsData<Uri>>()
 
     val uriPhoto = MutableLiveData<String>()
+    val downloadPhotoUrl = MutableLiveData<String>()
     val title = MutableLiveData<String>()
     val text = MutableLiveData<String>()
     val textPost = MutableLiveData<String>()
@@ -42,11 +43,14 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
     val textErrorMessage = MutableLiveData<String>()
     var categorySelected = MutableLiveData<String>()
 
+    var postPendingDate = MutableLiveData<Date>()
+    var postPending = MutableLiveData<Post>()
+
     private val _dataLoading = MutableLiveData<Boolean>()
     val dataLoading: LiveData<Boolean>
         get() = _dataLoading
 
-    fun feed(downloadUri: String?) {
+    fun feed() {
 
         _dataLoading.value = true
 
@@ -64,21 +68,21 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
 //        textErrorMessage.value = pageInteractor.validateTextPost(feed)
 //        if (!textErrorMessage.value.isNullOrEmpty()) return
 
-        if (downloadUri == null) {
+        if (downloadPhotoUrl.value == null) {
             feedDisposable = pageInteractor.feed(feed)
                 .subscribe { res, _ ->
                     if (res != null) {
-                        writeNewPost(res.id!!, downloadUri)
+                        writeNewPost(res.id!!, downloadPhotoUrl.value)
                         resultPost.value = SmmsData.Success(res)
                     }
                 }
 
         } else {
-            feed.url = downloadUri
+            feed.url = downloadPhotoUrl.value
             feedDisposable = pageInteractor.photo(feed)
                 .subscribe { res, _ ->
                     if (res != null) {
-                        writeNewPost(res.id!!, downloadUri)
+                        writeNewPost(res.id!!, downloadPhotoUrl.value)
                         resultPost.value = SmmsData.Success(res)
                     }
                 }
@@ -89,27 +93,53 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
 
     private fun writeNewPost(postId: String, downloadUri: String?) {
 
+        val date = Calendar.getInstance().time
         var platforms: MutableList<String> = arrayListOf()
 
         postFacebook.value?.let { it -> if(it) platforms.add("facebook") }
         postInsta.value?.let { it -> if(it) platforms.add("instagram") }
 
-        val currentDate = Calendar.getInstance().time
         val post = Post(
             getUid(),
             title.value,
             text.value,
             postId,
             downloadUri,
-            date = currentDate.toString("dd"),
-            month = currentDate.toString("MM"),
-            year = currentDate.toString("yyyy"),
+            date = date.toString("dd"),
+            month = date.toString("MM"),
+            year = date.toString("yyyy"),
             category = categorySelected.value,
             media = platforms
         )
 
         firebaseInteractor.writeNewPost(tags.value, post)
         _dataLoading.value = false
+
+    }
+
+     fun writePostPending(date: Date) {
+
+        var platforms: MutableList<String> = arrayListOf()
+
+        postFacebook.value?.let { it -> if(it) platforms.add("facebook") }
+        postInsta.value?.let { it -> if(it) platforms.add("instagram") }
+
+        val post = Post(
+            getUid(),
+            title.value,
+            text.value,
+            urlPicture = downloadPhotoUrl.value,
+            date = date.toString("dd"),
+            month = date.toString("MM"),
+            year = date.toString("yyyy"),
+            category = categorySelected.value,
+            media = platforms,
+            pending = true
+        )
+
+        firebaseInteractor.writeNewPost(tags.value, post)
+        _dataLoading.value = false
+        resetAllFields()
 
     }
 
@@ -147,12 +177,21 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
         )
     }
 
+    fun resetAllFields() {
+        text.value = ""
+        title.value = ""
+        tags.value = ""
+        postFacebook.value = false
+        postInsta.value = false
+        postInstaStory.value = false
+        downloadPhotoUrl.value = null
+        postPendingDate.value = null
+        postPending.value = null
+    }
+
     override fun onCleared() {
         super.onCleared()
         smmsCompositeDisposable.dispose()
     }
-
-
-
 
 }

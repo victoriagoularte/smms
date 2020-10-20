@@ -1,4 +1,4 @@
-package br.com.unb.smms
+package br.com.unb.smms.utils
 
 import android.content.BroadcastReceiver
 import android.content.Context

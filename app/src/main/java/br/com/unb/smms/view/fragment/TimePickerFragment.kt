@@ -4,6 +4,7 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
+import br.com.unb.smms.domain.firebase.Post
 import java.util.*
 
 class TimePickerFragment : DialogFragment() {
@@ -38,7 +39,6 @@ class DatePickerFragment : DialogFragment() {
             year,
             month,
             day
-
         )
     }
 }

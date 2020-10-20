@@ -8,7 +8,6 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.DatePicker
 import android.widget.TimePicker
 import android.widget.Toast
@@ -18,11 +17,12 @@ import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
-import br.com.unb.smms.AlarmReceiver
+import br.com.unb.smms.utils.AlarmReceiver
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData.Error
 import br.com.unb.smms.SmmsData.Success
 import br.com.unb.smms.databinding.ActivitySmmsBinding
+import br.com.unb.smms.viewmodel.NewPostViewModel
 import br.com.unb.smms.viewmodel.SmmsViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
@@ -34,6 +34,7 @@ class SmmsActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ti
 
     lateinit var binding: ActivitySmmsBinding
     private val viewModel: SmmsViewModel by viewModels()
+    private val newPostViewModel: NewPostViewModel by viewModels()
 
     private lateinit var navOptions: NavOptions
     private lateinit var navController: NavController
@@ -117,7 +118,8 @@ class SmmsActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ti
         calendar.set(Calendar.HOUR_OF_DAY, hour)
         calendar.set(Calendar.MINUTE, minute)
         calendar.set(Calendar.SECOND, 0)
-        startAlarm(calendar.timeInMillis)
+        newPostViewModel.postPendingDate.value = calendar.time
+        startAlarm(calendar)
     }
 
     private fun showTimerPickerFragment() {
@@ -126,17 +128,19 @@ class SmmsActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ti
     }
 
     override fun onDateSet(p0: DatePicker?, year: Int, month: Int, day: Int) {
+        newPostViewModel.postPendingDate.value = Date()
         calendar.set(Calendar.YEAR, year)
         calendar.set(Calendar.MONTH, month)
         calendar.set(Calendar.DATE, day)
         showTimerPickerFragment()
     }
 
-    private fun startAlarm(time: Long) {
+    private fun startAlarm(time: Calendar) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent)
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent)
+        newPostViewModel.writePostPending(calendar.time)
     }
 
 }

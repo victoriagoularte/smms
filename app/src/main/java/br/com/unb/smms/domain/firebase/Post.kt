@@ -12,5 +12,6 @@ data class Post (
     var year: String? = null,
     var annotations: List<Tag>? = null,
     var category: String? = null,
-    var media: List<String>? = null
+    var media: List<String>? = null,
+    var pending: Boolean = false
 )

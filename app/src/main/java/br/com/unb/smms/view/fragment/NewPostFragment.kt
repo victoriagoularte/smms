@@ -1,10 +1,8 @@
 package br.com.unb.smms.view.fragment
 
 import DatePickerFragment
-import TimePickerFragment
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.app.TimePickerDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -19,23 +17,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import br.com.unb.smms.utils.AlarmReceiver
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
-import br.com.unb.smms.AlarmReceiver
 import br.com.unb.smms.databinding.FragmentNewPostBinding
+import br.com.unb.smms.domain.firebase.Post
+import br.com.unb.smms.security.SecurityConstants
+import br.com.unb.smms.security.getEncrypSharedPreferences
 import br.com.unb.smms.viewmodel.NewPostViewModel
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class NewPostFragment : Fragment() {
@@ -45,9 +45,8 @@ class NewPostFragment : Fragment() {
     }
 
     lateinit var binding: FragmentNewPostBinding
-    private val viewModel: NewPostViewModel by viewModels()
+    private val viewModel: NewPostViewModel by activityViewModels()
     private lateinit var database: DatabaseReference
-
 
     private var bitmap: Bitmap? = null
     private var imagePath: String? = null
@@ -93,7 +92,8 @@ class NewPostFragment : Fragment() {
                 ).show()
                 is SmmsData.Success -> {
                     if (viewModel.postFacebook.value!!) {
-                        viewModel.feed(it.data.toString())
+                        viewModel.downloadPhotoUrl.value = it.data.toString()
+                        viewModel.feed()
                     } else if (viewModel.postInsta.value!! || viewModel.postInstaStory.value!!) {
                         createInstagramIntent()
                     }
@@ -119,7 +119,9 @@ class NewPostFragment : Fragment() {
                         Handler().postDelayed({
                             createInstagramIntent()
                         }, 2500)
-                        resetAllFields()
+                        viewModel.resetAllFields()
+                        binding.clUploadPhoto.visibility = View.VISIBLE
+                        binding.ivPhoto.visibility = View.GONE
                     }
                 }
             }
@@ -206,7 +208,7 @@ class NewPostFragment : Fragment() {
             if (viewModel.uriPhoto.value != null) {
                 viewModel.uploadFirebaseImage()
             } else if (binding.ckFace.isChecked) {
-                viewModel.feed(null)
+                viewModel.feed()
             } else if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
                 createInstagramIntent()
             }
@@ -280,7 +282,7 @@ class NewPostFragment : Fragment() {
     private fun displayImage() {
         if (viewModel.uriPhoto.value != null) {
             bitmap = BitmapFactory.decodeFile(viewModel.uriPhoto.value)
-            binding.ivPhoto?.setImageBitmap(bitmap)
+            binding.ivPhoto.setImageBitmap(bitmap)
             binding.clUploadPhoto.visibility = View.INVISIBLE
             binding.ivPhoto.visibility = View.VISIBLE
         } else {
@@ -288,20 +290,7 @@ class NewPostFragment : Fragment() {
         }
     }
 
-    private fun resetAllFields() {
-        viewModel.text.value = ""
-        viewModel.title.value = ""
-        viewModel.tags.value = ""
-        binding.clUploadPhoto.visibility = View.VISIBLE
-        binding.ivPhoto.visibility = View.GONE
-        viewModel.postFacebook.value = false
-        viewModel.postInsta.value = false
-        viewModel.postInstaStory.value = false
-    }
-
     fun showTimerPickerFragment(view: View) {
-//        val timePickerFragment = TimePickerFragment()
-//        timePickerFragment.show(parentFragmentManager, "time_picker")
         val datePickerFragment = DatePickerFragment()
         datePickerFragment.show(parentFragmentManager, "date_picker")
     }
@@ -314,9 +303,13 @@ class NewPostFragment : Fragment() {
 //        alarm_time_text.text = getString(R.string.time_dosent_set)
     }
 
+    fun getListPostScheduler() : List<Post> {
 
+        val gson = Gson()
+        val listPostString = getEncrypSharedPreferences(requireContext()).getString(SecurityConstants.LIST_POST_SCHEDULER, "")
+        val listPost : List<Post> =  gson.fromJson(listPostString, Array<Post>::class.java).asList()
 
-
-
+        return listPost
+    }
 
 }
