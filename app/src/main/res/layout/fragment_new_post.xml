@@ -54,6 +54,18 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <TextView
+                    android:id="@+id/tvScheduler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:layout_marginEnd="24dp"
+                    android:text="@string/posts_scheduler"
+                    android:textColor="@color/colorAccent"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tiTitlePost"
                     android:layout_width="0dp"
@@ -82,16 +94,16 @@
                     android:id="@+id/clPhoto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/tvScheduler">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/clUploadPhoto"
                         android:layout_width="0dp"
                         android:layout_height="100dp"
                         android:layout_marginStart="24dp"
-                        android:layout_marginTop="24dp"
                         android:layout_marginEnd="24dp"
                         android:background="@drawable/card_background"
                         android:onClick="@{fragment::choosePhoto}"

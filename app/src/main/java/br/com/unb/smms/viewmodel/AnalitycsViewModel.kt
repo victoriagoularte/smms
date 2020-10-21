@@ -105,7 +105,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
         return list.filter {
             when (period) {
                 "day" -> {
-
                     var nextDate = Date()
                     val cal = Calendar.getInstance()
                     cal.time = nextDate
@@ -269,10 +268,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
             }
 
         })
-
     }
-
-
 
     override fun onCleared() {
         super.onCleared()

@@ -55,8 +55,6 @@ class AnalitycsFragment : Fragment() {
         events()
         viewModel.getFriendsCount()
         viewModel.userIdIg()
-
-//        viewModel.getPostsByPeriod(viewModel.periodSelected.value)
         viewModel.postsFacebook()
 
         viewModel.resultUserIdIg.observe(viewLifecycleOwner) {
@@ -95,10 +93,6 @@ class AnalitycsFragment : Fragment() {
         viewModel.resultCountComments.observe(viewLifecycleOwner) {
             binding.tvCommentsCount.text = it.toString()
         }
-
-//        viewModel.entries.observe(viewLifecycleOwner) {
-//            plotChartData(it)
-//        }
 
     }
 

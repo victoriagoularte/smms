@@ -42,5 +42,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="more_info"><![CDATA[Mais informações >]]></string>
+    <string name="posts_scheduler"><![CDATA[Agenda de publicações >]]></string>
+    <string name="scheduler">Agenda</string>
 
 </resources>

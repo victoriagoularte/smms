@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_scheduler"
+    app:startDestination="@id/schedulerFragment">
+
+    <fragment
+        android:id="@+id/schedulerFragment"
+        android:name="br.com.unb.smms.view.fragment.SchedulerFragment"
+        android:label="scheduler_fragment"
+        tools:layout="@layout/scheduler_fragment" />
+</navigation>

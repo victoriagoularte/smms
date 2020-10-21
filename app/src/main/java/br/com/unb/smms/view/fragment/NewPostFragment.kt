@@ -21,15 +21,14 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import br.com.unb.smms.utils.AlarmReceiver
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
+import br.com.unb.smms.utils.AlarmReceiver
 import br.com.unb.smms.viewmodel.NewPostViewModel
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
@@ -46,19 +45,12 @@ class NewPostFragment : Fragment() {
 
     lateinit var binding: FragmentNewPostBinding
     private val viewModel: NewPostViewModel by activityViewModels()
-    private lateinit var database: DatabaseReference
 
     private var bitmap: Bitmap? = null
-    private var imagePath: String? = null
     private var userSelectedPhoto: Boolean = false
     lateinit var mStorageRef: StorageReference
-    var downloadUri: Uri? = null
     private var localUri : Uri? = null
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -303,13 +295,8 @@ class NewPostFragment : Fragment() {
 //        alarm_time_text.text = getString(R.string.time_dosent_set)
     }
 
-    fun getListPostScheduler() : List<Post> {
+    fun goToSchedule(view: View) {
 
-        val gson = Gson()
-        val listPostString = getEncrypSharedPreferences(requireContext()).getString(SecurityConstants.LIST_POST_SCHEDULER, "")
-        val listPost : List<Post> =  gson.fromJson(listPostString, Array<Post>::class.java).asList()
-
-        return listPost
     }
 
 }
