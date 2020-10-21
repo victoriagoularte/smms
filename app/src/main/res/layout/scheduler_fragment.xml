@@ -26,6 +26,7 @@
                 android:id="@+id/ivArrowBack"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:onClick="@{() -> fragment.activity.onBackPressed()}"
                 android:scaleType="centerInside"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/sp_chevron_start"

@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
@@ -296,7 +297,7 @@ class NewPostFragment : Fragment() {
     }
 
     fun goToSchedule(view: View) {
-
+        findNavController().navigate(R.id.action_newPostFragment_to_scheduleActivity)
     }
 
 }
