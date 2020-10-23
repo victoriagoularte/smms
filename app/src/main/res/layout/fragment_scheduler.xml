@@ -8,6 +8,9 @@
         <variable
             name="fragment"
             type="br.com.unb.smms.view.fragment.SchedulerFragment" />
+        <variable
+            name="viewModel"
+            type="br.com.unb.smms.viewmodel.SchedulerViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

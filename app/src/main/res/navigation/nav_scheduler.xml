@@ -9,5 +9,5 @@
         android:id="@+id/schedulerFragment"
         android:name="br.com.unb.smms.view.fragment.SchedulerFragment"
         android:label="scheduler_fragment"
-        tools:layout="@layout/scheduler_fragment" />
+        tools:layout="@layout/fragment_scheduler" />
 </navigation>

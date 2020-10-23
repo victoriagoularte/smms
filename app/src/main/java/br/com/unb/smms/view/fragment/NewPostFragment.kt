@@ -175,7 +175,6 @@ class NewPostFragment : Fragment() {
         }
     }
 
-
     fun choosePhoto(view: View) {
         val checkSelfPermission = ContextCompat.checkSelfPermission(
             requireContext(),
@@ -206,7 +205,6 @@ class NewPostFragment : Fragment() {
                 createInstagramIntent()
             }
         }
-
     }
 
     override fun onRequestPermissionsResult(
@@ -254,7 +252,6 @@ class NewPostFragment : Fragment() {
 
                 userSelectedPhoto = true
                 displayImage()
-
             }
         }
     }

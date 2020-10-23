@@ -7,13 +7,10 @@
         <variable
             name="activity"
             type="br.com.unb.smms.view.activity.SmmsActivity" />
-
         <variable
             name="viewModel"
             type="br.com.unb.smms.viewmodel.SmmsViewModel" />
-
     </data>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
