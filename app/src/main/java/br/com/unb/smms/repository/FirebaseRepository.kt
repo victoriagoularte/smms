@@ -67,27 +67,5 @@ class FirebaseRepository {
         }
     }
 
-    fun getPublishesScheduler() {
-
-        var posts: MutableList<Post> = arrayListOf()
-
-        val database = FirebaseDatabase.getInstance().reference
-        val postRef = database.child("posts")
-        val pendingPosts = postRef.child("pending")
-
-        pendingPosts.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val post = snapshot.getValue(Post::class.java)!!
-                posts.add(post)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-
-        })
-    }
-
 
 }

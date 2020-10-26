@@ -1,20 +1,15 @@
 package br.com.unb.smms.view.fragment
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import br.com.unb.smms.R
-import br.com.unb.smms.databinding.FragmentNewPostBinding
+import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.unb.smms.databinding.FragmentSchedulerBinding
-import br.com.unb.smms.databinding.SchedulerFragmentBindingImpl
-import br.com.unb.smms.viewmodel.NewPostViewModel
 import br.com.unb.smms.viewmodel.SchedulerViewModel
-import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,6 +30,35 @@ class SchedulerFragment : Fragment() {
         binding.viewModel = viewModel
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
+
+        binding.rvPostsPending.layoutManager = LinearLayoutManager(context)
+        binding.rvPostsPending.adapter
+
+        viewModel.resultBanks.observe(viewLifecycleOwner, Observer {
+            when(it) {
+                is SipagData.Success -> {
+                    banks.value = it.data
+                    banks.value?.sortBy { bank -> bank.number }
+
+                    adapter = BankAdapter(it.data) {
+                        selectedBank(it)
+                    }
+
+                    binding.rvBanks.layoutManager = LinearLayoutManager(context)
+                    binding.rvBanks.adapter = adapter
+                }
+                is SipagData.Error -> {
+                    Toast.makeText(context, it.error.localizedMessage, Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+        })
     }
 
 
