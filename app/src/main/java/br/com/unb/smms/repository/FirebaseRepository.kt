@@ -3,10 +3,7 @@ package br.com.unb.smms.repository
 import android.net.Uri
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.domain.firebase.Tag
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import io.reactivex.Single
@@ -68,6 +65,28 @@ class FirebaseRepository {
             }
 
         }
+    }
+
+    fun getPublishesScheduler() {
+
+        var posts: MutableList<Post> = arrayListOf()
+
+        val database = FirebaseDatabase.getInstance().reference
+        val postRef = database.child("posts")
+        val pendingPosts = postRef.child("pending")
+
+        pendingPosts.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val post = snapshot.getValue(Post::class.java)!!
+                posts.add(post)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+
+        })
     }
 
 
