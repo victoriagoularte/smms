@@ -3,9 +3,14 @@ package br.com.unb.smms.repository
 import android.net.Uri
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.domain.firebase.Tag
-import com.google.firebase.database.*
+import com.google.firebase.FirebaseException
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import io.reactivex.Observable
 import io.reactivex.Single
 import java.io.File
 
@@ -67,5 +72,52 @@ class FirebaseRepository {
         }
     }
 
+    fun getPendingPosts(): Observable<List<Post>> {
 
+        val database = FirebaseDatabase.getInstance().reference
+        val postRef = database.child("posts")
+        val pendingPosts = postRef.child("pending")
+
+        return Observable.create {
+
+            postRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var listPost: MutableList<Post> = arrayListOf()
+                    var snapshotIterable = snapshot.children
+                    var iterator = snapshotIterable.iterator()
+
+                    while (iterator.hasNext()) {
+                        val post = iterator.next().getValue(Post::class.java)
+                        if (post != null && post.pending) {
+                            listPost.add(post)
+                        }
+                    }
+
+                    it.onNext(listPost);
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    it.onError(FirebaseException(error.message))
+                }
+
+            })
+
+        }
+
+//        return Single.create { it ->
+//            postRef.addValueEventListener(object : ValueEventListener {
+//                override fun onDataChange(snapshot: DataSnapshot) {
+//                    val post = snapshot.getValue(Post::class.java)!!
+//                    if (post.pending) {
+//                        listPost.add(post)
+//                        it.onSuccess(listPost)
+//                    }
+//                }
+//
+//                override fun onCancelled(error: DatabaseError) {
+//                    it.tryOnError(Throwable("erro ao carregar lista"))
+//                }
+//            })
+//        }
+    }
 }

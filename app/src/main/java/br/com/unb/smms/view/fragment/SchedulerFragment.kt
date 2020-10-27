@@ -8,7 +8,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentSchedulerBinding
+import br.com.unb.smms.domain.firebase.Post
+import br.com.unb.smms.view.adapter.PostAdapter
 import br.com.unb.smms.viewmodel.SchedulerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,30 +38,24 @@ class SchedulerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        viewModel.getPosts()
 
         binding.rvPostsPending.layoutManager = LinearLayoutManager(context)
-        binding.rvPostsPending.adapter
 
-        viewModel.resultBanks.observe(viewLifecycleOwner, Observer {
+        viewModel.posts.observe(viewLifecycleOwner, {
             when(it) {
-                is SipagData.Success -> {
-                    banks.value = it.data
-                    banks.value?.sortBy { bank -> bank.number }
-
-                    adapter = BankAdapter(it.data) {
-                        selectedBank(it)
-                    }
-
-                    binding.rvBanks.layoutManager = LinearLayoutManager(context)
-                    binding.rvBanks.adapter = adapter
-                }
-                is SipagData.Error -> {
-                    Toast.makeText(context, it.error.localizedMessage, Toast.LENGTH_LONG)
-                        .show()
-                }
+                is SmmsData.Success -> binding.rvPostsPending.adapter = PostAdapter(it.data) { selectedPost(it) }
+                is SmmsData.Error -> Toast.makeText(requireContext(),it.error.localizedMessage, Toast.LENGTH_LONG).show()
             }
         })
+
+
+
+
+    }
+
+    fun selectedPost(post: Post) {
+        Toast.makeText(requireContext(), post.title, Toast.LENGTH_LONG).show()
     }
 
 

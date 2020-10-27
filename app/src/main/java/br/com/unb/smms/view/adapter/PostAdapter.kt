@@ -8,7 +8,7 @@ import br.com.unb.smms.R
 import br.com.unb.smms.databinding.ItemPostPedingBinding
 import br.com.unb.smms.domain.firebase.Post
 
-class PostAdapter(var posts: Array<Post>, private val onItemClick: ((Post) -> Unit)) :
+class PostAdapter(var posts: List<Post>, private val onItemClick: ((Post) -> Unit)) :
     RecyclerView.Adapter<PostAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,10 +37,6 @@ class PostAdapter(var posts: Array<Post>, private val onItemClick: ((Post) -> Un
 //        notifyDataSetChanged()
 //    }
 
-    fun filter(filteredBanks: ArrayList<Post>) {
-        this.posts = filteredBanks.toTypedArray()
-        notifyDataSetChanged()
-    }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding: ItemPostPedingBinding? = ItemPostPedingBinding.bind(view)
