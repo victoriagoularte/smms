@@ -44,5 +44,6 @@
     <string name="more_info"><![CDATA[Mais informações >]]></string>
     <string name="posts_scheduler"><![CDATA[Agenda de publicações >]]></string>
     <string name="scheduler">Agenda</string>
+    <string name="platform">Plataforma:</string>
 
 </resources>

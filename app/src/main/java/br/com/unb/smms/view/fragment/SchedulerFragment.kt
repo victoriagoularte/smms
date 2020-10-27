@@ -49,9 +49,6 @@ class SchedulerFragment : Fragment() {
             }
         })
 
-
-
-
     }
 
     fun selectedPost(post: Post) {

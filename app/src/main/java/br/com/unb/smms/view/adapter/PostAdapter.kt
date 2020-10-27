@@ -20,7 +20,7 @@ class PostAdapter(var posts: List<Post>, private val onItemClick: ((Post) -> Uni
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val binding = holder.binding
-//        binding?.bank = banks[position]
+        binding?.post = posts[position]
         binding?.executePendingBindings()
 
 //        if (banks[position].selected == true) {

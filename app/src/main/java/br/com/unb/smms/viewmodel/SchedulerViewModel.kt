@@ -29,6 +29,9 @@ class SchedulerViewModel @ViewModelInject constructor(val firebaseInteractor: Fi
                 posts.value = SmmsData.Success(it)
             }.doOnError {
                 posts.value = SmmsData.Error(it)
-            }.subscribe()
+            }.doOnSubscribe {
+                _dataLoading.value = false
+            }
+            .subscribe()
     }
 }
