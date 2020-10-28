@@ -76,7 +76,6 @@ class FirebaseRepository {
 
         val database = FirebaseDatabase.getInstance().reference
         val postRef = database.child("posts")
-        val pendingPosts = postRef.child("pending")
 
         return Observable.create {
 
@@ -88,6 +87,7 @@ class FirebaseRepository {
 
                     while (iterator.hasNext()) {
                         val post = iterator.next().getValue(Post::class.java)
+                        post?.id = iterator.next().key
                         if (post != null && post.pending) {
                             listPost.add(post)
                         }
@@ -105,18 +105,16 @@ class FirebaseRepository {
         }
     }
 
-    fun updatePostPending(id: String, post: Post): Single<Boolean> {
+    fun updatePostPending(post: Post): Single<Boolean> {
         val database = FirebaseDatabase.getInstance().reference
-        val postRef = database.child("posts")
-
         post.pending = false
 
         val childUpdates = hashMapOf<String, Any>(
-            "/posts/$id" to post
+            "/posts/${post.id}" to post
         )
 
         return Single.create { emitter ->
-            postRef.updateChildren(childUpdates).addOnSuccessListener {
+            database.updateChildren(childUpdates).addOnSuccessListener {
                 emitter.onSuccess(true)
             }.addOnFailureListener {
                 emitter.onError(it)

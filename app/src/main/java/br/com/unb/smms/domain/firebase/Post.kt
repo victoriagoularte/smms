@@ -2,6 +2,7 @@ package br.com.unb.smms.domain.firebase
 
 
 data class Post (
+    var id: String? = null,
     var uid: String? = null,
     var title : String? = null,
     var body: String? = null,

@@ -22,21 +22,7 @@ class PostAdapter(var posts: List<Post>, private val onItemClick: ((Post) -> Uni
         val binding = holder.binding
         binding?.post = posts[position]
         binding?.executePendingBindings()
-
-//        if (banks[position].selected == true) {
-//            binding?.ivSelected?.visibility = View.VISIBLE
-//        } else {
-//            binding?.ivSelected?.visibility = View.INVISIBLE
-//        }
     }
-
-//    fun selected(position: Int) {
-//        posts.map { it.selected = false }  //deselect all previous selected banks
-//        posts[position].selected = true
-//
-//        notifyDataSetChanged()
-//    }
-
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding: ItemPostPedingBinding? = ItemPostPedingBinding.bind(view)

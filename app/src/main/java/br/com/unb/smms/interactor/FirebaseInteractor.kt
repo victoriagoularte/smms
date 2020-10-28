@@ -9,7 +9,7 @@ class FirebaseInteractor @Inject constructor(private val firebaseRepository: Fir
     fun writeNewPost(tags: String?, post: Post) = firebaseRepository.writeNewPost(tags, post)
     fun uploadImageFirebase(imagePath: String) = firebaseRepository.uploadImageFirebase(imagePath)
     fun getPendingPosts() = firebaseRepository.getPendingPosts()
-    fun updatePostPendingToPublish(id: String, post: Post) = firebaseRepository.updatePostPending(id, post)
+    fun updatePostPendingToPublish(post: Post) = firebaseRepository.updatePostPending(post)
 
 
 }

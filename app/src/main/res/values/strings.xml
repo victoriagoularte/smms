@@ -39,11 +39,15 @@
         <item>Esporte</item>
         <item>Universidade</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="more_info"><![CDATA[Mais informações >]]></string>
     <string name="posts_scheduler"><![CDATA[Agenda de publicações >]]></string>
     <string name="scheduler">Agenda</string>
     <string name="platform">Plataforma:</string>
+    <string name="confirm_post">Postar publicação</string>
+    <string name="body_confirmation">Gostaria de postar a publicação com título %1$s agora?</string>
+    <string name="cancel">Cancelar</string>
+    <string name="remove">Excluir</string>
+
 
 </resources>
