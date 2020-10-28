@@ -34,4 +34,9 @@ class SchedulerViewModel @ViewModelInject constructor(val firebaseInteractor: Fi
             }
             .subscribe()
     }
+
+    fun updatePostPending() {
+
+    }
+
 }

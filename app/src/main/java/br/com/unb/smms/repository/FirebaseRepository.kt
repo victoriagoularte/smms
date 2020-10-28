@@ -103,21 +103,24 @@ class FirebaseRepository {
             })
 
         }
+    }
 
-//        return Single.create { it ->
-//            postRef.addValueEventListener(object : ValueEventListener {
-//                override fun onDataChange(snapshot: DataSnapshot) {
-//                    val post = snapshot.getValue(Post::class.java)!!
-//                    if (post.pending) {
-//                        listPost.add(post)
-//                        it.onSuccess(listPost)
-//                    }
-//                }
-//
-//                override fun onCancelled(error: DatabaseError) {
-//                    it.tryOnError(Throwable("erro ao carregar lista"))
-//                }
-//            })
-//        }
+    fun updatePostPending(id: String, post: Post): Single<Boolean> {
+        val database = FirebaseDatabase.getInstance().reference
+        val postRef = database.child("posts")
+
+        post.pending = false
+
+        val childUpdates = hashMapOf<String, Any>(
+            "/posts/$id" to post
+        )
+
+        return Single.create { emitter ->
+            postRef.updateChildren(childUpdates).addOnSuccessListener {
+                emitter.onSuccess(true)
+            }.addOnFailureListener {
+                emitter.onError(it)
+            }
+        }
     }
 }
