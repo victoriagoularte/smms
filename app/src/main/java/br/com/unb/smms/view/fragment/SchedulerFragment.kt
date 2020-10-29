@@ -1,11 +1,11 @@
 package br.com.unb.smms.view.fragment
 
-import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,9 +15,7 @@ import br.com.unb.smms.databinding.FragmentSchedulerBinding
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.view.adapter.PostAdapter
 import br.com.unb.smms.viewmodel.SchedulerViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_scheduler.*
 
 @AndroidEntryPoint
 class SchedulerFragment : Fragment() {
@@ -35,6 +33,7 @@ class SchedulerFragment : Fragment() {
         binding.fragment = this@SchedulerFragment
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        binding.progressBar.visibility = View.VISIBLE
 
         return binding.root
     }
@@ -46,9 +45,22 @@ class SchedulerFragment : Fragment() {
 
         binding.rvPostsPending.layoutManager = LinearLayoutManager(context)
 
+        viewModel.dataLoading.observe(viewLifecycleOwner, {
+            binding.progressBar.visibility = if (it) View.VISIBLE else View.INVISIBLE
+        })
+
         viewModel.posts.observe(viewLifecycleOwner, {
             when(it) {
-                is SmmsData.Success -> binding.rvPostsPending.adapter = PostAdapter(it.data) { post -> selectedPost(post) }
+                is SmmsData.Success -> {
+                    if(it.data.isEmpty()) {
+                        binding.tvNoPendingPosts.visibility = View.VISIBLE
+                        binding.rvPostsPending.visibility = View.GONE
+                    } else {
+                        binding.tvNoPendingPosts.visibility = View.GONE
+                        binding.rvPostsPending.visibility = View.VISIBLE
+                        binding.rvPostsPending.adapter = PostAdapter(it.data) { post -> selectedPost(post) }
+                    }
+                }
                 is SmmsData.Error -> Toast.makeText(requireContext(),it.error.localizedMessage, Toast.LENGTH_LONG).show()
             }
         })
@@ -73,19 +85,30 @@ class SchedulerFragment : Fragment() {
     }
 
     fun selectedPost(post: Post) {
-        MaterialAlertDialogBuilder(requireContext(), R.style.AppTheme)
+
+        val builder = AlertDialog.Builder(requireContext())
             .setTitle(resources.getString(R.string.confirm_post))
-            .setMessage(String.format(resources.getString(R.string.body_confirmation), post.title))
-            .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which ->
-                dialog?.let { dialog.dismiss() }
-            }
-            .setNegativeButton(resources.getString(R.string.remove)) { dialog, which ->
-                // Respond to negative button press
-            }
-            .setPositiveButton(resources.getString(R.string.publish)) { dialog, which ->
+            .setMessage(
+                (String.format(
+                    resources.getString(R.string.body_confirmation),
+                    post.title
+                ))
+            )
+
+        builder.apply {
+            setPositiveButton(
+                R.string.ok
+            ) { _, _ ->
                 viewModel.postPublishPending(post)
             }
-            .show()
+            setNegativeButton(
+                R.string.cancel
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+        }
+        builder.create().show()
+
     }
 
 

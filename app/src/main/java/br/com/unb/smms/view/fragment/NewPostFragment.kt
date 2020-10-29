@@ -26,15 +26,10 @@ import androidx.navigation.fragment.findNavController
 import br.com.unb.smms.R
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.databinding.FragmentNewPostBinding
-import br.com.unb.smms.domain.firebase.Post
-import br.com.unb.smms.security.SecurityConstants
-import br.com.unb.smms.security.getEncrypSharedPreferences
 import br.com.unb.smms.utils.AlarmReceiver
 import br.com.unb.smms.viewmodel.NewPostViewModel
-import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -72,11 +67,11 @@ class NewPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.dataLoading.observe(viewLifecycleOwner, Observer<Boolean> { loading ->
+        viewModel.dataLoading.observe(viewLifecycleOwner, { loading ->
             binding.clLoading.visibility = if (loading) View.VISIBLE else View.INVISIBLE
         })
 
-        viewModel.resultUploadPhoto.observe(viewLifecycleOwner, Observer {
+        viewModel.resultUploadPhoto.observe(viewLifecycleOwner, {
             when (it) {
                 is SmmsData.Error -> Toast.makeText(
                     context,

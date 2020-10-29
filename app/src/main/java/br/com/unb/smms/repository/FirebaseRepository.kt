@@ -10,7 +10,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import io.reactivex.Observable
 import io.reactivex.Single
 import java.io.File
 
@@ -72,12 +71,12 @@ class FirebaseRepository {
         }
     }
 
-    fun getPendingPosts(): Observable<List<Post>> {
+    fun getPendingPosts(): Single<List<Post>> {
 
         val database = FirebaseDatabase.getInstance().reference
         val postRef = database.child("posts")
 
-        return Observable.create {
+        return Single.create {
 
             postRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -86,18 +85,20 @@ class FirebaseRepository {
                     var iterator = snapshotIterable.iterator()
 
                     while (iterator.hasNext()) {
-                        val post = iterator.next().getValue(Post::class.java)
-                        post?.id = iterator.next().key
+                        val teste = iterator.next()
+                        val post = teste.getValue(Post::class.java)
+                        post?.id = teste.key
                         if (post != null && post.pending) {
                             listPost.add(post)
                         }
                     }
-
-                    it.onNext(listPost);
+                    if(listPost.isNotEmpty()) {
+                        it.onSuccess(listPost)
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    it.onError(FirebaseException(error.message))
+                    it.onError(Throwable("error: lista de posts pendentes nao carregada"))
                 }
 
             })

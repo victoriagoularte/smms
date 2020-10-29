@@ -36,17 +36,32 @@ class SchedulerViewModel @ViewModelInject constructor(
 
         _dataLoading.value = true
 
-        postDisposable = firebaseInteractor.getPendingPosts()
-            .doOnNext {
-                posts.value = SmmsData.Success(it)
-            }.doOnError {
-                posts.value = SmmsData.Error(it)
-            }.doOnSubscribe {
-                _dataLoading.value = false
+        postDisposable = firebaseInteractor.getPendingPosts().subscribe { res, error ->
+
+            _dataLoading.value = false
+
+            if(error != null) {
+                posts.value = SmmsData.Error(error)
+                return@subscribe
             }
-            .subscribe()
+
+            posts.value = SmmsData.Success(res)
+
+        }
 
         composite.add(postDisposable)
+
+//      firebaseInteractor.getPendingPosts().subscribe { res, error ->
+//            if(error != null) {
+//                posts.value =  SmmsData.Error(error)
+//                return@subscribe
+//            }
+//
+//            if(res.isNotEmpty()) {
+//                posts.value = SmmsData.Success(res)
+//            }
+//        }
+
     }
 
     fun updatePostPending(post: Post) {

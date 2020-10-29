@@ -48,6 +48,7 @@
     <string name="body_confirmation">Gostaria de postar a publicação com título %1$s agora?</string>
     <string name="cancel">Cancelar</string>
     <string name="remove">Excluir</string>
+    <string name="no_pending_posts">Não existem publicações pendentes.</string>
 
 
 </resources>
