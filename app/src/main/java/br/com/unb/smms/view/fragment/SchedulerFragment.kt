@@ -79,7 +79,7 @@ class SchedulerFragment : Fragment() {
             when(it) {
                 is SmmsData.Success -> {
                     Toast.makeText(context, "post atualizado com sucesso", Toast.LENGTH_LONG).show()
-
+                    viewModel.getPosts()
                 }
                 is SmmsData.Error -> Toast.makeText(context, "error: post nao atualizado", Toast.LENGTH_LONG).show()
             }
