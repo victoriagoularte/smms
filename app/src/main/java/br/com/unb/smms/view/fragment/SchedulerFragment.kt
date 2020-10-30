@@ -61,7 +61,10 @@ class SchedulerFragment : Fragment() {
                         binding.rvPostsPending.adapter = PostAdapter(it.data) { post -> selectedPost(post) }
                     }
                 }
-                is SmmsData.Error -> Toast.makeText(requireContext(),it.error.localizedMessage, Toast.LENGTH_LONG).show()
+                is SmmsData.Error -> {
+
+                    Toast.makeText(requireContext(),it.error.localizedMessage, Toast.LENGTH_LONG).show()
+                }
             }
         })
 

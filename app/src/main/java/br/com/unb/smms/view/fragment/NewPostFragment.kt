@@ -79,12 +79,21 @@ class NewPostFragment : Fragment() {
                     Toast.LENGTH_LONG
                 ).show()
                 is SmmsData.Success -> {
+                    viewModel.pendingProcess.value?.let { isPending ->
+                        if (isPending) {
+                            viewModel.downloadPhotoUrl.value = it.data.toString()
+                            viewModel.savePendingPost()
+                            return@observe
+                        }
+                    }
+
                     if (viewModel.postFacebook.value!!) {
                         viewModel.downloadPhotoUrl.value = it.data.toString()
                         viewModel.feed()
                     } else if (viewModel.postInsta.value!! || viewModel.postInstaStory.value!!) {
                         createInstagramIntent()
                     }
+
                 }
             }
         })
@@ -122,6 +131,13 @@ class NewPostFragment : Fragment() {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.spinnerCategories.adapter = adapter
         }
+
+        viewModel.downloadPhotoUrl.observe(viewLifecycleOwner, {
+            if (it.isNullOrBlank()) {
+                binding.ivPhoto.visibility = View.GONE
+                binding.clUploadPhoto.visibility = View.VISIBLE
+            }
+        })
 
         binding.spinnerCategories.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {

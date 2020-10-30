@@ -54,7 +54,6 @@ class SmmsActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener, Ti
         setParameters()
     }
 
-
     private fun setParameters() {
 
         configNav()

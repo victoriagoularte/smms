@@ -40,6 +40,8 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
     val postFacebook = MutableLiveData<Boolean>(false)
     val postInsta = MutableLiveData<Boolean>(false)
     val postInstaStory = MutableLiveData<Boolean>(false)
+    val pendingProcess = MutableLiveData(false)
+    val datePending = MutableLiveData<Date>()
     val textErrorMessage = MutableLiveData<String>()
     var categorySelected = MutableLiveData<String>()
 
@@ -118,29 +120,12 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
     }
 
      fun writePostPending(date: Date) {
+         datePending.value = date
+         pendingProcess.value = true
 
-        var platforms: MutableList<String> = arrayListOf()
-
-        postFacebook.value?.let { it -> if(it) platforms.add("facebook") }
-        postInsta.value?.let { it -> if(it) platforms.add("instagram") }
-
-        val post = Post(
-            getUid(),
-            title.value,
-            text.value,
-            urlPicture = downloadPhotoUrl.value,
-            date = date.toString("dd"),
-            month = date.toString("MM"),
-            year = date.toString("yyyy"),
-            category = categorySelected.value,
-            media = platforms,
-            pending = true
-        )
-
-        firebaseInteractor.writeNewPost(tags.value, post)
-        _dataLoading.value = false
-        resetAllFields()
-
+         if(!uriPhoto.value.isNullOrBlank()) {
+             uploadFirebaseImage()
+         }
     }
 
     fun uploadFirebaseImage() {
@@ -187,11 +172,36 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
         downloadPhotoUrl.value = null
         postPendingDate.value = null
         postPending.value = null
+
     }
 
     override fun onCleared() {
         super.onCleared()
         smmsCompositeDisposable.dispose()
+    }
+
+    fun savePendingPost() {
+        var platforms: MutableList<String> = arrayListOf()
+
+        postFacebook.value?.let { it -> if(it) platforms.add("facebook") }
+        postInsta.value?.let { it -> if(it) platforms.add("instagram") }
+
+        val post = Post(
+            getUid(),
+            title.value,
+            text.value,
+            urlPicture = downloadPhotoUrl.value,
+            date = datePending.value?.toString("dd"),
+            month = datePending.value?.toString("MM"),
+            year = datePending.value?.toString("yyyy"),
+            category = categorySelected.value,
+            media = platforms,
+            pending = true
+        )
+
+        firebaseInteractor.writeNewPost(tags.value, post)
+        _dataLoading.value = false
+        resetAllFields()
     }
 
 }

@@ -50,18 +50,6 @@ class SchedulerViewModel @ViewModelInject constructor(
         }
 
         composite.add(postDisposable)
-
-//      firebaseInteractor.getPendingPosts().subscribe { res, error ->
-//            if(error != null) {
-//                posts.value =  SmmsData.Error(error)
-//                return@subscribe
-//            }
-//
-//            if(res.isNotEmpty()) {
-//                posts.value = SmmsData.Success(res)
-//            }
-//        }
-
     }
 
     fun updatePostPending(post: Post) {
@@ -88,7 +76,8 @@ class SchedulerViewModel @ViewModelInject constructor(
         }
 
         post.annotations?.let {
-            val tagsPost = (post.annotations)?.joinToString(separator = " #")
+            var descriptions: List<String> = (post.annotations)!!.map { it -> it.description!! };
+            val tagsPost = (descriptions)?.joinToString(separator = " #")
             textPost = post.body + "\n.\n.\n.\n.\n.\n" + tagsPost
         }
 

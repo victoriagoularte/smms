@@ -92,9 +92,9 @@ class FirebaseRepository {
                             listPost.add(post)
                         }
                     }
-                    if(listPost.isNotEmpty()) {
-                        it.onSuccess(listPost)
-                    }
+
+                    it.onSuccess(listPost)
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {
