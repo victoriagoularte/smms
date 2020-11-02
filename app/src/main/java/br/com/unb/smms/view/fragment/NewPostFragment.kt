@@ -107,18 +107,24 @@ class NewPostFragment : Fragment() {
                 ).show()
                 is SmmsData.Success -> {
                     copy()
-                    Toast.makeText(
-                        context,
-                        "Publicado com sucesso no Facebook, aguarde enquanto redirecionamos para o Instagram! O seu texto foi copiado na área de transferência.",
-                        Toast.LENGTH_LONG
-                    ).show()
                     if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
                         Handler().postDelayed({
+                            Toast.makeText(
+                                context,
+                                "Publicado com sucesso no Facebook, aguarde enquanto redirecionamos para o Instagram! O seu texto foi copiado na área de transferência.",
+                                Toast.LENGTH_LONG
+                            ).show()
                             createInstagramIntent()
                         }, 2500)
                         viewModel.resetAllFields()
                         binding.clUploadPhoto.visibility = View.VISIBLE
                         binding.ivPhoto.visibility = View.GONE
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Seu post foi publicado com sucesso no Facebook!",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }
@@ -157,13 +163,13 @@ class NewPostFragment : Fragment() {
             }
     }
 
-    fun copy() {
+    private fun copy() {
         val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip: ClipData = ClipData.newPlainText("texto", viewModel.textPost.value)
         clipboard.setPrimaryClip(clip)
     }
 
-    fun createInstagramIntent() {
+    private fun createInstagramIntent() {
         val type = "image/*"
         createInstagramIntent(type);
     }

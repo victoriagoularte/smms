@@ -1,6 +1,12 @@
 package br.com.unb.smms.view.fragment
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -62,32 +68,66 @@ class SchedulerFragment : Fragment() {
                     }
                 }
                 is SmmsData.Error -> {
-
                     Toast.makeText(requireContext(),it.error.localizedMessage, Toast.LENGTH_LONG).show()
                 }
             }
         })
 
         viewModel.resultPost.observe(viewLifecycleOwner, {
-            when(it) {
-                is SmmsData.Success -> Toast.makeText(context, "post realizado com sucesso", Toast.LENGTH_LONG).show()
-                is SmmsData.Error -> Toast.makeText(context, "error: post nao efetuado", Toast.LENGTH_LONG).show()
+            when (it) {
+                is SmmsData.Success -> {
+                    copy()
+                    if (viewModel.postUpdating.value?.media != null) {
+                        Handler().postDelayed({
+                            Toast.makeText(
+                                context,
+                                "Publicado com sucesso no Facebook, aguarde enquanto redirecionamos para o Instagram! O seu texto foi copiado na área de transferência.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            viewModel.postUpdating.value.let { post ->
+                                post?.media?.let {
+                                    for(media in post.media!!) {
+                                        when(media) {
+                                            "instagram" -> postInstaFeed(post.urlPicture, post)
+                                            "insta_story" -> postInstaFeed(post.urlPicture, post)
+                                        }
+                                    }
+                                }
+
+                            }
+                        }, 2500)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Seu post foi publicado com sucesso no Facebook!",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+                is SmmsData.Error -> Toast.makeText(
+                    context,
+                    "error: post nao efetuado",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         })
 
         viewModel.resultUpdate.observe(viewLifecycleOwner, {
-            when(it) {
+            when (it) {
                 is SmmsData.Success -> {
                     Toast.makeText(context, "post atualizado com sucesso", Toast.LENGTH_LONG).show()
                     viewModel.getPosts()
                 }
-                is SmmsData.Error -> Toast.makeText(context, "error: post nao atualizado", Toast.LENGTH_LONG).show()
+                is SmmsData.Error -> Toast.makeText(
+                    context,
+                    "error: post nao atualizado",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         })
-
     }
 
-    fun selectedPost(post: Post) {
+    private fun selectedPost(post: Post) {
 
         val builder = AlertDialog.Builder(requireContext())
             .setTitle(resources.getString(R.string.confirm_post))
@@ -102,7 +142,17 @@ class SchedulerFragment : Fragment() {
             setPositiveButton(
                 R.string.ok
             ) { _, _ ->
-                viewModel.postPublishPending(post)
+                post.media?.let {
+                    for(media in it) {
+                        when(media) {
+                            "facebook" -> viewModel.postPublishPending(post)
+                            "instagram" -> postInstaFeed(post.urlPicture, post)
+                            "insta_story" -> postInstaFeed(post.urlPicture, post)
+
+                        }
+                    }
+                }
+
             }
             setNegativeButton(
                 R.string.cancel
@@ -111,8 +161,33 @@ class SchedulerFragment : Fragment() {
             }
         }
         builder.create().show()
-
     }
 
+    private fun copy() {
+        val clipboard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData = ClipData.newPlainText("texto", viewModel.textPost.value)
+        clipboard.setPrimaryClip(clip)
+    }
+
+    private fun postInstaFeed(localUri: String?, post: Post) {
+        val share = Intent("com.instagram.share.ADD_TO_FEED")
+        share.type = "image/*"
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(localUri))
+        startActivity(share)
+        viewModel.updatePostPending(post)
+    }
+
+    private fun postInstaStory(localUri: String?, post: Post) {
+        val share = Intent("com.instagram.share.ADD_TO_STORY");
+        share.setDataAndType(Uri.parse(localUri), "image/*");
+        share.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+        share.putExtra("content_url", "https://www.google.com");
+
+        if (activity?.packageManager?.resolveActivity(share, 0) != null) {
+            activity?.startActivityForResult(share, 0);
+        }
+
+        viewModel.updatePostPending(post)
+    }
 
 }

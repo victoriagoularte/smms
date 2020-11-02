@@ -23,6 +23,9 @@ class SchedulerViewModel @ViewModelInject constructor(
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
     var resultUpdate = MutableLiveData<SmmsData<Boolean>>()
 
+    var postUpdating = MutableLiveData<Post>()
+    var textPost = MutableLiveData<String>()
+
     private lateinit var postDisposable: Disposable
     private lateinit var feedDisposable: Disposable
     private lateinit var updateDisposable: Disposable
@@ -54,33 +57,38 @@ class SchedulerViewModel @ViewModelInject constructor(
 
     fun updatePostPending(post: Post) {
 
-        updateDisposable = firebaseInteractor.updatePostPendingToPublish(post).subscribe { res, error ->
-            if(error != null) {
-                resultUpdate.value = SmmsData.Error(error)
-                return@subscribe
+        updateDisposable =
+            firebaseInteractor.updatePostPendingToPublish(post).subscribe { res, error ->
+                if (error != null) {
+                    resultUpdate.value = SmmsData.Error(error)
+                    return@subscribe
+                }
+
+                resultUpdate.value = SmmsData.Success(res)
+
             }
-
-            resultUpdate.value = SmmsData.Success(res)
-
-        }
 
         composite.add(updateDisposable)
     }
 
     fun postPublishPending(post: Post) {
 
-        var textPost = ""
+        postUpdating.value = post
 
         post.body?.let {
-            textPost = post.body!!
+            textPost.value = post.body!!
         }
 
         post.annotations?.let {
-            var descriptions: List<String> = (post.annotations)!!.map { it -> it.description!! };
-            val tagsPost = (descriptions)?.joinToString(separator = " #")
-            textPost = post.body + "\n.\n.\n.\n.\n.\n" + tagsPost
+            var descriptions: List<String> = (post.annotations)!!.map { it.description!! };
+            val tagsPost = (descriptions).joinToString(separator = " #")
+            textPost.value = post.body + "\n.\n.\n.\n.\n.\n" + tagsPost
         }
 
+        postFacebook(post, textPost.value.orEmpty())
+    }
+
+    private fun postFacebook(post: Post, textPost: String) {
         if (post.urlPicture == null) {
             feedDisposable = pageInteractor.feed(Feed(textPost))
                 .subscribe { res, _ ->
@@ -89,7 +97,6 @@ class SchedulerViewModel @ViewModelInject constructor(
                         resultPost.value = SmmsData.Success(res)
                     }
                 }
-
         } else {
             feedDisposable = pageInteractor.photo(Feed(textPost, post.urlPicture))
                 .subscribe { res, _ ->

@@ -100,6 +100,7 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
 
         postFacebook.value?.let { it -> if(it) platforms.add("facebook") }
         postInsta.value?.let { it -> if(it) platforms.add("instagram") }
+        postInstaStory.value?.let { it -> if(it) platforms.add("insta_story") }
 
         val post = Post(
             getUid(),
@@ -185,6 +186,7 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
 
         postFacebook.value?.let { it -> if(it) platforms.add("facebook") }
         postInsta.value?.let { it -> if(it) platforms.add("instagram") }
+        postInstaStory.value?.let { it -> if(it) platforms.add("insta_story") }
 
         val post = Post(
             getUid(),
