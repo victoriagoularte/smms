@@ -22,9 +22,10 @@ class SchedulerViewModel @ViewModelInject constructor(
     var posts = MutableLiveData<SmmsData<List<Post>>>()
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
     var resultUpdate = MutableLiveData<SmmsData<Boolean>>()
-
     var postUpdating = MutableLiveData<Post>()
+
     var textPost = MutableLiveData<String>()
+    var updateAlready = MutableLiveData<Boolean>(false)
 
     private lateinit var postDisposable: Disposable
     private lateinit var feedDisposable: Disposable
@@ -65,6 +66,7 @@ class SchedulerViewModel @ViewModelInject constructor(
                 }
 
                 resultUpdate.value = SmmsData.Success(res)
+                updateAlready.value = true
 
             }
 
