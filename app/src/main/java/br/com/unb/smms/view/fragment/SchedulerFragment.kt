@@ -4,9 +4,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +25,9 @@ import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.view.adapter.PostAdapter
 import br.com.unb.smms.viewmodel.SchedulerViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.ByteArrayOutputStream
+import java.net.URL
+
 
 @AndroidEntryPoint
 class SchedulerFragment : Fragment() {
@@ -56,19 +62,24 @@ class SchedulerFragment : Fragment() {
         })
 
         viewModel.posts.observe(viewLifecycleOwner, {
-            when(it) {
+            when (it) {
                 is SmmsData.Success -> {
-                    if(it.data.isEmpty()) {
+                    if (it.data.isEmpty()) {
                         binding.tvNoPendingPosts.visibility = View.VISIBLE
                         binding.rvPostsPending.visibility = View.GONE
                     } else {
                         binding.tvNoPendingPosts.visibility = View.GONE
                         binding.rvPostsPending.visibility = View.VISIBLE
-                        binding.rvPostsPending.adapter = PostAdapter(it.data) { post -> selectedPost(post) }
+                        binding.rvPostsPending.adapter = PostAdapter(it.data) { post ->
+                            selectedPost(
+                                post
+                            )
+                        }
                     }
                 }
                 is SmmsData.Error -> {
-                    Toast.makeText(requireContext(),it.error.localizedMessage, Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), it.error.localizedMessage, Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         })
@@ -86,10 +97,10 @@ class SchedulerFragment : Fragment() {
                             ).show()
                             viewModel.postUpdating.value.let { post ->
                                 post?.media?.let {
-                                    for(media in post.media!!) {
-                                        when(media) {
+                                    for (media in post.media!!) {
+                                        when (media) {
                                             "instagram" -> postInstaFeed(post.urlPicture, post)
-                                            "insta_story" -> postInstaFeed(post.urlPicture, post)
+                                            "insta_story" -> postInstaStory(post.urlPicture, post)
                                         }
                                     }
                                 }
@@ -147,7 +158,7 @@ class SchedulerFragment : Fragment() {
                         when(media) {
                             "facebook" -> viewModel.postPublishPending(post)
                             "instagram" -> postInstaFeed(post.urlPicture, post)
-                            "insta_story" -> postInstaFeed(post.urlPicture, post)
+                            "insta_story" -> postInstaStory(post.urlPicture, post)
 
                         }
                     }
@@ -170,16 +181,23 @@ class SchedulerFragment : Fragment() {
     }
 
     private fun postInstaFeed(localUri: String?, post: Post) {
+        val url = URL(localUri)
+        val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+
         val share = Intent("com.instagram.share.ADD_TO_FEED")
         share.type = "image/*"
-        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(localUri))
+        share.putExtra(Intent.EXTRA_STREAM, getImageUri(requireContext(), image))
         startActivity(share)
         viewModel.updatePostPending(post)
     }
 
     private fun postInstaStory(localUri: String?, post: Post) {
+
+        val url = URL(localUri)
+        val image = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+
         val share = Intent("com.instagram.share.ADD_TO_STORY");
-        share.setDataAndType(Uri.parse(localUri), "image/*");
+        share.setDataAndType(getImageUri(requireContext(), image), "image/*");
         share.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
         share.putExtra("content_url", "https://www.google.com");
 
@@ -188,6 +206,14 @@ class SchedulerFragment : Fragment() {
         }
 
         viewModel.updatePostPending(post)
+    }
+
+    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri? {
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path: String =
+            MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
+        return Uri.parse(path)
     }
 
 }
