@@ -136,6 +136,10 @@ class AnalitycsFragment : Fragment() {
         findNavController().navigate(R.id.action_smmsFragment_to_moreInfoChartsFragment, bundle)
     }
 
+    fun search(view: View) {
+        findNavController().navigate(R.id.action_smmsFragment_to_searchActivity)
+    }
+
 
 }
 

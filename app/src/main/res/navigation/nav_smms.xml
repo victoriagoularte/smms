@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_smmsFragment_to_moreInfoChartsFragment"
             app:destination="@id/moreInfoChartsFragment" />
+        <action
+            android:id="@+id/action_smmsFragment_to_searchActivity"
+            app:destination="@id/searchActivity" />
     </fragment>
     <fragment
         android:id="@+id/newPostFragment"
@@ -33,4 +36,9 @@
         tools:layout="@layout/activity_schedule"
         android:name="br.com.unb.smms.view.activity.ScheduleActivity"
         android:label="ScheduleActivity" />
+    <activity
+        android:id="@+id/searchActivity"
+        android:name="br.com.unb.smms.view.activity.SearchActivity"
+        android:label="activity_search"
+        tools:layout="@layout/activity_search" />
 </navigation>
