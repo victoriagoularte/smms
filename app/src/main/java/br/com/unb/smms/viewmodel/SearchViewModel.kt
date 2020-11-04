@@ -28,7 +28,7 @@ class SearchViewModel @ViewModelInject constructor(
                 return@subscribe
             }
 
-            resultSearch.value = SmmsData.Success(res as List<Post>)
+            resultSearch.value = SmmsData.Success(res.toList())
         }
     }
 

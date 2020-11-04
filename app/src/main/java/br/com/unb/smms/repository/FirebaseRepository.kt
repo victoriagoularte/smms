@@ -174,7 +174,7 @@ class FirebaseRepository {
                         val post = teste.getValue(Post::class.java)
                         post?.id = teste.key
                         if (post != null && !post.title.isNullOrEmpty()) {
-                            if (post.title!!.contains(title)) {
+                            if (post.title!!.contains(title, true)) {
                                 listPost.add(post)
                             }
                         }
@@ -209,7 +209,7 @@ class FirebaseRepository {
                         val post = teste.getValue(Post::class.java)
                         post?.id = teste.key
                         if (post != null && !post.body.isNullOrEmpty()) {
-                            if (post.body?.contains(body)!!) {
+                            if (post.body?.contains(body, true)!!) {
                                 listPost.add(post)
                             }
                         }
