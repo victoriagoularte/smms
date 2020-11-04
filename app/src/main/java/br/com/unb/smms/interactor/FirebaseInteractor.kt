@@ -15,14 +15,12 @@ class FirebaseInteractor @Inject constructor(private val firebaseRepository: Fir
     fun uploadImageFirebase(imagePath: String) = firebaseRepository.uploadImageFirebase(imagePath)
     fun getPendingPosts() = firebaseRepository.getPendingPosts()
     fun updatePostPendingToPublish(post: Post) = firebaseRepository.updatePostPending(post)
-    fun findByTitle(title: String) = firebaseRepository.findByTitle(title)
-    fun findByAnnotation(annotation: String) = firebaseRepository.findByAnnotation(annotation)
-    fun findByPost(post: String) = firebaseRepository.findByBody(post)
     fun search(title: String, post: String, annotation: String): Single<Set<Post>> {
-        return Single.zip(firebaseRepository.findByTitle(title), firebaseRepository.findByBody(post), firebaseRepository.findByAnnotation(annotation), Function3 {
-                byTitle: List<Post>, byPost: List<Post>, byAnnotation: List<Post> ->
-                byTitle.intersect(byPost).intersect(byAnnotation)
-        })
+        return Single.zip(firebaseRepository.findByTitle(title), firebaseRepository.findByBody(post), firebaseRepository.findByAnnotation(annotation),
+            {
+                    byTitle: List<Post>, byPost: List<Post>, byAnnotation: List<Post> ->
+                    byTitle.intersect(byPost).intersect(byAnnotation)
+            })
     }
 
 
