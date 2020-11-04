@@ -3,7 +3,6 @@ package br.com.unb.smms.repository
 import android.net.Uri
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.domain.firebase.Tag
-import com.google.firebase.FirebaseException
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -92,17 +91,13 @@ class FirebaseRepository {
                             listPost.add(post)
                         }
                     }
-
                     it.onSuccess(listPost)
-
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                     it.onError(Throwable("error: lista de posts pendentes nao carregada"))
                 }
-
             })
-
         }
     }
 
@@ -120,6 +115,113 @@ class FirebaseRepository {
             }.addOnFailureListener {
                 emitter.onError(it)
             }
+        }
+    }
+
+    fun findByAnnotation(annotation: String): Single<List<Post>> {
+
+        val database = FirebaseDatabase.getInstance().reference
+        val postRef = database.child("posts")
+
+        return Single.create {
+
+            postRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    var listPost: MutableList<Post> = arrayListOf()
+                    var snapshotIterable = snapshot.children
+                    var iterator = snapshotIterable.iterator()
+
+                    while (iterator.hasNext()) {
+                        val teste = iterator.next()
+                        val post = teste.getValue(Post::class.java)
+                        post?.id = teste.key
+                        if (post != null && !post.annotations.isNullOrEmpty()) {
+                            for (tag in post.annotations!!) {
+                                if (tag.description == annotation) {
+                                    listPost.add(post)
+                                }
+                            }
+                        }
+                    }
+
+                    it.onSuccess(listPost)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    it.onError(Throwable("error: nenhum post encontrado"))
+                }
+            })
+        }
+    }
+
+    fun findByTitle(title: String): Single<List<Post>> {
+
+        val database = FirebaseDatabase.getInstance().reference
+        val titleRef = database.child("posts/title")
+
+        return Single.create {
+
+            titleRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    var listPost: MutableList<Post> = arrayListOf()
+                    var snapshotIterable = snapshot.children
+                    var iterator = snapshotIterable.iterator()
+
+                    while (iterator.hasNext()) {
+                        val teste = iterator.next()
+                        val post = teste.getValue(Post::class.java)
+                        post?.id = teste.key
+                        if (post != null && !post.title.isNullOrEmpty()) {
+                            if (post.title!!.contains(title)) {
+                                listPost.add(post)
+                            }
+                        }
+                    }
+
+                    it.onSuccess(listPost)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    it.onError(Throwable("error: nenhum post encontrado"))
+                }
+            })
+        }
+    }
+
+    fun findByBody(body: String): Single<List<Post>> {
+
+        val database = FirebaseDatabase.getInstance().reference
+        val descriptionRef = database.child("posts/body")
+
+        return Single.create {
+
+            descriptionRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+
+                    var listPost: MutableList<Post> = arrayListOf()
+                    var snapshotIterable = snapshot.children
+                    var iterator = snapshotIterable.iterator()
+
+                    while (iterator.hasNext()) {
+                        val teste = iterator.next()
+                        val post = teste.getValue(Post::class.java)
+                        post?.id = teste.key
+                        if (post != null && !post.body.isNullOrEmpty()) {
+                            if (post.body?.contains(body)!!) {
+                                listPost.add(post)
+                            }
+                        }
+                    }
+
+                    it.onSuccess(listPost)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    it.onError(Throwable("error: nenhum post encontrado"))
+                }
+            })
         }
     }
 }

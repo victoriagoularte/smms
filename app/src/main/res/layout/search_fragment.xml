@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
+        <variable
+            name="fragment"
+            type="br.com.unb.smms.view.fragment.SearchFragment" />
+        <variable
+            name="viewModel"
+            type="br.com.unb.smms.viewmodel.SearchViewModel" />
         <import type="android.view.View" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tiTitlePost"
@@ -29,6 +32,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etTitlePost"
                 style="@style/DefaultTextField"
+                android:text="@{viewModel.title}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -50,6 +54,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etAnnotationPost"
                 style="@style/DefaultTextField"
+                android:text="@{viewModel.annotation}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -71,6 +76,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etTextPostPost"
                 style="@style/DefaultTextField"
+                android:text="@{viewModel.post}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -86,6 +92,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="24dp"
             android:text="@string/search"
+            android:onClick="@{fragment::search}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tiTextPost" />

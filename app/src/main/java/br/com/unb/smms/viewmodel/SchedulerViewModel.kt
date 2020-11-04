@@ -14,10 +14,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 class SchedulerViewModel @ViewModelInject constructor(
-    val firebaseInteractor: FirebaseInteractor,
-    val pageInteractor: PageInteractor
-) :
-    ViewModel() {
+    private val firebaseInteractor: FirebaseInteractor,
+    private val pageInteractor: PageInteractor
+) : ViewModel() {
 
     var posts = MutableLiveData<SmmsData<List<Post>>>()
     var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
