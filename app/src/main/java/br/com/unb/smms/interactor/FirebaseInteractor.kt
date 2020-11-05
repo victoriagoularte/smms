@@ -2,11 +2,7 @@ package br.com.unb.smms.interactor
 
 import br.com.unb.smms.domain.firebase.Post
 import br.com.unb.smms.repository.FirebaseRepository
-import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
-import io.reactivex.functions.Function3
-import retrofit2.http.Body
 import javax.inject.Inject
 
 class FirebaseInteractor @Inject constructor(private val firebaseRepository: FirebaseRepository) {
@@ -15,11 +11,63 @@ class FirebaseInteractor @Inject constructor(private val firebaseRepository: Fir
     fun uploadImageFirebase(imagePath: String) = firebaseRepository.uploadImageFirebase(imagePath)
     fun getPendingPosts() = firebaseRepository.getPendingPosts()
     fun updatePostPendingToPublish(post: Post) = firebaseRepository.updatePostPending(post)
-    fun search(title: String, post: String, annotation: String): Single<Set<Post>> {
-        return Single.zip(firebaseRepository.findByTitle(title), firebaseRepository.findByBody(post), firebaseRepository.findByAnnotation(annotation),
-            {
-                    byTitle: List<Post>, byPost: List<Post>, byAnnotation: List<Post> ->
-                    byTitle.intersect(byPost).intersect(byAnnotation)
+    fun search(title: String?, post: String?, annotation: String?): Single<List<Post>> {
+
+        val listTitle = if (title.isNullOrEmpty()) {
+            Single.create { it.onSuccess(emptyList()) }
+        } else {
+            firebaseRepository.findByTitle(title)
+        }
+
+        val listAnnotation = if (annotation.isNullOrEmpty()) {
+            Single.create { it.onSuccess(emptyList()) }
+        } else {
+            firebaseRepository.findByAnnotation(annotation)
+        }
+
+        val listPost = if (post.isNullOrEmpty()) {
+            Single.create { it.onSuccess(emptyList()) }
+        } else {
+            firebaseRepository.findByBody(post)
+        }
+
+        return Single.zip(listTitle,
+            listPost,
+            listAnnotation,
+            { byTitle: List<Post>, byPost: List<Post>, byAnnotation: List<Post> ->
+                when {
+                    byTitle.isNullOrEmpty() -> {
+                        if (byAnnotation.isNullOrEmpty()) {
+                            byPost
+                        } else if (byPost.isNullOrEmpty()) {
+                            byAnnotation
+                        } else {
+                            byPost.intersect(byAnnotation).toList()
+                        }
+                    }
+                    byPost.isNullOrEmpty() -> {
+                        if (byAnnotation.isNullOrEmpty()) {
+                            byTitle
+                        } else if (byTitle.isNullOrEmpty()) {
+                            byAnnotation
+                        } else {
+                            byAnnotation.intersect(byTitle).toList()
+                        }
+                    }
+                    byAnnotation.isNullOrEmpty() -> {
+                        if (byTitle.isNullOrEmpty()) {
+                            byPost
+                        } else if (byPost.isNullOrEmpty()) {
+                            byTitle
+                        } else {
+                            byPost.intersect(byTitle).toList()
+                        }
+                    }
+                    else -> {
+                        byTitle.intersect(byPost).intersect(byAnnotation).toList()
+                    }
+                }
+
             })
     }
 

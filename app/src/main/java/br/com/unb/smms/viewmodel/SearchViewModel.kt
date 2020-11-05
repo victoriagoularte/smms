@@ -13,16 +13,16 @@ class SearchViewModel @ViewModelInject constructor(
     private val firebaseInteractor: FirebaseInteractor
 ) : ViewModel() {
 
-    var title = MutableLiveData("")
-    var post = MutableLiveData("")
-    val annotation = MutableLiveData("")
+    var title = MutableLiveData<String>()
+    var post = MutableLiveData<String>()
+    val annotation = MutableLiveData<String>()
 
     var resultSearch = MutableLiveData<SmmsData<List<Post>>>()
 
     private lateinit var disposable: Disposable
 
     fun search() {
-        disposable = firebaseInteractor.search(title.value ?: "", post.value ?: "", annotation.value ?: "").subscribe { res, error ->
+        disposable = firebaseInteractor.search(title.value, post.value, annotation.value).subscribe { res, error ->
             if(error != null) {
                 resultSearch.value = SmmsData.Error(error)
                 return@subscribe

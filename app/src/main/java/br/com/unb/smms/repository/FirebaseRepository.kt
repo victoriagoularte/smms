@@ -158,7 +158,7 @@ class FirebaseRepository {
     fun findByTitle(title: String): Single<List<Post>> {
 
         val database = FirebaseDatabase.getInstance().reference
-        val titleRef = database.child("posts/title")
+        val titleRef = database.child("posts")
 
         return Single.create {
 
@@ -193,7 +193,7 @@ class FirebaseRepository {
     fun findByBody(body: String): Single<List<Post>> {
 
         val database = FirebaseDatabase.getInstance().reference
-        val descriptionRef = database.child("posts/body")
+        val descriptionRef = database.child("posts")
 
         return Single.create {
 
