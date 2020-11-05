@@ -126,6 +126,8 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
 
          if(!uriPhoto.value.isNullOrBlank()) {
              uploadFirebaseImage()
+         } else {
+             savePendingPost()
          }
     }
 
