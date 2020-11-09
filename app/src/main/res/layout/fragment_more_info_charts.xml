@@ -16,10 +16,11 @@
 
         <ImageView
             android:id="@+id/ivClose"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="40dip"
+            android:layout_height="50dip"
             android:layout_marginStart="16dp"
             android:layout_marginTop="32dp"
+            android:padding="5dp"
             android:onClick="@{() -> fragment.activity.onBackPressed()}"
             android:src="@drawable/sp_chevron_start"
             app:layout_constraintStart_toStartOf="parent"

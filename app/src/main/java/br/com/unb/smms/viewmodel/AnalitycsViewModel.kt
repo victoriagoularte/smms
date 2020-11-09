@@ -148,7 +148,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
         pageInteractor.postInsights(ids, metric).map { it ->
             postsDisposable = it.subscribe {res, error ->
-
                 res?.let {
                     when (metric) {
                         "likes" -> {
@@ -164,7 +163,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                             index += 1
                             entrylist.add(Entry(index.toFloat(), it.toFloat()))
                             entriesComments.value = entrylist
-
                         }
                     }
             }

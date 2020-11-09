@@ -36,8 +36,6 @@ class AnalitycsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
-        resetFields()
-
         return binding.root
     }
 
@@ -52,6 +50,7 @@ class AnalitycsFragment : Fragment() {
             binding.spinnerPeriod.adapter = adapter
         }
 
+        resetFields()
         events()
         viewModel.getFriendsCount()
         viewModel.userIdIg()
@@ -74,6 +73,7 @@ class AnalitycsFragment : Fragment() {
         viewModel.resultFacebookPosts.observe(viewLifecycleOwner) {
             when(it) {
                 is SmmsData.Success -> {
+                    resetFields()
                     listPosts = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
                     viewModel.postInsightLikes(listPosts.map { it.id!! }).toString()
                     viewModel.postInsightImpressions(listPosts.map { it.id!! }).toString()
