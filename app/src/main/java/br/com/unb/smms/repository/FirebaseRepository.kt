@@ -138,7 +138,7 @@ class FirebaseRepository {
                         post?.id = teste.key
                         if (post != null && !post.annotations.isNullOrEmpty()) {
                             for (tag in post.annotations!!) {
-                                if (tag.description == annotation) {
+                                if (tag.description.equals(annotation, true)) {
                                     listPost.add(post)
                                 }
                             }
