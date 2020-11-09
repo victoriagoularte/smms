@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import br.com.unb.smms.SmmsData
 import br.com.unb.smms.domain.facebook.Account
 import br.com.unb.smms.extension.toJson
+import br.com.unb.smms.interactor.PageInteractor
 import br.com.unb.smms.interactor.UserInteractor
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences
@@ -18,6 +19,7 @@ import io.reactivex.disposables.Disposable
 
 class SmmsViewModel @ViewModelInject constructor(
     private val userInteractor: UserInteractor,
+    private val pageInteractor: PageInteractor,
     @ApplicationContext val context: Context
 ) : ViewModel() {
 
@@ -27,7 +29,6 @@ class SmmsViewModel @ViewModelInject constructor(
 
     var resultPic = MutableLiveData<SmmsData<Bitmap>>()
     var resultAccess = MutableLiveData<SmmsData<Account>>()
-
 
     fun access() {
 
@@ -49,7 +50,7 @@ class SmmsViewModel @ViewModelInject constructor(
     }
 
     fun getUserProfilePicture() {
-        picDisposable = userInteractor.getUserProfilePicture().subscribe { res, error ->
+        picDisposable = pageInteractor.profilePicture().subscribe { res, error ->
             if (error != null) {
                 resultPic.value = SmmsData.Error(Throwable("erro ao carregar imagem"))
                 return@subscribe

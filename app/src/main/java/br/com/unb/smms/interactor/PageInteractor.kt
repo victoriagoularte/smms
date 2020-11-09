@@ -1,6 +1,7 @@
 package br.com.unb.smms.interactor
 
 import android.content.Context
+import android.graphics.Bitmap
 import br.com.unb.smms.R
 import br.com.unb.smms.domain.facebook.*
 import br.com.unb.smms.repository.PageRepository
@@ -22,6 +23,10 @@ class PageInteractor @Inject constructor(private val smmsRepository: PageReposit
         return smmsRepository.feed(getIdAccount(), feed)
     }
 
+    fun profilePicture(): Single<Bitmap> {
+        return smmsRepository.profilePicture(getIdAccount())
+    }
+
     fun postInsights(ids: List<String>, metric: String): List<Single<Int?>> {
         return smmsRepository.postInsights(ids, metric)
     }
@@ -37,10 +42,6 @@ class PageInteractor @Inject constructor(private val smmsRepository: PageReposit
     fun igBusinessAccount(): Single<IgBusinessAccount?> {
         return smmsRepository.igBusinessAccount(getIdAccount())
     }
-
-//    fun insights(id: String, period: String): Single<ListInsight?> {
-//        return smmsRepository.insights(id, period)
-//    }
 
     private fun getIdAccount(): String {
         val gson = Gson()

@@ -1,11 +1,14 @@
 package br.com.unb.smms.repository
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import br.com.unb.smms.domain.facebook.*
 import br.com.unb.smms.repository.dto.*
 import br.com.unb.smms.repository.mapper.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import okhttp3.ResponseBody
 import org.mapstruct.factory.Mappers
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -21,6 +24,9 @@ interface FacebookPageService {
 
     @POST("{page-id}/photos")
     fun photo(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
+
+    @GET("{page-id}/picture?height=200&width=200&type=normal")
+    fun photoProfile(@Path("page-id") id: String): Single<ResponseBody>
 
     @GET("{page-id}/posts")
     fun posts(@Path("page-id") id: String): Single<ListPostDTO>
@@ -56,6 +62,14 @@ class PageRepository @Inject constructor(private val facebookService: FacebookPa
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
+    }
+
+    fun profilePicture(id: String): Single<Bitmap> {
+        return facebookService.photoProfile(id).map { it ->
+            BitmapFactory.decodeByteArray(it.bytes(), 0, it.contentLength().toInt())
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun posts(id: String): Single<ListPost?> {
