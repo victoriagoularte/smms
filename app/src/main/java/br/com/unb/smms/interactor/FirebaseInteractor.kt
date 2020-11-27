@@ -37,30 +37,42 @@ class FirebaseInteractor @Inject constructor(private val firebaseRepository: Fir
             { byTitle: List<Post>, byPost: List<Post>, byAnnotation: List<Post> ->
                 when {
                     byTitle.isNullOrEmpty() -> {
-                        if (byAnnotation.isNullOrEmpty()) {
-                            byPost
-                        } else if (byPost.isNullOrEmpty()) {
-                            byAnnotation
-                        } else {
-                            byPost.intersect(byAnnotation).toList()
+                        when {
+                            byAnnotation.isNullOrEmpty() -> {
+                                byPost
+                            }
+                            byPost.isNullOrEmpty() -> {
+                                byAnnotation
+                            }
+                            else -> {
+                                byPost.intersect(byAnnotation).toList()
+                            }
                         }
                     }
                     byPost.isNullOrEmpty() -> {
-                        if (byAnnotation.isNullOrEmpty()) {
-                            byTitle
-                        } else if (byTitle.isNullOrEmpty()) {
-                            byAnnotation
-                        } else {
-                            byAnnotation.intersect(byTitle).toList()
+                        when {
+                            byAnnotation.isNullOrEmpty() -> {
+                                byTitle
+                            }
+                            byTitle.isNullOrEmpty() -> {
+                                byAnnotation
+                            }
+                            else -> {
+                                byAnnotation.intersect(byTitle).toList()
+                            }
                         }
                     }
                     byAnnotation.isNullOrEmpty() -> {
-                        if (byTitle.isNullOrEmpty()) {
-                            byPost
-                        } else if (byPost.isNullOrEmpty()) {
-                            byTitle
-                        } else {
-                            byPost.intersect(byTitle).toList()
+                        when {
+                            byTitle.isNullOrEmpty() -> {
+                                byPost
+                            }
+                            byPost.isNullOrEmpty() -> {
+                                byTitle
+                            }
+                            else -> {
+                                byPost.intersect(byTitle).toList()
+                            }
                         }
                     }
                     else -> {

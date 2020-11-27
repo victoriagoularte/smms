@@ -102,7 +102,7 @@ class MoreInfoChartsFragment : Fragment(), OnChartValueSelectedListener {
             dataSet.fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_bg)
             dataSet.setDrawFilled(true)
             dataSet.lineWidth = 2.0F
-            dataSet.color = R.color.biometric_error_color
+//            dataSet.color = R.color.biometric_error_color
 
             dataSet.setDrawCircles(false)
             dataSet.setDrawCircleHole(false)

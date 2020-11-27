@@ -64,7 +64,7 @@ class SelectSocialMediaActivity : AppCompatActivity() {
 
         val login = loginStoraged!!.fromJson<LoginResult>()
 
-        if (login != null && login.accessToken.token!!.isNotEmpty()) {
+        if (login != null && login.accessToken.token!!.isNotEmpty() && AccessToken.getCurrentAccessToken() != null) {
             if (login.accessToken.token.equals(AccessToken.getCurrentAccessToken().token, true)) {
                 startActivity(Intent(this@SelectSocialMediaActivity, SmmsActivity::class.java))
                 return

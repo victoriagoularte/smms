@@ -11,8 +11,8 @@ class LoginViewModel(val app: Application) : AndroidViewModel(app) {
 
     private val interactor = LoginInteractor(app.applicationContext)
 
-    val password = MutableLiveData<String>("11223344")
-    val email = MutableLiveData<String>("vickgoularte@gmail.com")
+    val password = MutableLiveData<String>()
+    val email = MutableLiveData<String>()
     val resultSignIn = MutableLiveData<SmmsData<String>>()
     val resultRegister = MutableLiveData<SmmsData<String>>()
 
