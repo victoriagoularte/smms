@@ -149,29 +149,6 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
         }
 
         smmsCompositeDisposable.add(likesDisposable)
-
-//        if (resultCountLikes.value == 0) {
-//            pageInteractor.postInsights(ids, "likes").map { it ->
-//                var index = 0
-//                likesDisposable = it.subscribe { res, error ->
-//                    res?.let {
-////                        resultCountLikes.value = resultCountLikes.value?.plus(it)
-//                        index += 1
-//                        entrylist.add(Entry(index.toFloat(), it.toFloat()))
-//                        entriesLikes.value = entrylist
-//                    }
-//
-//                    error?.let {
-//                        resultCountLikes.value = 0
-//                    }
-//                }
-//
-//                smmsCompositeDisposable.add(likesDisposable)
-//                _showLikes.value = true
-//
-//            }
-//            resultCountLikes.value = entrylist.map { it.y.toInt() }.sum()
-//        }
     }
 
 
@@ -201,92 +178,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
         }
 
         smmsCompositeDisposable.add(commentsDisposable)
-
-//        if (resultCountComments.value == 0) {
-//            pageInteractor.postInsights(ids, "comments").map { it ->
-//                var index = 0
-//                val entrylist = ArrayList<Entry>()
-//                commentsDisposable = it.subscribe { res, error ->
-//                    res?.let {
-//                        resultCountComments.value = resultCountComments.value?.plus(it)
-//                        index += 1
-//                        entrylist.add(Entry(index.toFloat(), it.toFloat()))
-//                        entriesComments.value = entrylist
-//                    }
-//
-//                    error?.let {
-//                        resultCountComments.value = 0
-//                    }
-//                }
-//                _showComments.value = true
-//                smmsCompositeDisposable.add(commentsDisposable)
-//            }
-//        }
-
-
     }
-
-//    fun postInsightReactions(ids: List<String>) {
-//        postInsights(ids, "reactions")
-//    }
-
-//    fun postInsights(ids: List<String>, metric: String) {
-//
-//        val entrylist = ArrayList<Entry>()
-//        var index = 0
-//        var likesCount = 0
-//        var seenCount = 0
-//        var commentsCount = 0
-//
-//        pageInteractor.postInsights(ids, metric).map { it ->
-//            postsDisposable = it.subscribe { res, error ->
-//                res?.let {
-//
-//                    when (metric) {
-//                        "likes" -> {
-////                            resultCountLikes.value = resultCountLikes.value?.plus(it)
-//                            likesCount.plus(it)
-//                            index += 1
-//                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
-//                            entriesLikes.value = entrylist
-//                        }
-//                        "seen" -> seenCount += it
-////                            resultCountImpressions.value?.plus(it)
-//                        "comments" -> {
-////                            resultCountComments.value = resultCountComments.value?.plus(it)
-//                            commentsCount.plus(it)
-//                            index += 1
-//                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
-//                            entriesComments.value = entrylist
-//                        }
-//                    }
-//            }
-//
-//                error?.let {
-//                    when(metric) {
-//                        "likes" -> resultCountLikes.value = 0
-//                        "seen" -> resultCountImpressions.value = 0
-//                        "comments" -> resultCountComments.value = 0
-//                    }
-//                }
-//
-//                when (metric) {
-//                    "likes" -> _showLikes.value = true
-//                    "seen" -> _showImpressions.value = true
-//                    "comments" -> _showComments.value = true
-//                }
-//
-//            }
-//
-//            resultCountLikes.value = likesCount
-//            resultCountImpressions.value = seenCount
-//            resultCountComments.value = commentsCount
-//
-//        }
-//
-//        smmsCompositeDisposable.add(postsDisposable)
-//
-//    }
 
     fun userIdIg() {
 
