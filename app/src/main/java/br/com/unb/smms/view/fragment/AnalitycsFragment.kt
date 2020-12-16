@@ -120,9 +120,7 @@ class AnalitycsFragment : Fragment() {
                     else -> "year"
                 }
 
-                viewModel.resultCountLikes.value = 0
-                viewModel.resultCountComments.value = 0
-                viewModel.resultCountImpressions.value = 0
+                resetFields()
 
                 viewModel.postsFacebook()
             }
@@ -142,7 +140,3 @@ class AnalitycsFragment : Fragment() {
 
 
 }
-
-
-
-//enum {NONE, LIKE, LOVE, WOW, HAHA, SAD, ANGRY, THANKFUL, PRIDE, CARE} to reations

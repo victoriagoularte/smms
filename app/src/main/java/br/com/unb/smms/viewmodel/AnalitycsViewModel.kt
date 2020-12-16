@@ -37,6 +37,8 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     private lateinit var instaInfoDisposable: Disposable
     private lateinit var instaUserDisposable: Disposable
     private lateinit var postsDisposable: Disposable
+    private lateinit var likesDisposable: Disposable
+    private lateinit var commentsDisposable: Disposable
 
     var resultFacebookFriends = MutableLiveData<String>()
     var followersCount = MutableLiveData<String>()
@@ -126,73 +128,171 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     }
 
     fun postInsightLikes(ids: List<String>) {
-        postInsights(ids, "likes")
-    }
 
-    fun postInsightImpressions(ids: List<String>) {
-        postInsights(ids, "seen")
-    }
+        likesDisposable = pageInteractor.postInsights(ids, "likes").subscribe { res, error ->
 
-    fun postInsightComments(ids: List<String>) {
-        postInsights(ids, "comments")
-    }
+            res?.let {
+                val entrylist = ArrayList<Entry>()
+                resultCountLikes.value =  it.sum()
+                for(i in it.indices) {
+                    entrylist.add(Entry(i.toFloat(), it[i].toFloat()))
+                }
+                entriesLikes.value = entrylist
+                _showLikes.value = true
 
-    fun postInsightReactions(ids: List<String>) {
-        postInsights(ids, "reactions")
-    }
-
-    fun postInsights(ids: List<String>, metric: String) {
-
-        val entrylist = ArrayList<Entry>()
-        var index = 0
-
-        pageInteractor.postInsights(ids, metric).map { it ->
-            postsDisposable = it.subscribe {res, error ->
-                res?.let {
-                    when (metric) {
-                        "likes" -> {
-                            resultCountLikes.value = resultCountLikes.value?.plus(it)
-                            index += 1
-                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
-                            entriesLikes.value = entrylist
-                        }
-                        "seen" -> resultCountImpressions.value =
-                            resultCountImpressions.value?.plus(it)
-                        "comments" -> {
-                            resultCountComments.value = resultCountComments.value?.plus(it)
-                            index += 1
-                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
-                            entriesComments.value = entrylist
-                        }
-                    }
             }
 
-                error?.let {
-                    when(metric) {
-                        "likes" -> resultCountLikes.value = 0
-                        "seen" -> resultCountImpressions.value = 0
-                        "comments" -> resultCountComments.value = 0
-                    }
-                }
-
-                when(metric) {
-                    "likes" -> _showLikes.value = true
-                    "seen" -> _showImpressions.value = true
-                    "comments" -> _showComments.value = true
-                }
-
+            error?.let {
+                resultCountLikes.value = 0
+                _showLikes.value = true
             }
         }
 
-        smmsCompositeDisposable.add(postsDisposable)
+        smmsCompositeDisposable.add(likesDisposable)
+
+//        if (resultCountLikes.value == 0) {
+//            pageInteractor.postInsights(ids, "likes").map { it ->
+//                var index = 0
+//                likesDisposable = it.subscribe { res, error ->
+//                    res?.let {
+////                        resultCountLikes.value = resultCountLikes.value?.plus(it)
+//                        index += 1
+//                        entrylist.add(Entry(index.toFloat(), it.toFloat()))
+//                        entriesLikes.value = entrylist
+//                    }
+//
+//                    error?.let {
+//                        resultCountLikes.value = 0
+//                    }
+//                }
+//
+//                smmsCompositeDisposable.add(likesDisposable)
+//                _showLikes.value = true
+//
+//            }
+//            resultCountLikes.value = entrylist.map { it.y.toInt() }.sum()
+//        }
+    }
+
+
+    fun postInsightImpressions(ids: List<String>) {
+//        postInsights(ids, "seen")
+    }
+
+    fun postInsightComments(ids: List<String>) {
+
+        commentsDisposable = pageInteractor.postInsights(ids, "comments").subscribe { res, error ->
+
+            res?.let {
+                val entrylist = ArrayList<Entry>()
+                resultCountComments.value =  it.sum()
+                for(i in it.indices) {
+                    entrylist.add(Entry(i.toFloat(), it[i].toFloat()))
+                }
+                entriesComments.value = entrylist
+                _showComments.value = true
+
+            }
+
+            error?.let {
+                resultCountComments.value = 0
+                _showComments.value = true
+            }
+        }
+
+        smmsCompositeDisposable.add(commentsDisposable)
+
+//        if (resultCountComments.value == 0) {
+//            pageInteractor.postInsights(ids, "comments").map { it ->
+//                var index = 0
+//                val entrylist = ArrayList<Entry>()
+//                commentsDisposable = it.subscribe { res, error ->
+//                    res?.let {
+//                        resultCountComments.value = resultCountComments.value?.plus(it)
+//                        index += 1
+//                        entrylist.add(Entry(index.toFloat(), it.toFloat()))
+//                        entriesComments.value = entrylist
+//                    }
+//
+//                    error?.let {
+//                        resultCountComments.value = 0
+//                    }
+//                }
+//                _showComments.value = true
+//                smmsCompositeDisposable.add(commentsDisposable)
+//            }
+//        }
+
 
     }
+
+//    fun postInsightReactions(ids: List<String>) {
+//        postInsights(ids, "reactions")
+//    }
+
+//    fun postInsights(ids: List<String>, metric: String) {
+//
+//        val entrylist = ArrayList<Entry>()
+//        var index = 0
+//        var likesCount = 0
+//        var seenCount = 0
+//        var commentsCount = 0
+//
+//        pageInteractor.postInsights(ids, metric).map { it ->
+//            postsDisposable = it.subscribe { res, error ->
+//                res?.let {
+//
+//                    when (metric) {
+//                        "likes" -> {
+////                            resultCountLikes.value = resultCountLikes.value?.plus(it)
+//                            likesCount.plus(it)
+//                            index += 1
+//                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
+//                            entriesLikes.value = entrylist
+//                        }
+//                        "seen" -> seenCount += it
+////                            resultCountImpressions.value?.plus(it)
+//                        "comments" -> {
+////                            resultCountComments.value = resultCountComments.value?.plus(it)
+//                            commentsCount.plus(it)
+//                            index += 1
+//                            entrylist.add(Entry(index.toFloat(), it.toFloat()))
+//                            entriesComments.value = entrylist
+//                        }
+//                    }
+//            }
+//
+//                error?.let {
+//                    when(metric) {
+//                        "likes" -> resultCountLikes.value = 0
+//                        "seen" -> resultCountImpressions.value = 0
+//                        "comments" -> resultCountComments.value = 0
+//                    }
+//                }
+//
+//                when (metric) {
+//                    "likes" -> _showLikes.value = true
+//                    "seen" -> _showImpressions.value = true
+//                    "comments" -> _showComments.value = true
+//                }
+//
+//            }
+//
+//            resultCountLikes.value = likesCount
+//            resultCountImpressions.value = seenCount
+//            resultCountComments.value = commentsCount
+//
+//        }
+//
+//        smmsCompositeDisposable.add(postsDisposable)
+//
+//    }
 
     fun userIdIg() {
 
         instaUserDisposable = pageInteractor.igBusinessAccount()
             .subscribe { res, error ->
-                if(error != null) {
+                if (error != null) {
                     resultUserIdIg.value = SmmsData.Error(error)
                     return@subscribe
                 }
@@ -277,6 +377,4 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
 
         smmsCompositeDisposable.dispose()
     }
-
-
 }

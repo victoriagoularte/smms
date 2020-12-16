@@ -2,7 +2,10 @@ package br.com.unb.smms.repository
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import br.com.unb.smms.domain.facebook.*
+import br.com.unb.smms.domain.facebook.Feed
+import br.com.unb.smms.domain.facebook.IgBusinessAccount
+import br.com.unb.smms.domain.facebook.ListPost
+import br.com.unb.smms.domain.facebook.NodeGraph
 import br.com.unb.smms.repository.dto.*
 import br.com.unb.smms.repository.mapper.*
 import io.reactivex.Single
@@ -120,9 +123,9 @@ class PageRepository @Inject constructor(private val facebookService: FacebookPa
 
     }
 
-    fun postInsights(idsPosts: List<String>, metric: String): List<Single<Int?>> {
-        return idsPosts.map { postInsights(it, metric) }
+    fun postInsights(idsPosts: List<String>, metric: String): Single<List<Int>> {
+        return Single.zip(idsPosts.map { postInsights(it, metric) }) {
+            it.toList() as List<Int>
+        }
     }
-
-
 }

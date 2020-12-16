@@ -27,7 +27,7 @@ class PageInteractor @Inject constructor(private val smmsRepository: PageReposit
         return smmsRepository.profilePicture(getIdAccount())
     }
 
-    fun postInsights(ids: List<String>, metric: String): List<Single<Int?>> {
+    fun postInsights(ids: List<String>, metric: String): Single<List<Int>> {
         return smmsRepository.postInsights(ids, metric)
     }
 

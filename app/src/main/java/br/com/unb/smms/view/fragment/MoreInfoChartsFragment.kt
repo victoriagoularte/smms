@@ -92,7 +92,6 @@ class MoreInfoChartsFragment : Fragment(), OnChartValueSelectedListener {
 
     private fun plotChartData(entries: List<Entry>, chart: LineChart) {
 
-
         if (entries.isNotEmpty()) {
             val dataSet = LineDataSet(entries, null)
 
@@ -102,7 +101,7 @@ class MoreInfoChartsFragment : Fragment(), OnChartValueSelectedListener {
             dataSet.fillDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_bg)
             dataSet.setDrawFilled(true)
             dataSet.lineWidth = 2.0F
-//            dataSet.color = R.color.biometric_error_color
+            dataSet.color = R.color.dialogplus_black_overlay
 
             dataSet.setDrawCircles(false)
             dataSet.setDrawCircleHole(false)
