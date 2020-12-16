@@ -108,8 +108,13 @@ class LoginFragment : Fragment() {
                     LoginInteractor.INVALID_USERID
                 )
             } else {
-                auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
-                    goToChooseApplication()
+                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(requireActivity()) {
+                    if (it.isSuccessful) {
+                        Toast.makeText(context, "Cadastro realizado com sucesso.", Toast.LENGTH_LONG).show()
+                        goToChooseApplication()
+                    } else {
+                        Toast.makeText(context, "Falha ao cadastrar usuário.", Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         } catch (e: Exception) {

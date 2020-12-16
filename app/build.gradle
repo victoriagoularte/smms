@@ -131,7 +131,7 @@ dependencies {
 
     /** Firebase */
     implementation 'com.google.firebase:firebase-analytics:17.5.0'
-    implementation 'com.google.firebase:firebase-auth:19.3.2'
+    implementation 'com.google.firebase:firebase-auth:20.0.1'
     implementation 'com.google.firebase:firebase-storage:19.2.0'
     implementation 'com.google.firebase:firebase-database:19.4.0'
     implementation 'com.androidhuman.rxfirebase2:firebase-auth-kotlin:16.1.0.0'
