@@ -90,7 +90,7 @@ class NewPostFragment : Fragment() {
                     if (viewModel.postFacebook.value!!) {
                         viewModel.downloadPhotoUrl.value = it.data.toString()
                         viewModel.feed()
-                    } else if (viewModel.postInsta.value!! || viewModel.postInstaStory.value!!) {
+                    } else if (binding.ckInsta.isChecked || binding.ckInstaStory.isChecked) {
                         createInstagramIntent()
                     }
 
@@ -175,7 +175,7 @@ class NewPostFragment : Fragment() {
     }
 
     private fun createInstagramIntent(type: String) {
-        if (viewModel.postInsta.value!!) {
+        if (binding.ckInsta.isChecked!!) {
             val share = Intent("com.instagram.share.ADD_TO_FEED")
             share.type = type
             share.putExtra(Intent.EXTRA_STREAM, localUri)

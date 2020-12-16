@@ -28,7 +28,9 @@ class NewPostViewModel @ViewModelInject constructor(val pageInteractor: PageInte
     private lateinit var feedDisposable: Disposable
     private lateinit var photoDisposable: Disposable
 
-    var resultPost = MutableLiveData<SmmsData<NodeGraph>>()
+    var resultPost = MutableLiveData<SmmsData<NodeGraph>>(
+
+    )
     var resultUploadPhoto = MutableLiveData<SmmsData<Uri>>()
 
     val uriPhoto = MutableLiveData<String>()
