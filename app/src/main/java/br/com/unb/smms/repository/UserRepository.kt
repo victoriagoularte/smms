@@ -4,17 +4,21 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import br.com.unb.smms.domain.facebook.Account
 import br.com.unb.smms.domain.facebook.Data
+import br.com.unb.smms.domain.facebook.FanCount
 import br.com.unb.smms.repository.dto.AccessDTO
 import br.com.unb.smms.repository.dto.DataDTO
+import br.com.unb.smms.repository.dto.FanCountDTO
 import br.com.unb.smms.repository.dto.NodeGraphDTO
 import br.com.unb.smms.repository.mapper.AccountMapper
 import br.com.unb.smms.repository.mapper.DataResponseMapper
+import br.com.unb.smms.repository.mapper.FanCountMapper
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import org.mapstruct.factory.Mappers
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Path
 import javax.inject.Inject
 
@@ -69,6 +73,4 @@ class UserRepository @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
     }
-
-
 }

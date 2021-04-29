@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import br.com.unb.smms.domain.facebook.Account
 import br.com.unb.smms.domain.facebook.Data
+import br.com.unb.smms.domain.facebook.FanCount
 import br.com.unb.smms.repository.UserRepository
 import br.com.unb.smms.security.SecurityConstants
 import br.com.unb.smms.security.getEncrypSharedPreferences

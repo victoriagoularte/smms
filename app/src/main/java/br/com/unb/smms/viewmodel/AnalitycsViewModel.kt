@@ -33,14 +33,14 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                                                       private val igInteractor: IgInteractor, @ApplicationContext val context: Context) : ViewModel() {
 
     private val smmsCompositeDisposable = CompositeDisposable()
-    private lateinit var friendsFacebookDisposable: Disposable
+    private lateinit var facebookFollowers: Disposable
     private lateinit var instaInfoDisposable: Disposable
     private lateinit var instaUserDisposable: Disposable
     private lateinit var postsDisposable: Disposable
     private lateinit var likesDisposable: Disposable
     private lateinit var commentsDisposable: Disposable
 
-    var resultFacebookFriends = MutableLiveData<String>()
+    var resultFacebookFollowers = MutableLiveData<String>()
     var followersCount = MutableLiveData<String>()
 
     var resultUserIdIg = MutableLiveData<SmmsData<NodeGraph>>()
@@ -71,15 +71,15 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
     val showImpressions: LiveData<Boolean>
         get() = _showImpressions
 
-    fun getFriendsCount() {
+    fun followers() {
 
-        friendsFacebookDisposable = userInteractor.getFriendsCount()
+        facebookFollowers = pageInteractor.followers()
             .subscribe { res, error ->
-                if (res?.summary != null)
-                    resultFacebookFriends.value = (res.summary!!.totalCount).toString()
+                if (res != null)
+                    resultFacebookFollowers.value = (res.fanCount).toString()
             }
 
-        smmsCompositeDisposable.add(friendsFacebookDisposable)
+        smmsCompositeDisposable.add(facebookFollowers)
 
     }
 
@@ -110,7 +110,7 @@ class AnalitycsViewModel @ViewModelInject constructor(private val userInteractor
                     var nextDate = Date()
                     val cal = Calendar.getInstance()
                     cal.time = nextDate
-                    cal.add(Calendar.DATE, 1)
+                    cal.add(Calendar.DATE, 0)
                     nextDate = cal.time
 
                     (it.created_time?.substring(8, 10) == cal.time.toString("dd") ||

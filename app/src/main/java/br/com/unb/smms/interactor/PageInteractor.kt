@@ -19,6 +19,10 @@ class PageInteractor @Inject constructor(private val smmsRepository: PageReposit
         } else null
     }
 
+    fun followers(): Single<FanCount> {
+        return smmsRepository.followers(getIdAccount())
+    }
+
     fun feed(feed: Feed): Single<NodeGraph?> {
         return smmsRepository.feed(getIdAccount(), feed)
     }

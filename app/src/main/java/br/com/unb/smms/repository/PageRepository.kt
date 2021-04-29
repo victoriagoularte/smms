@@ -2,10 +2,7 @@ package br.com.unb.smms.repository
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import br.com.unb.smms.domain.facebook.Feed
-import br.com.unb.smms.domain.facebook.IgBusinessAccount
-import br.com.unb.smms.domain.facebook.ListPost
-import br.com.unb.smms.domain.facebook.NodeGraph
+import br.com.unb.smms.domain.facebook.*
 import br.com.unb.smms.repository.dto.*
 import br.com.unb.smms.repository.mapper.*
 import io.reactivex.Single
@@ -21,6 +18,9 @@ import javax.inject.Inject
 
 
 interface FacebookPageService {
+
+    @GET("{page-id}?fields=fan_count")
+    fun followers(@Path("page-id") id: String): Single<FanCountDTO>
 
     @POST("{page-id}/feed")
     fun feed(@Path("page-id") id: String, @Body feedDTO: FeedDTO): Single<NodeGraphDTO>
@@ -52,6 +52,18 @@ interface FacebookPageService {
 }
 
 class PageRepository @Inject constructor(private val facebookService: FacebookPageService) {
+
+    fun followers(id: String): Single<FanCount> {
+
+        val domainMapper = Mappers.getMapper(FanCountMapper::class.java)
+
+        return facebookService.followers(id).map { fanCountDTO ->
+            domainMapper.toDomain(fanCountDTO)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+
+    }
 
     fun feed(id: String, feed: Feed): Single<NodeGraph?> {
 

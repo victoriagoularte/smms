@@ -52,7 +52,7 @@ class AnalitycsFragment : Fragment() {
 
         resetFields()
         events()
-        viewModel.getFriendsCount()
+        viewModel.followers()
         viewModel.userIdIg()
         viewModel.postsFacebook()
 
@@ -73,7 +73,7 @@ class AnalitycsFragment : Fragment() {
         viewModel.resultFacebookPosts.observe(viewLifecycleOwner) {
             when(it) {
                 is SmmsData.Success -> {
-                    resetFields()
+//                    resetFields()
                     listPosts = viewModel.filterPostsByPeriod(viewModel.periodSelected.value ?: "day", it.data.data!!)
                     viewModel.postInsightLikes(listPosts.map { it.id!! }).toString()
                     viewModel.postInsightImpressions(listPosts.map { it.id!! }).toString()
@@ -120,7 +120,7 @@ class AnalitycsFragment : Fragment() {
                     else -> "year"
                 }
 
-                resetFields()
+//                resetFields()
 
                 viewModel.postsFacebook()
             }

@@ -116,7 +116,6 @@ class NewPostFragment : Fragment() {
                             ).show()
                             createInstagramIntent()
                         }, 2500)
-                        viewModel.resetAllFields()
                         binding.clUploadPhoto.visibility = View.VISIBLE
                         binding.ivPhoto.visibility = View.GONE
                     } else {
@@ -125,6 +124,7 @@ class NewPostFragment : Fragment() {
                             "Seu post foi publicado com sucesso no Facebook!",
                             Toast.LENGTH_LONG
                         ).show()
+                        viewModel.resetAllFields()
                     }
                 }
             }
@@ -175,11 +175,12 @@ class NewPostFragment : Fragment() {
     }
 
     private fun createInstagramIntent(type: String) {
-        if (binding.ckInsta.isChecked!!) {
+        if (binding.ckInsta.isChecked) {
             val share = Intent("com.instagram.share.ADD_TO_FEED")
             share.type = type
             share.putExtra(Intent.EXTRA_STREAM, localUri)
             startActivity(share)
+            viewModel.resetAllFields()
         } else {
             val share = Intent("com.instagram.share.ADD_TO_STORY");
             share.setDataAndType(localUri, type);
@@ -189,6 +190,7 @@ class NewPostFragment : Fragment() {
             if (activity?.packageManager?.resolveActivity(share, 0) != null) {
                 activity?.startActivityForResult(share, 0);
             }
+            viewModel.resetAllFields()
         }
     }
 
